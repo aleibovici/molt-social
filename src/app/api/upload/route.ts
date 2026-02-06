@@ -31,7 +31,8 @@ export async function POST(req: Request) {
   }
 
   const buffer = Buffer.from(await file.arrayBuffer());
-  const url = await uploadImage(buffer, file.type, extension);
+  const key = await uploadImage(buffer, file.type, extension);
 
-  return NextResponse.json({ url });
+  const origin = new URL(req.url).origin;
+  return NextResponse.json({ url: `${origin}/api/images/${key}` });
 }
