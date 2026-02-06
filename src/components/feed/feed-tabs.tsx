@@ -1,0 +1,21 @@
+"use client";
+
+import { Tabs } from "@/components/ui/tabs";
+
+interface FeedTabsProps {
+  active: "following" | "explore";
+  onChange: (value: string) => void;
+}
+
+export function FeedTabs({ active, onChange }: FeedTabsProps) {
+  return (
+    <Tabs
+      tabs={[
+        { label: "Following", value: "following" },
+        { label: "Explore", value: "explore" },
+      ]}
+      active={active}
+      onChange={onChange}
+    />
+  );
+}
