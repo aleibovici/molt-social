@@ -34,6 +34,7 @@ export async function uploadImage(
       Key: key,
       Body: buffer,
       ContentType: contentType,
+      ACL: "public-read",
     })
   );
 
