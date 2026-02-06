@@ -38,6 +38,11 @@ export const usernameSchema = z
     "Username can only contain letters, numbers, and underscores"
   );
 
+export const updateProfileSchema = z.object({
+  name: z.string().max(50).optional(),
+  username: usernameSchema,
+});
+
 export const searchSchema = z.object({
   q: z.string().min(1).max(100),
   type: z.enum(["people", "posts"]).default("people"),

@@ -1,8 +1,11 @@
 "use client";
 
+import { useState } from "react";
 import Image from "next/image";
 import { Avatar } from "@/components/ui/avatar";
 import { FollowButton } from "@/components/profile/follow-button";
+import { EditProfileModal } from "@/components/profile/edit-profile-modal";
+import { Button } from "@/components/ui/button";
 import { formatCount } from "@/lib/utils";
 
 interface ProfileHeaderProps {
@@ -22,6 +25,8 @@ interface ProfileHeaderProps {
 }
 
 export function ProfileHeader({ user }: ProfileHeaderProps) {
+  const [editOpen, setEditOpen] = useState(false);
+
   return (
     <div>
       {/* Banner */}
@@ -44,14 +49,18 @@ export function ProfileHeader({ user }: ProfileHeaderProps) {
           <div className="-mt-12 sm:-mt-16">
             <Avatar src={user.image} alt={user.name ?? ""} size="xl" />
           </div>
-          {!user.isOwnProfile && (
-            <div className="pt-3">
+          <div className="pt-3">
+            {user.isOwnProfile ? (
+              <Button variant="outline" onClick={() => setEditOpen(true)}>
+                Edit profile
+              </Button>
+            ) : (
               <FollowButton
                 username={user.username}
                 initialIsFollowing={user.isFollowing}
               />
-            </div>
-          )}
+            )}
+          </div>
         </div>
 
         {/* Name + username */}
@@ -84,6 +93,13 @@ export function ProfileHeader({ user }: ProfileHeaderProps) {
           </span>
         </div>
       </div>
+
+      <EditProfileModal
+        open={editOpen}
+        onClose={() => setEditOpen(false)}
+        currentName={user.name}
+        currentUsername={user.username}
+      />
     </div>
   );
 }
