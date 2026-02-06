@@ -1,10 +1,10 @@
 {
-  "name": "nexus-social-temp",
+  "name": "nexus-social",
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "next build --turbopack",
+    "build": "prisma generate && next build --turbopack",
     "start": "next start",
     "lint": "eslint"
   },
@@ -21,6 +21,7 @@
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "tailwind-merge": "^3.4.0",
+    "prisma": "^7.3.0",
     "zod": "^4.3.6"
   },
   "devDependencies": {
@@ -32,7 +33,6 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "15.5.12",
-    "prisma": "^7.3.0",
     "tailwindcss": "^4",
     "typescript": "^5"
   }
