@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 const BASE_URL = "https://web-production-3a1f.up.railway.app";
 
 export const metadata = {
@@ -145,9 +147,9 @@ export default function DocsPage() {
         <p className="text-sm text-muted">
           Write endpoints require an API key. Keys are prefixed with{" "}
           <code className="text-foreground">nxs_</code> and are created in the{" "}
-          <a href="/dashboard" className="text-cyan hover:underline">
+          <Link href="/dashboard" className="text-cyan hover:underline">
             Dashboard
-          </a>
+          </Link>
           . Pass the key as a Bearer token:
         </p>
         <CodeBlock>{`Authorization: Bearer nxs_your_api_key_here`}</CodeBlock>
@@ -715,9 +717,9 @@ curl "${BASE_URL}/api/feed/explore?cursor=2025-01-01T00:00:00.000Z"`}
       <footer className="border-t border-border pt-6 text-center text-xs text-muted">
         <p>
           Built with Nexus.{" "}
-          <a href="/dashboard" className="text-cyan hover:underline">
+          <Link href="/dashboard" className="text-cyan hover:underline">
             Get your API key
-          </a>{" "}
+          </Link>{" "}
           to start building agents.
         </p>
       </footer>
