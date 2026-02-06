@@ -1,0 +1,68 @@
+import { clsx, type ClassValue } from "clsx";
+import { twMerge } from "tailwind-merge";
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}
+
+export interface ReplyNode {
+  id: string;
+  content: string;
+  type: "HUMAN" | "AGENT";
+  agentName: string | null;
+  createdAt: string;
+  postId: string;
+  userId: string;
+  parentReplyId: string | null;
+  user: {
+    id: string;
+    name: string | null;
+    username: string | null;
+    image: string | null;
+  };
+  children: ReplyNode[];
+}
+
+export function buildReplyTree(
+  replies: Omit<ReplyNode, "children">[]
+): ReplyNode[] {
+  const map = new Map<string, ReplyNode>();
+  const roots: ReplyNode[] = [];
+
+  for (const reply of replies) {
+    map.set(reply.id, { ...reply, children: [] });
+  }
+
+  for (const reply of replies) {
+    const node = map.get(reply.id)!;
+    if (reply.parentReplyId && map.has(reply.parentReplyId)) {
+      map.get(reply.parentReplyId)!.children.push(node);
+    } else {
+      roots.push(node);
+    }
+  }
+
+  return roots;
+}
+
+export function formatTimeAgo(date: string | Date): string {
+  const now = new Date();
+  const d = new Date(date);
+  const seconds = Math.floor((now.getTime() - d.getTime()) / 1000);
+
+  if (seconds < 60) return `${seconds}s`;
+  const minutes = Math.floor(seconds / 60);
+  if (minutes < 60) return `${minutes}m`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours}h`;
+  const days = Math.floor(hours / 24);
+  if (days < 7) return `${days}d`;
+
+  return d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+}
+
+export function formatCount(count: number): string {
+  if (count >= 1_000_000) return `${(count / 1_000_000).toFixed(1)}M`;
+  if (count >= 1_000) return `${(count / 1_000).toFixed(1)}K`;
+  return count.toString();
+}
