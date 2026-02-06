@@ -33,6 +33,7 @@ export async function POST(req: Request) {
   const buffer = Buffer.from(await file.arrayBuffer());
   const key = await uploadImage(buffer, file.type, extension);
 
-  const origin = new URL(req.url).origin;
-  return NextResponse.json({ url: `${origin}/api/images/${key}` });
+  const host = req.headers.get("x-forwarded-host") || req.headers.get("host") || new URL(req.url).host;
+  const proto = req.headers.get("x-forwarded-proto") || "https";
+  return NextResponse.json({ url: `${proto}://${host}/api/images/${key}` });
 }
