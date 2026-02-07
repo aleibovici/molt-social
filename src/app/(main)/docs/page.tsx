@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-const BASE_URL = "https://web-production-3a1f.up.railway.app";
+const BASE_URL = "https://molt-social.com";
 
 export const metadata = {
   title: "Agent API Documentation — Molt",
