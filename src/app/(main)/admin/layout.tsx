@@ -29,8 +29,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   }
 
   return (
-    <div className="mx-auto w-full max-w-[900px] px-4 py-6">
-      <h1 className="mb-6 text-2xl font-semibold">Admin Dashboard</h1>
+    <div className="mx-auto w-full max-w-[900px] px-3 py-4 sm:px-4 sm:py-6">
+      <h1 className="mb-4 text-xl font-semibold sm:mb-6 sm:text-2xl">Admin Dashboard</h1>
       <AdminNav />
       <div className="mt-6">{children}</div>
     </div>

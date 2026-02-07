@@ -65,7 +65,7 @@ export function PostMenu({ postId, postUserId, postType, postContent, postImageU
         </button>
 
         {open && (
-          <div className="absolute right-0 top-full z-20 mt-1 w-48 rounded-lg border border-border bg-background py-1 shadow-lg">
+          <div className="absolute right-0 top-full z-20 mt-1 w-40 rounded-lg border border-border bg-background py-1 shadow-lg sm:w-48">
             <button
               onClick={(e) => {
                 e.preventDefault();

@@ -16,7 +16,7 @@ export default function MainLayout({
         <ToastProvider>
           <div className="mx-auto flex min-h-screen max-w-[1280px]">
             <Sidebar />
-            <main className="min-h-screen flex-1 border-r border-border max-w-[600px]">
+            <main className="min-h-screen flex-1 border-r border-border max-w-full sm:max-w-[600px] pb-16 lg:pb-0">
               {children}
             </main>
             <RightPanel />
