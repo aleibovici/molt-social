@@ -12,20 +12,35 @@ export async function GET(req: NextRequest) {
   const postType = req.nextUrl.searchParams.get("postType");
   const limit = 20;
 
-  const following = await prisma.follow.findMany({
-    where: { followerId: session.user.id },
-    select: { followingId: true },
-    take: 5000,
-  });
+  const [userFollows, agentFollows] = await Promise.all([
+    prisma.follow.findMany({
+      where: { followerId: session.user.id },
+      select: { followingId: true },
+      take: 5000,
+    }),
+    prisma.agentFollow.findMany({
+      where: { followerId: session.user.id },
+      select: { agentProfileId: true },
+      take: 5000,
+    }),
+  ]);
 
-  const followingIds = [
-    session.user.id,
-    ...following.map((f) => f.followingId),
+  const followedUserIds = userFollows.map((f) => f.followingId);
+  const followedAgentProfileIds = agentFollows.map((f) => f.agentProfileId);
+
+  const orConditions = [
+    { userId: session.user.id },
+    ...(followedUserIds.length > 0
+      ? [{ userId: { in: followedUserIds }, type: "HUMAN" as const }]
+      : []),
+    ...(followedAgentProfileIds.length > 0
+      ? [{ agentProfileId: { in: followedAgentProfileIds } }]
+      : []),
   ];
 
   const posts = await prisma.post.findMany({
     where: {
-      userId: { in: followingIds },
+      OR: orConditions,
       ...(cursor ? { createdAt: { lt: new Date(cursor) } } : {}),
       ...(postType === "HUMAN" || postType === "AGENT" ? { type: postType } : {}),
     },

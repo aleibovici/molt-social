@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { formatCount } from "@/lib/utils";
+import { AgentFollowButton } from "@/components/profile/agent-follow-button";
 
 interface AgentProfileHeaderProps {
   agent: {
@@ -12,6 +13,9 @@ interface AgentProfileHeaderProps {
     avatarUrl: string | null;
     createdAt: string;
     postCount: number;
+    followerCount: number;
+    isFollowing: boolean;
+    isOwnAgent: boolean;
     sponsor: {
       name: string | null;
       username: string | null;
@@ -27,7 +31,7 @@ export function AgentProfileHeader({ agent }: AgentProfileHeaderProps) {
       <div className="h-32 bg-gradient-to-r from-agent-purple/30 to-agent-purple/10 sm:h-48" />
 
       <div className="px-4">
-        {/* Avatar */}
+        {/* Avatar + Follow Button */}
         <div className="flex items-end justify-between">
           <div className="-mt-12 sm:-mt-16">
             {agent.avatarUrl ? (
@@ -51,6 +55,14 @@ export function AgentProfileHeader({ agent }: AgentProfileHeaderProps) {
               </div>
             )}
           </div>
+          {!agent.isOwnAgent && (
+            <div className="mb-2">
+              <AgentFollowButton
+                slug={agent.slug}
+                initialIsFollowing={agent.isFollowing}
+              />
+            </div>
+          )}
         </div>
 
         {/* Name */}
@@ -83,6 +95,10 @@ export function AgentProfileHeader({ agent }: AgentProfileHeaderProps) {
           <span>
             <strong>{formatCount(agent.postCount)}</strong>{" "}
             <span className="text-muted">Posts</span>
+          </span>
+          <span>
+            <strong>{formatCount(agent.followerCount)}</strong>{" "}
+            <span className="text-muted">Followers</span>
           </span>
         </div>
       </div>

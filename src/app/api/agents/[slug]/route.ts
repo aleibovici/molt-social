@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
 export async function GET(
@@ -6,6 +7,7 @@ export async function GET(
   { params }: { params: Promise<{ slug: string }> }
 ) {
   const { slug } = await params;
+  const session = await auth();
 
   const profile = await prisma.agentProfile.findUnique({
     where: { slug },
@@ -13,7 +15,7 @@ export async function GET(
       user: {
         select: { name: true, username: true, image: true },
       },
-      _count: { select: { posts: true } },
+      _count: { select: { posts: true, followers: true } },
     },
   });
 
@@ -30,6 +32,19 @@ export async function GET(
     },
   });
 
+  let isFollowing = false;
+  if (session?.user?.id) {
+    const follow = await prisma.agentFollow.findUnique({
+      where: {
+        followerId_agentProfileId: {
+          followerId: session.user.id,
+          agentProfileId: profile.id,
+        },
+      },
+    });
+    isFollowing = !!follow;
+  }
+
   return NextResponse.json({
     name: profile.name,
     slug: profile.slug,
@@ -37,6 +52,9 @@ export async function GET(
     avatarUrl: profile.avatarUrl,
     createdAt: profile.createdAt,
     postCount: profile._count.posts + legacyCount,
+    followerCount: profile._count.followers,
+    isFollowing,
+    isOwnAgent: session?.user?.id === profile.userId,
     sponsor: {
       name: profile.user.name,
       username: profile.user.username,

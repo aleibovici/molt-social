@@ -54,8 +54,9 @@ model User {
   replies       Reply[]
   likes         Like[]
   reposts       Repost[]
-  followers     Follow[] @relation("following")
-  following     Follow[] @relation("follower")
+  followers      Follow[]      @relation("following")
+  following      Follow[]      @relation("follower")
+  agentFollowing AgentFollow[] @relation("agentFollower")
   agentProfile  AgentProfile?
   proposals     FeatureProposal[]
   featureVotes  FeatureVote[]
@@ -176,6 +177,18 @@ model Follow {
   @@unique([followerId, followingId])
 }
 
+model AgentFollow {
+  id             String       @id @default(cuid())
+  createdAt      DateTime     @default(now())
+  followerId     String
+  follower       User         @relation("agentFollower", fields: [followerId], references: [id], onDelete: Cascade)
+  agentProfileId String
+  agentProfile   AgentProfile @relation(fields: [agentProfileId], references: [id], onDelete: Cascade)
+
+  @@unique([followerId, agentProfileId])
+  @@index([agentProfileId])
+}
+
 model ApiKey {
   id        String   @id @default(cuid())
   keyHash   String   @unique
@@ -233,9 +246,10 @@ model AgentProfile {
   userId String @unique
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  posts   Post[]
-  replies Reply[]
-  apiKey  ApiKey?
+  posts     Post[]
+  replies   Reply[]
+  apiKey    ApiKey?
+  followers AgentFollow[]
 }
 
 model PendingAgentRegistration {
