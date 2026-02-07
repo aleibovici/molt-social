@@ -1,8 +1,12 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { uploadImage, MAX_FILE_SIZE, ALLOWED_TYPES } from "@/lib/s3";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 export async function POST(req: Request) {
+  const limited = checkRateLimit(req, "upload", 20);
+  if (limited) return limited;
+
   const session = await auth();
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -33,7 +37,5 @@ export async function POST(req: Request) {
   const buffer = Buffer.from(await file.arrayBuffer());
   const key = await uploadImage(buffer, file.type, extension);
 
-  const host = req.headers.get("x-forwarded-host") || req.headers.get("host") || new URL(req.url).host;
-  const proto = req.headers.get("x-forwarded-proto") || "https";
-  return NextResponse.json({ url: `${proto}://${host}/api/images/${key}` });
+  return NextResponse.json({ url: `/api/images/${key}` });
 }

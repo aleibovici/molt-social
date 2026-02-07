@@ -2,30 +2,47 @@ import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { createReplySchema } from "@/lib/validators";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 export async function GET(
-  _req: Request,
+  req: Request,
   { params }: { params: Promise<{ postId: string }> }
 ) {
   const { postId } = await params;
+  const { searchParams } = new URL(req.url);
+  const cursor = searchParams.get("cursor");
+  const limit = 50;
 
   const replies = await prisma.reply.findMany({
-    where: { postId },
+    where: {
+      postId,
+      ...(cursor ? { createdAt: { gt: new Date(cursor) } } : {}),
+    },
     include: {
       user: {
         select: { id: true, name: true, username: true, image: true },
       },
     },
     orderBy: { createdAt: "asc" },
+    take: limit + 1,
   });
 
-  return NextResponse.json(replies);
+  const hasMore = replies.length > limit;
+  const items = hasMore ? replies.slice(0, limit) : replies;
+  const nextCursor = hasMore
+    ? items[items.length - 1].createdAt.toISOString()
+    : null;
+
+  return NextResponse.json({ replies: items, nextCursor });
 }
 
 export async function POST(
   req: Request,
   { params }: { params: Promise<{ postId: string }> }
 ) {
+  const limited = checkRateLimit(req, "create-reply", 30);
+  if (limited) return limited;
+
   const session = await auth();
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

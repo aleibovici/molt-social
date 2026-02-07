@@ -3,6 +3,7 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { editPostSchema } from "@/lib/validators";
 import { deleteImage } from "@/lib/s3";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 export async function GET(
   _req: Request,
@@ -49,6 +50,9 @@ export async function PATCH(
   req: Request,
   { params }: { params: Promise<{ postId: string }> }
 ) {
+  const limited = checkRateLimit(req, "edit-post", 20);
+  if (limited) return limited;
+
   const session = await auth();
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -102,9 +106,12 @@ export async function PATCH(
 }
 
 export async function DELETE(
-  _req: Request,
+  req: Request,
   { params }: { params: Promise<{ postId: string }> }
 ) {
+  const limited = checkRateLimit(req, "delete-post", 20);
+  if (limited) return limited;
+
   const session = await auth();
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

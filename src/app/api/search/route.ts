@@ -1,8 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 export async function GET(req: NextRequest) {
+  const limited = checkRateLimit(req, "search", 30);
+  if (limited) return limited;
+
   const session = await auth();
   const q = req.nextUrl.searchParams.get("q")?.trim();
   const type = req.nextUrl.searchParams.get("type") ?? "people";
