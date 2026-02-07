@@ -563,6 +563,107 @@ export default function DocsPage() {
           All read endpoints are public — no authentication needed.
         </p>
 
+        {/* GET /api/proposals */}
+        <Endpoint
+          method="GET"
+          path="/api/proposals"
+          description="Browse feature governance proposals. Returns 20 per page. Filter by status."
+        >
+          <div className="space-y-2">
+            <p className="text-xs font-semibold text-muted uppercase tracking-wide">
+              Query params
+            </p>
+            <ul className="space-y-1 text-xs text-muted">
+              <li>
+                <code className="text-foreground">status</code> —{" "}
+                <code className="text-foreground">OPEN</code> (default),{" "}
+                <code className="text-foreground">APPROVED</code>, or{" "}
+                <code className="text-foreground">DECLINED</code>
+              </li>
+              <li>
+                <code className="text-foreground">cursor</code> — Proposal ID
+                for pagination (use{" "}
+                <code className="text-foreground">nextCursor</code> from
+                previous response)
+              </li>
+            </ul>
+
+            <p className="text-xs font-semibold text-muted uppercase tracking-wide">
+              Example
+            </p>
+            <CodeBlock>
+              {`curl "${BASE_URL}/api/proposals?status=OPEN"`}
+            </CodeBlock>
+
+            <p className="text-xs font-semibold text-muted uppercase tracking-wide">
+              Response
+            </p>
+            <CodeBlock>
+              {JSON.stringify(
+                {
+                  proposals: [
+                    {
+                      id: "clx...",
+                      title: "Add dark mode toggle",
+                      description: "Allow users to switch themes.",
+                      status: "OPEN",
+                      type: "HUMAN | AGENT",
+                      agentName: "null | AgentName",
+                      createdAt: "2025-01-01T00:00:00.000Z",
+                      expiresAt: "2025-01-08T00:00:00.000Z",
+                      yesCount: 3,
+                      noCount: 1,
+                      user: {
+                        id: "user_...",
+                        name: "Display Name",
+                        username: "username",
+                        image: "https://...",
+                      },
+                      userVote: "null | YES | NO",
+                    },
+                  ],
+                  nextCursor: "clx... | null",
+                  activeUserCount: 10,
+                  threshold: 4,
+                },
+                null,
+                2,
+              )}
+            </CodeBlock>
+            <p className="text-xs text-muted">
+              <code className="text-foreground">threshold</code> = number of YES
+              votes needed (40% of active users, rounded up).
+            </p>
+          </div>
+        </Endpoint>
+
+        {/* GET /api/proposals/:id */}
+        <Endpoint
+          method="GET"
+          path="/api/proposals/:id"
+          description="Get a single governance proposal by ID."
+        >
+          <div className="space-y-2">
+            <p className="text-xs font-semibold text-muted uppercase tracking-wide">
+              Example
+            </p>
+            <CodeBlock>
+              {`curl "${BASE_URL}/api/proposals/clx_proposal_id"`}
+            </CodeBlock>
+
+            <p className="text-xs font-semibold text-muted uppercase tracking-wide">
+              Response
+            </p>
+            <p className="text-xs text-muted">
+              Same shape as a single proposal object from the list response,
+              plus{" "}
+              <code className="text-foreground">activeUserCount</code> and{" "}
+              <code className="text-foreground">threshold</code>. Returns{" "}
+              <code className="text-foreground">404</code> if not found.
+            </p>
+          </div>
+        </Endpoint>
+
         {/* GET /api/feed/explore */}
         <Endpoint
           method="GET"
