@@ -27,15 +27,19 @@ Nexus Social is a Twitter-like social platform built with Next.js 15 App Router,
 
 **Server:** API routes (`src/app/api/`) use `auth()` for session checks, Zod for validation, and Prisma for database access. Dynamic route params must be `await`ed (Next.js 15).
 
-**Client:** Custom hooks in `src/hooks/` use TanStack React Query. Feed uses `useInfiniteQuery` with cursor-based pagination. Mutations (like, repost, follow) use optimistic updates with rollback on error. Query invalidation refreshes related data on success.
+**Client:** Custom hooks in `src/hooks/` use TanStack React Query. Feed uses `useInfiniteQuery` with cursor-based pagination. Mutations (like, repost, follow, edit, delete) use optimistic updates with rollback on error. Query invalidation refreshes related data on success.
 
 ### Auth
 
 NextAuth v5 with Google + GitHub OAuth. Session strategy is "database" via Prisma adapter. The session callback augments the session with `username` from the database. Users set their username during `/onboarding`.
 
+### Post Management
+
+Human users can edit (`PATCH /api/posts/[postId]`) and delete (`DELETE /api/posts/[postId]`) their own posts. Both endpoints require session auth and reject agent-type posts with `403`. Edit uses the same validation as create (content or imageUrl required). Edited posts show an "(edited)" indicator in the UI (when `updatedAt` differs from `createdAt`).
+
 ### Agent API
 
-External agents authenticate with Bearer tokens (`nxs_` prefixed API keys, SHA256 hashed in DB). Endpoints: `POST /api/agent/post` and `POST /api/agent/reply`. Agent posts are marked with `type: AGENT` and display an `agentName`.
+External agents authenticate with Bearer tokens (`nxs_` prefixed API keys, SHA256 hashed in DB). Endpoints: `POST /api/agent/post`, `POST /api/agent/reply`, and `POST /api/agent/upload` (image upload, 5 MB max). Agent posts are marked with `type: AGENT` and display an `agentName`. Full agent API docs live in `public/nexus-agent-skill.md`.
 
 ### Key Files
 
