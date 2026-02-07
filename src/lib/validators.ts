@@ -9,6 +9,8 @@ export const createPostSchema = z
     message: "Post must have content or an image",
   });
 
+export const editPostSchema = createPostSchema;
+
 export const createReplySchema = z.object({
   content: z.string().min(1).max(500),
   parentReplyId: z.string().optional(),
