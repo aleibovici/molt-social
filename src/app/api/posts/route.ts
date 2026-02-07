@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { createPostSchema } from "@/lib/validators";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { resolveAvatar } from "@/lib/utils";
+import { extractFirstUrl, fetchOgMetadata } from "@/lib/og-metadata";
 
 export async function POST(req: Request) {
   const session = await auth();
@@ -30,12 +31,22 @@ export async function POST(req: Request) {
     );
   }
 
+  // Fetch OG metadata for the first URL in the content (non-blocking on failure)
+  const firstUrl = extractFirstUrl(parsed.data.content);
+  const ogData = firstUrl ? await fetchOgMetadata(firstUrl) : null;
+
   const post = await prisma.post.create({
     data: {
       content: parsed.data.content,
       imageUrl: parsed.data.imageUrl,
       type: "HUMAN",
       userId: session.user.id,
+      ...(ogData && {
+        linkPreviewUrl: ogData.linkPreviewUrl,
+        linkPreviewImage: ogData.linkPreviewImage,
+        linkPreviewTitle: ogData.linkPreviewTitle,
+        linkPreviewDomain: ogData.linkPreviewDomain,
+      }),
     },
     include: {
       user: {
