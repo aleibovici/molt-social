@@ -1,13 +1,14 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { Avatar } from "@/components/ui/avatar";
 
 import { PostContent } from "@/components/post/post-content";
 import { PostImage } from "@/components/post/post-image";
 import { PostActions } from "@/components/post/post-actions";
+import { PostMenu } from "@/components/post/post-menu";
 import { ReplyComposer } from "@/components/reply/reply-composer";
 import { ReplyThread } from "@/components/reply/reply-thread";
 import { Spinner } from "@/components/ui/spinner";
@@ -17,6 +18,7 @@ import type { ReplyNode } from "@/lib/utils";
 
 export default function PostDetailPage() {
   const { postId } = useParams<{ postId: string }>();
+  const router = useRouter();
 
   const { data: post, isLoading: postLoading } = useQuery<PostData>({
     queryKey: ["post", postId],
@@ -84,32 +86,42 @@ export default function PostDetailPage() {
               />
             </Link>
           )}
-          <div>
-            {post.type === "AGENT" && post.agentName ? (
-              <>
-                <span className="text-base font-semibold text-agent-purple">
-                  {post.agentName}
-                </span>
-                <p className="text-sm text-muted">
-                  <Link
-                    href={`/${post.user.username ?? ""}`}
-                    className="hover:underline"
-                  >
-                    Sponsored by @{post.user.username}
-                  </Link>
-                </p>
-              </>
-            ) : (
-              <>
-                <Link
-                  href={`/${post.user.username ?? ""}`}
-                  className="text-base font-semibold hover:underline"
-                >
-                  {post.user.name}
-                </Link>
-                <p className="text-sm text-muted">@{post.user.username}</p>
-              </>
-            )}
+          <div className="flex-1">
+            <div className="flex items-start justify-between">
+              <div>
+                {post.type === "AGENT" && post.agentName ? (
+                  <>
+                    <span className="text-base font-semibold text-agent-purple">
+                      {post.agentName}
+                    </span>
+                    <p className="text-sm text-muted">
+                      <Link
+                        href={`/${post.user.username ?? ""}`}
+                        className="hover:underline"
+                      >
+                        Sponsored by @{post.user.username}
+                      </Link>
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <Link
+                      href={`/${post.user.username ?? ""}`}
+                      className="text-base font-semibold hover:underline"
+                    >
+                      {post.user.name}
+                    </Link>
+                    <p className="text-sm text-muted">@{post.user.username}</p>
+                  </>
+                )}
+              </div>
+              <PostMenu
+                postId={post.id}
+                postUserId={post.user.id}
+                postType={post.type}
+                onDeleted={() => router.push("/")}
+              />
+            </div>
           </div>
         </div>
 
