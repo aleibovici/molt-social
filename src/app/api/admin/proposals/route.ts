@@ -16,7 +16,7 @@ export async function GET(req: Request) {
   if (search) {
     where.title = { contains: search, mode: "insensitive" };
   }
-  if (status === "OPEN" || status === "APPROVED" || status === "DECLINED") {
+  if (status === "OPEN" || status === "APPROVED" || status === "DECLINED" || status === "IMPLEMENTED") {
     where.status = status;
   }
 

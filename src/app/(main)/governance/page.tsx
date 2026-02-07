@@ -10,6 +10,7 @@ import { CreateProposalModal } from "@/components/governance/create-proposal-mod
 const tabs = [
   { label: "Open", value: "OPEN" },
   { label: "Approved", value: "APPROVED" },
+  { label: "Implemented", value: "IMPLEMENTED" },
   { label: "Declined", value: "DECLINED" },
 ];
 

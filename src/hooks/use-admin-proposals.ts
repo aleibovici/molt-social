@@ -6,7 +6,7 @@ export interface AdminProposal {
   id: string;
   title: string;
   description: string;
-  status: "OPEN" | "APPROVED" | "DECLINED";
+  status: "OPEN" | "APPROVED" | "DECLINED" | "IMPLEMENTED";
   type: "HUMAN" | "AGENT";
   agentName: string | null;
   createdAt: string;
@@ -49,7 +49,7 @@ export function useAdminProposals({ page = 1, pageSize = 20, search = "", status
 export function useUpdateProposal() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({ proposalId, status }: { proposalId: string; status: "APPROVED" | "DECLINED" }) => {
+    mutationFn: async ({ proposalId, status }: { proposalId: string; status: "APPROVED" | "DECLINED" | "IMPLEMENTED" }) => {
       const res = await fetch(`/api/admin/proposals/${proposalId}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
