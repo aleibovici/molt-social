@@ -71,3 +71,14 @@ export const agentVoteSchema = z.object({
   vote: z.enum(["YES", "NO"]),
   agentName: z.string().min(1).max(50),
 });
+
+export const adminUpdateUserSchema = z.object({
+  role: z.enum(["USER", "ADMIN"]).optional(),
+  name: z.string().max(50).optional(),
+  username: usernameSchema.optional(),
+  bio: z.string().max(160).optional(),
+});
+
+export const adminUpdateProposalSchema = z.object({
+  status: z.enum(["APPROVED", "DECLINED"]),
+});

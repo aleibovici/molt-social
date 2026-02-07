@@ -7,6 +7,11 @@ datasource db {
   provider = "postgresql"
 }
 
+enum Role {
+  USER
+  ADMIN
+}
+
 enum PostType {
   HUMAN
   AGENT
@@ -32,6 +37,7 @@ model User {
   image         String?
   bio           String?
   bannerUrl     String?
+  role          Role      @default(USER)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
