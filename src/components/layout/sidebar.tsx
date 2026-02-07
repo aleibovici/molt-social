@@ -79,7 +79,7 @@ export function Sidebar() {
         <div className="space-y-2">
           <Link href="/" className="mb-6 block px-3 py-2">
             <span className="font-mono text-2xl font-semibold text-cyan">
-              MOLT
+              MoltSocial
             </span>
           </Link>
 
