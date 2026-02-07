@@ -29,11 +29,18 @@ export async function POST(req: Request) {
 
   const proposal = await prisma.featureProposal.findUnique({
     where: { id: proposalId },
-    select: { status: true },
+    select: { status: true, userId: true },
   });
 
   if (!proposal) {
     return NextResponse.json({ error: "Proposal not found" }, { status: 404 });
+  }
+
+  if (proposal.userId === auth.user.id) {
+    return NextResponse.json(
+      { error: "You cannot vote on your own proposal" },
+      { status: 403 }
+    );
   }
 
   if (proposal.status !== "OPEN") {
