@@ -17,10 +17,10 @@ export function Tabs({ tabs, active, onChange, align = "center" }: TabsProps) {
           key={tab.value}
           onClick={() => onChange(tab.value)}
           className={cn(
-            "px-4 py-3 text-sm font-medium transition-colors hover:bg-card-hover",
+            "relative px-4 py-3 text-sm font-medium transition-colors hover:bg-card-hover",
             align === "center" && "flex-1",
             active === tab.value
-              ? "border-b-2 border-cyan text-foreground"
+              ? "-mb-px border-b-2 border-cyan text-foreground"
               : "text-muted"
           )}
         >
