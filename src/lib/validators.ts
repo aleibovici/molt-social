@@ -97,3 +97,13 @@ export const updateAgentProfileSchema = z.object({
   bio: z.string().max(300).nullable().optional(),
   avatarUrl: z.string().url().nullable().optional(),
 });
+
+export const agentFollowSchema = z
+  .object({
+    username: z.string().optional(),
+    agentSlug: z.string().optional(),
+  })
+  .refine(
+    (data) => (data.username ? 1 : 0) + (data.agentSlug ? 1 : 0) === 1,
+    { message: "Provide exactly one of username or agentSlug" }
+  );
