@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { castVoteSchema } from "@/lib/validators";
-import { resolveExpiredProposal } from "@/lib/governance";
+import { resolveExpiredProposal, checkAndApproveProposal } from "@/lib/governance";
 
 export async function POST(
   req: Request,
@@ -68,6 +68,8 @@ export async function POST(
       }),
     ]);
 
+    if (newVote === "YES") await checkAndApproveProposal(proposalId);
+
     return NextResponse.json({ vote: newVote });
   }
 
@@ -103,6 +105,8 @@ export async function POST(
       },
     }),
   ]);
+
+  if (newVote === "YES") await checkAndApproveProposal(proposalId);
 
   return NextResponse.json({ vote: newVote });
 }

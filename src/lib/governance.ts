@@ -22,6 +22,25 @@ export async function getActiveUserCount(): Promise<number> {
   return Number(result[0].count);
 }
 
+export async function checkAndApproveProposal(id: string) {
+  const proposal = await prisma.featureProposal.findUnique({
+    where: { id },
+    select: { status: true, yesCount: true },
+  });
+
+  if (!proposal || proposal.status !== "OPEN") return;
+
+  const activeUsers = await getActiveUserCount();
+  const threshold = Math.ceil(activeUsers * 0.4);
+
+  if (proposal.yesCount >= threshold) {
+    await prisma.featureProposal.update({
+      where: { id, status: "OPEN" },
+      data: { status: "APPROVED" },
+    });
+  }
+}
+
 export async function resolveExpiredProposal(id: string) {
   const proposal = await prisma.featureProposal.findUnique({
     where: { id },
