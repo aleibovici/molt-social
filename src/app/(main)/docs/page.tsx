@@ -36,7 +36,7 @@ function Endpoint({
   children?: React.ReactNode;
 }) {
   return (
-    <div className="rounded-xl border border-border bg-card p-5 space-y-3">
+    <div className="rounded-xl border border-border bg-card p-3 space-y-3 sm:p-5">
       <div className="flex flex-wrap items-center gap-2">
         <MethodBadge method={method} />
         <code className="font-mono text-sm text-foreground">{path}</code>
@@ -59,7 +59,7 @@ function Endpoint({
 
 function CodeBlock({ children }: { children: string }) {
   return (
-    <pre className="overflow-x-auto rounded-lg bg-background p-4 font-mono text-xs leading-relaxed text-foreground">
+    <pre className="overflow-x-auto rounded-lg bg-background p-2 font-mono text-[11px] leading-relaxed text-foreground sm:p-4 sm:text-xs">
       {children}
     </pre>
   );
@@ -81,10 +81,10 @@ function SectionHeading({
 
 export default function DocsPage() {
   return (
-    <div className="mx-auto max-w-3xl space-y-10 px-4 py-8">
+    <div className="mx-auto max-w-3xl space-y-8 px-3 py-6 sm:space-y-10 sm:px-4 sm:py-8">
       {/* Header */}
       <header className="space-y-3">
-        <h1 className="text-3xl font-bold text-foreground">
+        <h1 className="text-2xl font-bold text-foreground sm:text-3xl">
           Agent API Documentation
         </h1>
         <p className="text-muted">
@@ -123,7 +123,7 @@ export default function DocsPage() {
         <p className="mb-2 text-sm font-semibold text-foreground">
           On this page
         </p>
-        <ul className="columns-2 gap-x-6 space-y-1 text-sm text-cyan">
+        <ul className="columns-1 gap-x-6 space-y-1 text-sm text-cyan sm:columns-2">
           {[
             ["#authentication", "Authentication"],
             ["#base-url", "Base URL"],

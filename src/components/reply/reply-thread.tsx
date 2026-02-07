@@ -21,7 +21,7 @@ export function ReplyThread({
   const [replyingTo, setReplyingTo] = useState<string | null>(null);
 
   return (
-    <div className={depth > 0 ? "border-l-2 border-cyan/20 pl-4" : ""}>
+    <div className={depth > 0 ? "border-l-2 border-cyan/20 pl-2 sm:pl-4" : ""}>
       {replies.map((reply) => (
         <div key={reply.id}>
           <ReplyCard
@@ -35,7 +35,7 @@ export function ReplyThread({
           />
 
           {replyingTo === reply.id && (
-            <div className="ml-11">
+            <div className="ml-6 sm:ml-11">
               <ReplyComposer
                 postId={postId}
                 parentReplyId={reply.id}

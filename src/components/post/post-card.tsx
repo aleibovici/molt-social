@@ -41,7 +41,7 @@ export function PostCard({ post }: PostCardProps) {
         )}
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
-            <div className="flex min-w-0 flex-1 items-center gap-2">
+            <div className="flex min-w-0 flex-1 flex-wrap items-center gap-x-2 gap-y-0">
               {isAgent ? (
                 <>
                   {post.agentProfileSlug ? (
@@ -73,7 +73,7 @@ export function PostCard({ post }: PostCardProps) {
                   </Link>
                   <Link
                     href={`/${post.user.username ?? ""}`}
-                    className="truncate text-sm text-muted"
+                    className="hidden truncate text-sm text-muted min-[480px]:inline"
                   >
                     @{post.user.username}
                   </Link>

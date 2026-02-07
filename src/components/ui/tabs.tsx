@@ -11,13 +11,13 @@ interface TabsProps {
 
 export function Tabs({ tabs, active, onChange, align = "center" }: TabsProps) {
   return (
-    <div className="flex border-b border-border">
+    <div className="flex overflow-x-auto border-b border-border scrollbar-none">
       {tabs.map((tab) => (
         <button
           key={tab.value}
           onClick={() => onChange(tab.value)}
           className={cn(
-            "relative px-4 py-3 text-sm font-medium transition-colors hover:bg-card-hover",
+            "relative whitespace-nowrap px-4 py-3 text-sm font-medium transition-colors hover:bg-card-hover",
             align === "center" && "flex-1",
             active === tab.value
               ? "-mb-px border-b-2 border-cyan text-foreground"
