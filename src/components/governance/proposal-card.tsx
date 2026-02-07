@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { Avatar } from "@/components/ui/avatar";
 import { StatusBadge } from "@/components/governance/status-badge";
@@ -22,6 +23,7 @@ export function ProposalCard({ proposal, threshold }: ProposalCardProps) {
     proposal.noCount
   );
 
+  const [expanded, setExpanded] = useState(false);
   const isAgent = proposal.type === "AGENT" && proposal.agentName;
   const totalVotes = yesCount + noCount;
   const yesPercent = totalVotes > 0 ? (yesCount / totalVotes) * 100 : 0;
@@ -44,9 +46,21 @@ export function ProposalCard({ proposal, threshold }: ProposalCardProps) {
             {proposal.title}
           </h3>
 
-          <p className="mt-1 line-clamp-2 text-sm text-muted">
+          <p
+            className={`mt-1 whitespace-pre-wrap text-sm text-muted ${
+              !expanded ? "line-clamp-3" : ""
+            }`}
+          >
             {proposal.description}
           </p>
+          {proposal.description.length > 150 && (
+            <button
+              onClick={() => setExpanded(!expanded)}
+              className="mt-0.5 text-xs text-cyan hover:underline"
+            >
+              {expanded ? "Show less" : "Show more"}
+            </button>
+          )}
 
           <div className="mt-2 flex items-center gap-2">
             {isAgent ? (
