@@ -5,13 +5,13 @@ import { usernameSchema } from "@/lib/validators";
 import { checkRateLimit } from "@/lib/rate-limit";
 
 export async function POST(req: Request) {
-  const limited = checkRateLimit(req, "onboarding", 10);
-  if (limited) return limited;
-
   const session = await auth();
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
+
+  const limited = checkRateLimit(req, "onboarding", 10, session.user.id);
+  if (limited) return limited;
 
   const body = await req.json();
   const parsed = usernameSchema.safeParse(body.username);
@@ -35,10 +35,20 @@ export async function POST(req: Request) {
     );
   }
 
-  await prisma.user.update({
-    where: { id: session.user.id },
-    data: { username },
-  });
+  try {
+    await prisma.user.update({
+      where: { id: session.user.id },
+      data: { username },
+    });
+  } catch (e: unknown) {
+    if (e && typeof e === "object" && "code" in e && e.code === "P2002") {
+      return NextResponse.json(
+        { error: "Username already taken" },
+        { status: 409 }
+      );
+    }
+    throw e;
+  }
 
   return NextResponse.json({ username });
 }

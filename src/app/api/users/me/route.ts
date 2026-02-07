@@ -5,13 +5,13 @@ import { updateProfileSchema } from "@/lib/validators";
 import { checkRateLimit } from "@/lib/rate-limit";
 
 export async function PATCH(req: Request) {
-  const limited = checkRateLimit(req, "update-profile", 10);
-  if (limited) return limited;
-
   const session = await auth();
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
+
+  const limited = checkRateLimit(req, "update-profile", 10, session.user.id);
+  if (limited) return limited;
 
   const body = await req.json();
   const parsed = updateProfileSchema.safeParse(body);

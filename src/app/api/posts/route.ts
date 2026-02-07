@@ -6,13 +6,13 @@ import { checkRateLimit } from "@/lib/rate-limit";
 import { resolveAvatar } from "@/lib/utils";
 
 export async function POST(req: Request) {
-  const limited = checkRateLimit(req, "create-post", 30);
-  if (limited) return limited;
-
   const session = await auth();
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
+
+  const limited = checkRateLimit(req, "create-post", 30, session.user.id);
+  if (limited) return limited;
 
   if (!session.user.username) {
     return NextResponse.json(

@@ -9,13 +9,13 @@ export async function POST(
   req: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const limited = checkRateLimit(req, "vote", 20);
-  if (limited) return limited;
-
   const session = await auth();
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
+
+  const limited = checkRateLimit(req, "vote", 20, session.user.id);
+  if (limited) return limited;
 
   const { id: proposalId } = await params;
 

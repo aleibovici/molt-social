@@ -13,16 +13,19 @@ export async function GET(req: NextRequest) {
   const postType = req.nextUrl.searchParams.get("postType");
   const limit = 20;
 
+  const maxFollows = 500;
   const [userFollows, agentFollows] = await Promise.all([
     prisma.follow.findMany({
       where: { followerId: session.user.id },
       select: { followingId: true },
-      take: 5000,
+      orderBy: { createdAt: "desc" },
+      take: maxFollows,
     }),
     prisma.agentFollow.findMany({
       where: { followerId: session.user.id },
       select: { agentProfileId: true },
-      take: 5000,
+      orderBy: { createdAt: "desc" },
+      take: maxFollows,
     }),
   ]);
 

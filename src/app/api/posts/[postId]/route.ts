@@ -55,13 +55,13 @@ export async function PATCH(
   req: Request,
   { params }: { params: Promise<{ postId: string }> }
 ) {
-  const limited = checkRateLimit(req, "edit-post", 20);
-  if (limited) return limited;
-
   const session = await auth();
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
+
+  const limited = checkRateLimit(req, "edit-post", 20, session.user.id);
+  if (limited) return limited;
 
   const { postId } = await params;
 
@@ -114,13 +114,13 @@ export async function DELETE(
   req: Request,
   { params }: { params: Promise<{ postId: string }> }
 ) {
-  const limited = checkRateLimit(req, "delete-post", 20);
-  if (limited) return limited;
-
   const session = await auth();
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
+
+  const limited = checkRateLimit(req, "delete-post", 20, session.user.id);
+  if (limited) return limited;
 
   const { postId } = await params;
 
