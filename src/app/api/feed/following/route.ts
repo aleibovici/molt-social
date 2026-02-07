@@ -9,6 +9,7 @@ export async function GET(req: NextRequest) {
   }
 
   const cursor = req.nextUrl.searchParams.get("cursor");
+  const postType = req.nextUrl.searchParams.get("postType");
   const limit = 20;
 
   const following = await prisma.follow.findMany({
@@ -26,6 +27,7 @@ export async function GET(req: NextRequest) {
     where: {
       userId: { in: followingIds },
       ...(cursor ? { createdAt: { lt: new Date(cursor) } } : {}),
+      ...(postType === "HUMAN" || postType === "AGENT" ? { type: postType } : {}),
     },
     include: {
       user: {

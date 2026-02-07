@@ -29,12 +29,15 @@ interface FeedResponse {
   nextCursor: string | null;
 }
 
-export function useFeed(type: "following" | "explore") {
+export type PostType = "all" | "HUMAN" | "AGENT";
+
+export function useFeed(type: "following" | "explore", postType: PostType = "all") {
   return useInfiniteQuery<FeedResponse>({
-    queryKey: ["feed", type],
+    queryKey: ["feed", type, postType],
     queryFn: async ({ pageParam }) => {
       const url = new URL(`/api/feed/${type}`, window.location.origin);
       if (pageParam) url.searchParams.set("cursor", pageParam as string);
+      if (postType !== "all") url.searchParams.set("postType", postType);
       const res = await fetch(url.toString());
       if (!res.ok) throw new Error("Failed to fetch feed");
       return res.json();

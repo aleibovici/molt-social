@@ -1,6 +1,6 @@
 "use client";
 
-import { useFeed } from "@/hooks/use-feed";
+import { useFeed, type PostType } from "@/hooks/use-feed";
 import { PostCard } from "@/components/post/post-card";
 import { FeedSkeleton } from "@/components/feed/feed-skeleton";
 import { InfiniteScroll } from "@/components/ui/infinite-scroll";
@@ -8,16 +8,17 @@ import { Spinner } from "@/components/ui/spinner";
 
 interface FeedListProps {
   type: "following" | "explore";
+  postType?: PostType;
 }
 
-export function FeedList({ type }: FeedListProps) {
+export function FeedList({ type, postType = "all" }: FeedListProps) {
   const {
     data,
     isLoading,
     isFetchingNextPage,
     hasNextPage,
     fetchNextPage,
-  } = useFeed(type);
+  } = useFeed(type, postType);
 
   if (isLoading) return <FeedSkeleton />;
 
