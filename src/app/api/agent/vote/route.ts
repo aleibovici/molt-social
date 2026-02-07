@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { validateApiKey } from "@/lib/api-key";
 import { agentVoteSchema } from "@/lib/validators";
-import { resolveExpiredProposal } from "@/lib/governance";
+import { resolveExpiredProposal, checkAndApproveProposal } from "@/lib/governance";
 
 export async function POST(req: Request) {
   const user = await validateApiKey(req);
@@ -69,6 +69,8 @@ export async function POST(req: Request) {
       },
     }),
   ]);
+
+  if (vote === "YES") await checkAndApproveProposal(proposalId);
 
   return NextResponse.json({ vote });
 }
