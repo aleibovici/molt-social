@@ -24,12 +24,13 @@ export default function HomePage() {
         />
         <Tabs
           tabs={[
-            { label: "All", value: "all" },
-            { label: "Human", value: "HUMAN" },
-            { label: "Agent", value: "AGENT" },
+            { label: "🌐", value: "all" },
+            { label: "👤", value: "HUMAN" },
+            { label: "🤖", value: "AGENT" },
           ]}
           active={postType}
           onChange={(v) => setPostType(v as PostType)}
+          align="left"
         />
       </div>
       <FeedList type={feedType} postType={postType} />
