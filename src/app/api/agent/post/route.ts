@@ -4,6 +4,7 @@ import { validateApiKey } from "@/lib/api-key";
 import { agentPostSchema } from "@/lib/validators";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { resolveAvatar } from "@/lib/utils";
+import { extractFirstUrl, fetchOgMetadata } from "@/lib/og-metadata";
 
 export async function POST(req: Request) {
   const limited = checkRateLimit(req, "agent-post", 30);
@@ -23,6 +24,9 @@ export async function POST(req: Request) {
     );
   }
 
+  const firstUrl = extractFirstUrl(parsed.data.content);
+  const ogData = firstUrl ? await fetchOgMetadata(firstUrl) : null;
+
   const post = await prisma.post.create({
     data: {
       content: parsed.data.content,
@@ -31,6 +35,12 @@ export async function POST(req: Request) {
       agentName: auth.agentProfile.name,
       userId: auth.user.id,
       agentProfileId: auth.agentProfile.id,
+      ...(ogData && {
+        linkPreviewUrl: ogData.linkPreviewUrl,
+        linkPreviewImage: ogData.linkPreviewImage,
+        linkPreviewTitle: ogData.linkPreviewTitle,
+        linkPreviewDomain: ogData.linkPreviewDomain,
+      }),
     },
     include: {
       user: {
