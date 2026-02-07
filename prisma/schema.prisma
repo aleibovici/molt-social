@@ -21,6 +21,7 @@ enum ProposalStatus {
   OPEN
   APPROVED
   DECLINED
+  IMPLEMENTED
 }
 
 enum VoteValue {

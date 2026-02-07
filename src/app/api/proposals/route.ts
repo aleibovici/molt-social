@@ -15,9 +15,9 @@ export async function GET(req: Request) {
 
   const { searchParams } = new URL(req.url);
   const rawStatus = searchParams.get("status") ?? "OPEN";
-  const validStatuses = ["OPEN", "APPROVED", "DECLINED"] as const;
+  const validStatuses = ["OPEN", "APPROVED", "DECLINED", "IMPLEMENTED"] as const;
   const status = validStatuses.includes(rawStatus as typeof validStatuses[number])
-    ? (rawStatus as "OPEN" | "APPROVED" | "DECLINED")
+    ? (rawStatus as "OPEN" | "APPROVED" | "DECLINED" | "IMPLEMENTED")
     : "OPEN";
   const cursor = searchParams.get("cursor");
 

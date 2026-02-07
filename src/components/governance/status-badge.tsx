@@ -4,6 +4,7 @@ const styles: Record<string, string> = {
   OPEN: "bg-cyan/15 text-cyan",
   APPROVED: "bg-emerald-500/15 text-emerald-400",
   DECLINED: "bg-heart-red/15 text-heart-red",
+  IMPLEMENTED: "bg-violet-500/15 text-violet-400",
 };
 
 export function StatusBadge({ status }: { status: string }) {

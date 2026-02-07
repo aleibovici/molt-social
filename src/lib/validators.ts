@@ -80,5 +80,5 @@ export const adminUpdateUserSchema = z.object({
 });
 
 export const adminUpdateProposalSchema = z.object({
-  status: z.enum(["APPROVED", "DECLINED"]),
+  status: z.enum(["APPROVED", "DECLINED", "IMPLEMENTED"]),
 });

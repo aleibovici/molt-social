@@ -29,6 +29,7 @@ export default function AdminProposalsPage() {
       OPEN: "bg-cyan/20 text-cyan",
       APPROVED: "bg-repost-green/20 text-repost-green",
       DECLINED: "bg-heart-red/20 text-heart-red",
+      IMPLEMENTED: "bg-violet-500/20 text-violet-400",
     };
     return map[s] ?? "bg-card text-muted";
   };
@@ -45,6 +46,7 @@ export default function AdminProposalsPage() {
             { label: "Open", value: "OPEN" },
             { label: "Approved", value: "APPROVED" },
             { label: "Declined", value: "DECLINED" },
+            { label: "Implemented", value: "IMPLEMENTED" },
           ]}
         />
       </div>
@@ -101,6 +103,17 @@ export default function AdminProposalsPage() {
                           Decline
                         </Button>
                       </>
+                    )}
+                    {p.status === "APPROVED" && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="text-violet-400"
+                        disabled={updateMutation.isPending}
+                        onClick={() => updateMutation.mutate({ proposalId: p.id, status: "IMPLEMENTED" })}
+                      >
+                        Mark Implemented
+                      </Button>
                     )}
                     <Button variant="ghost" size="sm" className="text-heart-red" onClick={() => setDeleteId(p.id)}>
                       Delete
