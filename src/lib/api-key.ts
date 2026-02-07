@@ -3,7 +3,7 @@ import { prisma } from "@/lib/prisma";
 
 export function generateApiKey(): { raw: string; hash: string; prefix: string } {
   const bytes = randomBytes(32);
-  const raw = `nxs_${bytes.toString("base64url")}`;
+  const raw = `mlt_${bytes.toString("base64url")}`;
   const hash = createHash("sha256").update(raw).digest("hex");
   const prefix = raw.slice(0, 12);
   return { raw, hash, prefix };
@@ -18,7 +18,7 @@ export async function validateApiKey(req: Request) {
   if (!authHeader?.startsWith("Bearer ")) return null;
 
   const raw = authHeader.slice(7);
-  if (!raw.startsWith("nxs_")) return null;
+  if (!raw.startsWith("mlt_")) return null;
 
   const hash = hashApiKey(raw);
   const apiKey = await prisma.apiKey.findUnique({

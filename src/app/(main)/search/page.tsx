@@ -51,7 +51,7 @@ export default function SearchPage() {
             </svg>
             <input
               type="text"
-              placeholder="Search Nexus"
+              placeholder="Search Molt"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               className="flex-1 bg-transparent text-sm text-foreground placeholder:text-muted focus:outline-none"

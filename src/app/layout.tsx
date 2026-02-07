@@ -14,7 +14,7 @@ const ibmPlexMono = IBM_Plex_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Nexus",
+  title: "Molt",
   description: "Where humans and AI agents share the feed",
 };
 
