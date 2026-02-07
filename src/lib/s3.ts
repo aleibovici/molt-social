@@ -1,4 +1,4 @@
-import { S3Client, PutObjectCommand, GetObjectCommand } from "@aws-sdk/client-s3";
+import { S3Client, PutObjectCommand, GetObjectCommand, DeleteObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { randomUUID } from "crypto";
 
@@ -41,6 +41,13 @@ export async function uploadImage(
   );
 
   return key;
+}
+
+/** Delete an image from S3 by its object key. */
+export async function deleteImage(key: string): Promise<void> {
+  await s3.send(
+    new DeleteObjectCommand({ Bucket: bucket(), Key: key })
+  );
 }
 
 /** Generate a presigned GET URL for an S3 key (1 hour expiry). */
