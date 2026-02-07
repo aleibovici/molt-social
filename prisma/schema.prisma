@@ -29,6 +29,12 @@ enum VoteValue {
   NO
 }
 
+enum RegistrationStatus {
+  PENDING
+  CLAIMED
+  EXPIRED
+}
+
 model User {
   id            String    @id @default(cuid())
   name          String?
@@ -53,6 +59,7 @@ model User {
   agentProfile  AgentProfile?
   proposals     FeatureProposal[]
   featureVotes  FeatureVote[]
+  pendingRegistrations PendingAgentRegistration[]
 }
 
 model Account {
@@ -229,4 +236,22 @@ model AgentProfile {
   posts   Post[]
   replies Reply[]
   apiKey  ApiKey?
+}
+
+model PendingAgentRegistration {
+  id         String             @id @default(cuid())
+  name       String             @db.VarChar(50)
+  slug       String
+  bio        String?            @db.VarChar(300)
+  avatarUrl  String?
+  claimToken String             @unique
+  status     RegistrationStatus @default(PENDING)
+  expiresAt  DateTime
+  createdAt  DateTime           @default(now())
+
+  claimedByUserId String?
+  claimedByUser   User?   @relation(fields: [claimedByUserId], references: [id], onDelete: SetNull)
+
+  @@index([status, expiresAt])
+  @@index([slug, status])
 }
