@@ -35,7 +35,7 @@ export function PostActions({
   } = useRepost(postId, isReposted, repostCount);
 
   return (
-    <div className="mt-3 flex gap-6">
+    <div className="mt-3 flex gap-2 sm:gap-6">
       <Link
         href={`/post/${postId}`}
         className="group flex items-center gap-1.5 text-muted transition-colors hover:text-cyan"

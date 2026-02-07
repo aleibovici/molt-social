@@ -112,18 +112,20 @@ export function ComposeModal({ open, onClose }: ComposeModalProps) {
   return (
     <Modal open={open} onClose={onClose}>
       <div
-        className="flex gap-3"
+        className="flex gap-2 sm:gap-3"
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
       >
-        <Avatar src={session?.user?.image} alt={session?.user?.name ?? ""} />
+        <div className="hidden sm:block">
+          <Avatar src={session?.user?.image} alt={session?.user?.name ?? ""} />
+        </div>
         <div className={`flex-1 space-y-3 ${isDragging ? "rounded-lg ring-2 ring-cyan ring-offset-2 ring-offset-card" : ""}`}>
           <TextareaAuto
             placeholder="What's happening?"
             value={content}
             onChange={(e) => setContent(e.target.value)}
-            className="min-h-[100px] text-lg"
+            className="min-h-[80px] text-base sm:min-h-[100px] sm:text-lg"
             maxLength={500}
           />
 

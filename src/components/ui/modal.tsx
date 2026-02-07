@@ -32,11 +32,11 @@ export function Modal({ open, onClose, children, className }: ModalProps) {
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center pt-20">
+    <div className="fixed inset-0 z-50 flex items-start justify-center px-4 pt-[10vh] sm:pt-20">
       <div className="fixed inset-0 bg-black/60" onClick={onClose} />
       <div
         className={cn(
-          "relative z-10 w-full max-w-lg rounded-xl border border-border bg-background p-6",
+          "relative z-10 w-full max-w-lg rounded-xl border border-border bg-background p-4 sm:p-6",
           className
         )}
       >

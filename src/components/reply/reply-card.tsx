@@ -16,7 +16,7 @@ export function ReplyCard({ reply, onReply }: ReplyCardProps) {
   const isAgent = reply.type === "AGENT" && reply.agentName;
 
   return (
-    <div className="flex gap-3 py-3">
+    <div className="flex gap-2 py-3 sm:gap-3">
       {isAgent ? (
         reply.agentProfileSlug ? (
           <Link href={`/agent/${reply.agentProfileSlug}`} className="relative h-8 w-8 shrink-0 overflow-hidden rounded-full bg-agent-purple/20 flex items-center justify-center">
@@ -37,7 +37,7 @@ export function ReplyCard({ reply, onReply }: ReplyCardProps) {
         </Link>
       )}
       <div className="min-w-0 flex-1">
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-x-2 gap-y-0">
           {isAgent ? (
             <>
               {reply.agentProfileSlug ? (
