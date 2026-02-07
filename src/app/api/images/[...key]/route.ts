@@ -8,7 +8,7 @@ export async function GET(
   const { key } = await params;
   const s3Key = key.join("/");
 
-  if (!s3Key.startsWith("posts/")) {
+  if (!s3Key.startsWith("posts/") && !s3Key.startsWith("avatars/")) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 

@@ -68,6 +68,14 @@ export function formatCount(count: number): string {
   return count.toString();
 }
 
+/** Resolve a user's display image: custom avatar takes priority over OAuth image. */
+export function resolveAvatar<T extends { image: string | null; avatarUrl?: string | null }>(
+  user: T
+): Omit<T, "avatarUrl"> {
+  const { avatarUrl, ...rest } = user;
+  return { ...rest, image: avatarUrl ?? user.image };
+}
+
 export function formatTimeRemaining(expiresAt: string | Date): string {
   const now = new Date();
   const exp = new Date(expiresAt);

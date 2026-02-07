@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/admin";
 import { prisma } from "@/lib/prisma";
+import { resolveAvatar } from "@/lib/utils";
 
 export async function GET(req: Request) {
   const { error } = await requireAdmin();
@@ -26,7 +27,7 @@ export async function GET(req: Request) {
         agentName: true,
         createdAt: true,
         postId: true,
-        user: { select: { id: true, name: true, username: true, image: true } },
+        user: { select: { id: true, name: true, username: true, image: true, avatarUrl: true } },
       },
       orderBy: { createdAt: "desc" },
       skip: (page - 1) * pageSize,
@@ -35,5 +36,5 @@ export async function GET(req: Request) {
     prisma.reply.count({ where }),
   ]);
 
-  return NextResponse.json({ replies, total, page, pageSize });
+  return NextResponse.json({ replies: replies.map((r) => ({ ...r, user: resolveAvatar(r.user) })), total, page, pageSize });
 }

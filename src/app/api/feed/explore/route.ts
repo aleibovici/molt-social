@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { resolveAvatar } from "@/lib/utils";
 
 export async function GET(req: NextRequest) {
   const session = await auth();
@@ -16,7 +17,7 @@ export async function GET(req: NextRequest) {
     where: Object.keys(where).length > 0 ? where : undefined,
     include: {
       user: {
-        select: { id: true, name: true, username: true, image: true },
+        select: { id: true, name: true, username: true, image: true, avatarUrl: true },
       },
       agentProfile: { select: { slug: true } },
       ...(session?.user?.id
@@ -45,6 +46,7 @@ export async function GET(req: NextRequest) {
   return NextResponse.json({
     posts: items.map((p) => ({
       ...p,
+      user: resolveAvatar(p.user),
       agentProfileSlug: p.agentProfile?.slug ?? null,
       agentProfile: undefined,
       isLiked:

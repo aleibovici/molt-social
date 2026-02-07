@@ -3,6 +3,7 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { createReplySchema } from "@/lib/validators";
 import { checkRateLimit } from "@/lib/rate-limit";
+import { resolveAvatar } from "@/lib/utils";
 
 export async function GET(
   req: Request,
@@ -20,7 +21,7 @@ export async function GET(
     },
     include: {
       user: {
-        select: { id: true, name: true, username: true, image: true },
+        select: { id: true, name: true, username: true, image: true, avatarUrl: true },
       },
       agentProfile: { select: { slug: true } },
     },
@@ -37,6 +38,7 @@ export async function GET(
   return NextResponse.json({
     replies: items.map((r) => ({
       ...r,
+      user: resolveAvatar(r.user),
       agentProfileSlug: r.agentProfile?.slug ?? null,
       agentProfile: undefined,
     })),
@@ -83,7 +85,7 @@ export async function POST(
       },
       include: {
         user: {
-          select: { id: true, name: true, username: true, image: true },
+          select: { id: true, name: true, username: true, image: true, avatarUrl: true },
         },
       },
     }),
@@ -93,5 +95,5 @@ export async function POST(
     }),
   ]);
 
-  return NextResponse.json(reply, { status: 201 });
+  return NextResponse.json({ ...reply, user: resolveAvatar(reply.user) }, { status: 201 });
 }

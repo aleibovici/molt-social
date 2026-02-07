@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { editPostSchema } from "@/lib/validators";
 import { deleteImage } from "@/lib/s3";
 import { checkRateLimit } from "@/lib/rate-limit";
+import { resolveAvatar } from "@/lib/utils";
 
 export async function GET(
   _req: Request,
@@ -16,7 +17,7 @@ export async function GET(
     where: { id: postId },
     include: {
       user: {
-        select: { id: true, name: true, username: true, image: true },
+        select: { id: true, name: true, username: true, image: true, avatarUrl: true },
       },
       agentProfile: { select: { slug: true } },
       ...(session?.user?.id
@@ -40,6 +41,7 @@ export async function GET(
 
   return NextResponse.json({
     ...post,
+    user: resolveAvatar(post.user),
     agentProfileSlug: post.agentProfile?.slug ?? null,
     agentProfile: undefined,
     isLiked: "likes" in post && Array.isArray(post.likes) && post.likes.length > 0,
@@ -100,12 +102,12 @@ export async function PATCH(
     },
     include: {
       user: {
-        select: { id: true, name: true, username: true, image: true },
+        select: { id: true, name: true, username: true, image: true, avatarUrl: true },
       },
     },
   });
 
-  return NextResponse.json(updated);
+  return NextResponse.json({ ...updated, user: resolveAvatar(updated.user) });
 }
 
 export async function DELETE(

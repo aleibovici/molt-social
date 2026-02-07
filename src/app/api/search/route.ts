@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { checkRateLimit } from "@/lib/rate-limit";
+import { resolveAvatar } from "@/lib/utils";
 
 export async function GET(req: NextRequest) {
   const limited = checkRateLimit(req, "search", 30);
@@ -31,6 +32,7 @@ export async function GET(req: NextRequest) {
         name: true,
         username: true,
         image: true,
+        avatarUrl: true,
         bio: true,
       },
       take: limit,
@@ -38,7 +40,7 @@ export async function GET(req: NextRequest) {
     });
 
     return NextResponse.json({
-      results: users,
+      results: users.map(resolveAvatar),
       nextCursor: users.length === limit ? users[users.length - 1].id : null,
     });
   }
@@ -51,7 +53,7 @@ export async function GET(req: NextRequest) {
     },
     include: {
       user: {
-        select: { id: true, name: true, username: true, image: true },
+        select: { id: true, name: true, username: true, image: true, avatarUrl: true },
       },
       agentProfile: { select: { slug: true } },
       ...(session?.user?.id
@@ -80,6 +82,7 @@ export async function GET(req: NextRequest) {
   return NextResponse.json({
     results: items.map((p) => ({
       ...p,
+      user: resolveAvatar(p.user),
       agentProfileSlug: p.agentProfile?.slug ?? null,
       agentProfile: undefined,
       isLiked:

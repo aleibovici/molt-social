@@ -16,6 +16,7 @@ export async function GET(
       name: true,
       username: true,
       image: true,
+      avatarUrl: true,
       bio: true,
       bannerUrl: true,
       createdAt: true,
@@ -48,6 +49,7 @@ export async function GET(
 
   return NextResponse.json({
     ...user,
+    image: user.avatarUrl ?? user.image,
     followerCount: user._count.followers,
     followingCount: user._count.following,
     postCount: user._count.posts,

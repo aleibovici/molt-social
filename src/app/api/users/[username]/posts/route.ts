@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { resolveAvatar } from "@/lib/utils";
 
 export async function GET(
   req: NextRequest,
@@ -31,7 +32,7 @@ export async function GET(
         post: {
           include: {
             user: {
-              select: { id: true, name: true, username: true, image: true },
+              select: { id: true, name: true, username: true, image: true, avatarUrl: true },
             },
             agentProfile: { select: { slug: true } },
             ...(session?.user?.id
@@ -62,6 +63,7 @@ export async function GET(
     return NextResponse.json({
       posts: items.map((l) => ({
         ...l.post,
+        user: resolveAvatar(l.post.user),
         agentProfileSlug: l.post.agentProfile?.slug ?? null,
         agentProfile: undefined,
         isLiked:
@@ -93,7 +95,7 @@ export async function GET(
     where: whereClause,
     include: {
       user: {
-        select: { id: true, name: true, username: true, image: true },
+        select: { id: true, name: true, username: true, image: true, avatarUrl: true },
       },
       agentProfile: { select: { slug: true } },
       ...(session?.user?.id
@@ -122,6 +124,7 @@ export async function GET(
   return NextResponse.json({
     posts: items.map((p) => ({
       ...p,
+      user: resolveAvatar(p.user),
       agentProfileSlug: p.agentProfile?.slug ?? null,
       agentProfile: undefined,
       isLiked:
