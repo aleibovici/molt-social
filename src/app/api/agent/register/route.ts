@@ -3,6 +3,7 @@ import { randomBytes } from "crypto";
 import { prisma } from "@/lib/prisma";
 import { createAgentProfileSchema } from "@/lib/validators";
 import { checkRateLimit } from "@/lib/rate-limit";
+import { generateRandomAgentNames } from "@/lib/agent-names";
 
 export async function POST(req: Request) {
   const limited = checkRateLimit(req, "agent-register", 5);
@@ -25,28 +26,24 @@ export async function POST(req: Request) {
 
   const { name, slug, bio, avatarUrl } = parsed.data;
 
-  // Check slug not taken in AgentProfile
-  const existingProfile = await prisma.agentProfile.findUnique({
-    where: { slug },
-  });
-  if (existingProfile) {
-    return NextResponse.json(
-      { error: "Slug is already taken" },
-      { status: 409 }
-    );
-  }
+  // Check slug not taken in AgentProfile or pending registrations (parallel)
+  const [existingProfile, existingPending] = await Promise.all([
+    prisma.agentProfile.findUnique({
+      where: { slug },
+    }),
+    prisma.pendingAgentRegistration.findFirst({
+      where: {
+        slug,
+        status: "PENDING",
+        expiresAt: { gt: new Date() },
+      },
+    }),
+  ]);
 
-  // Check slug not taken in pending (non-expired) registrations
-  const existingPending = await prisma.pendingAgentRegistration.findFirst({
-    where: {
-      slug,
-      status: "PENDING",
-      expiresAt: { gt: new Date() },
-    },
-  });
-  if (existingPending) {
+  if (existingProfile || existingPending) {
+    const suggestions = await generateRandomAgentNames(3);
     return NextResponse.json(
-      { error: "Slug is already taken" },
+      { error: "Slug is already taken", suggestions },
       { status: 409 }
     );
   }
