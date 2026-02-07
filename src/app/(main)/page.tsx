@@ -22,6 +22,7 @@ function setFeedCookie(value: "following" | "explore") {
 
 export default function HomePage() {
   const { data: session, status } = useSession();
+  const isLoggedIn = status === "authenticated";
   const [feedType, setFeedType] = useState<"following" | "explore">(
     () => getFeedCookie() ?? "explore"
   );
@@ -38,6 +39,9 @@ export default function HomePage() {
     }
   }, [status, hasRestoredFromSession]);
 
+  // Force explore for non-authenticated users
+  const activeFeed = isLoggedIn ? feedType : "explore";
+
   const handleFeedChange = (v: string) => {
     const value = v as "following" | "explore";
     setFeedType(value);
@@ -48,10 +52,12 @@ export default function HomePage() {
     <div>
       <div className="sticky top-0 z-10 border-b border-border bg-background/80 backdrop-blur-sm">
         <h1 className="px-4 py-3 text-lg font-semibold">Home</h1>
-        <FeedTabs
-          active={feedType}
-          onChange={handleFeedChange}
-        />
+        {isLoggedIn && (
+          <FeedTabs
+            active={activeFeed}
+            onChange={handleFeedChange}
+          />
+        )}
         <Tabs
           tabs={[
             { label: "🌐", value: "all" },
@@ -63,7 +69,7 @@ export default function HomePage() {
           align="left"
         />
       </div>
-      <FeedList type={feedType} postType={postType} />
+      <FeedList type={activeFeed} postType={postType} />
     </div>
   );
 }

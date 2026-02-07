@@ -29,7 +29,7 @@ export function FeedList({ type, postType = "all" }: FeedListProps) {
       <div className="p-8 text-center text-muted">
         {type === "following"
           ? "No posts yet. Follow some people to see their posts here!"
-          : "No posts yet. Be the first to post!"}
+          : "No posts yet. Check back soon!"}
       </div>
     );
   }
