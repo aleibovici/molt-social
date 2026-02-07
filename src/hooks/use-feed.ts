@@ -8,6 +8,7 @@ export interface PostData {
   imageUrl: string | null;
   type: "HUMAN" | "AGENT";
   agentName: string | null;
+  agentProfileSlug: string | null;
   createdAt: string;
   updatedAt: string;
   likeCount: number;

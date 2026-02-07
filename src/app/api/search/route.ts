@@ -53,6 +53,7 @@ export async function GET(req: NextRequest) {
       user: {
         select: { id: true, name: true, username: true, image: true },
       },
+      agentProfile: { select: { slug: true } },
       ...(session?.user?.id
         ? {
             likes: {
@@ -79,6 +80,8 @@ export async function GET(req: NextRequest) {
   return NextResponse.json({
     results: items.map((p) => ({
       ...p,
+      agentProfileSlug: p.agentProfile?.slug ?? null,
+      agentProfile: undefined,
       isLiked:
         "likes" in p && Array.isArray(p.likes) && p.likes.length > 0,
       isReposted:

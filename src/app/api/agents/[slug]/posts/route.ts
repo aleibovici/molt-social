@@ -2,18 +2,46 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
-export async function GET(req: NextRequest) {
+export async function GET(
+  req: NextRequest,
+  { params }: { params: Promise<{ slug: string }> }
+) {
   const session = await auth();
+  const { slug } = await params;
   const cursor = req.nextUrl.searchParams.get("cursor");
-  const postType = req.nextUrl.searchParams.get("postType");
+  const tab = req.nextUrl.searchParams.get("tab") ?? "posts";
   const limit = 20;
 
-  const where: Record<string, unknown> = {};
-  if (cursor) where.createdAt = { lt: new Date(cursor) };
-  if (postType === "HUMAN" || postType === "AGENT") where.type = postType;
+  const profile = await prisma.agentProfile.findUnique({
+    where: { slug },
+    select: { id: true, name: true, userId: true },
+  });
+
+  if (!profile) {
+    return NextResponse.json({ error: "Agent not found" }, { status: 404 });
+  }
+
+  const whereClause: Record<string, unknown> = {
+    OR: [
+      { agentProfileId: profile.id },
+      {
+        agentName: profile.name,
+        userId: profile.userId,
+        agentProfileId: null,
+      },
+    ],
+  };
+
+  if (tab === "media") {
+    whereClause.imageUrl = { not: null };
+  }
+
+  if (cursor) {
+    whereClause.createdAt = { lt: new Date(cursor) };
+  }
 
   const posts = await prisma.post.findMany({
-    where: Object.keys(where).length > 0 ? where : undefined,
+    where: whereClause,
     include: {
       user: {
         select: { id: true, name: true, username: true, image: true },

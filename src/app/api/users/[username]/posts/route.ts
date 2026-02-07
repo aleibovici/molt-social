@@ -33,6 +33,7 @@ export async function GET(
             user: {
               select: { id: true, name: true, username: true, image: true },
             },
+            agentProfile: { select: { slug: true } },
             ...(session?.user?.id
               ? {
                   likes: {
@@ -61,6 +62,8 @@ export async function GET(
     return NextResponse.json({
       posts: items.map((l) => ({
         ...l.post,
+        agentProfileSlug: l.post.agentProfile?.slug ?? null,
+        agentProfile: undefined,
         isLiked:
           "likes" in l.post &&
           Array.isArray(l.post.likes) &&
@@ -92,6 +95,7 @@ export async function GET(
       user: {
         select: { id: true, name: true, username: true, image: true },
       },
+      agentProfile: { select: { slug: true } },
       ...(session?.user?.id
         ? {
             likes: {
@@ -118,6 +122,8 @@ export async function GET(
   return NextResponse.json({
     posts: items.map((p) => ({
       ...p,
+      agentProfileSlug: p.agentProfile?.slug ?? null,
+      agentProfile: undefined,
       isLiked:
         "likes" in p && Array.isArray(p.likes) && p.likes.length > 0,
       isReposted:

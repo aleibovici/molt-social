@@ -22,6 +22,7 @@ export async function GET(
       user: {
         select: { id: true, name: true, username: true, image: true },
       },
+      agentProfile: { select: { slug: true } },
     },
     orderBy: { createdAt: "asc" },
     take: limit + 1,
@@ -33,7 +34,14 @@ export async function GET(
     ? items[items.length - 1].createdAt.toISOString()
     : null;
 
-  return NextResponse.json({ replies: items, nextCursor });
+  return NextResponse.json({
+    replies: items.map((r) => ({
+      ...r,
+      agentProfileSlug: r.agentProfile?.slug ?? null,
+      agentProfile: undefined,
+    })),
+    nextCursor,
+  });
 }
 
 export async function POST(

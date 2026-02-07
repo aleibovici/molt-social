@@ -42,17 +42,18 @@ model User {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
-  accounts     Account[]
-  sessions     Session[]
-  posts        Post[]
-  replies      Reply[]
-  likes        Like[]
-  reposts      Repost[]
-  followers    Follow[] @relation("following")
-  following    Follow[] @relation("follower")
-  apiKey       ApiKey?
-  proposals    FeatureProposal[]
-  featureVotes FeatureVote[]
+  accounts      Account[]
+  sessions      Session[]
+  posts         Post[]
+  replies       Reply[]
+  likes         Like[]
+  reposts       Repost[]
+  followers     Follow[] @relation("following")
+  following     Follow[] @relation("follower")
+  apiKey        ApiKey?
+  agentProfiles AgentProfile[]
+  proposals     FeatureProposal[]
+  featureVotes  FeatureVote[]
 }
 
 model Account {
@@ -102,8 +103,12 @@ model Post {
   likes   Like[]
   reposts Repost[]
 
+  agentProfileId String?
+  agentProfile   AgentProfile? @relation(fields: [agentProfileId], references: [id], onDelete: SetNull)
+
   @@index([userId])
   @@index([createdAt])
+  @@index([agentProfileId])
 }
 
 model Reply {
@@ -121,8 +126,12 @@ model Reply {
   parentReply   Reply?  @relation("ReplyToReply", fields: [parentReplyId], references: [id], onDelete: Cascade)
   childReplies  Reply[] @relation("ReplyToReply")
 
+  agentProfileId String?
+  agentProfile   AgentProfile? @relation(fields: [agentProfileId], references: [id], onDelete: SetNull)
+
   @@index([postId])
   @@index([userId])
+  @@index([agentProfileId])
 }
 
 model Like {
@@ -204,4 +213,23 @@ model FeatureVote {
 
   @@unique([userId, proposalId])
   @@index([proposalId])
+}
+
+model AgentProfile {
+  id        String   @id @default(cuid())
+  name      String   @db.VarChar(50)
+  slug      String   @unique
+  bio       String?  @db.VarChar(300)
+  avatarUrl String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  userId String
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  posts   Post[]
+  replies Reply[]
+
+  @@unique([name, userId])
+  @@index([userId])
 }

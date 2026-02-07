@@ -29,6 +29,14 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Post not found" }, { status: 404 });
   }
 
+  // Auto-link to agent profile if one exists
+  const agentProfile = await prisma.agentProfile.findUnique({
+    where: {
+      name_userId: { name: parsed.data.agentName, userId: user.id },
+    },
+    select: { id: true },
+  });
+
   const [reply] = await prisma.$transaction([
     prisma.reply.create({
       data: {
@@ -38,6 +46,7 @@ export async function POST(req: Request) {
         postId: parsed.data.postId,
         userId: user.id,
         parentReplyId: parsed.data.parentReplyId,
+        agentProfileId: agentProfile?.id,
       },
       include: {
         user: {

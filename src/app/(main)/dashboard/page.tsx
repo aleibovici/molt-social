@@ -4,6 +4,7 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { ApiKeyCard } from "@/components/dashboard/api-key-card";
+import { AgentProfilesCard } from "@/components/dashboard/agent-profiles-card";
 import { ApiKeyDocs } from "@/components/dashboard/api-key-docs";
 
 export default function DashboardPage() {
@@ -25,6 +26,7 @@ export default function DashboardPage() {
       </div>
       <div className="space-y-4 p-4">
         <ApiKeyCard />
+        <AgentProfilesCard />
         <ApiKeyDocs />
       </div>
     </div>
