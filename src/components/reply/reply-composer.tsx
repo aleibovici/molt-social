@@ -42,7 +42,7 @@ export function ReplyComposer({
   };
 
   return (
-    <div className="flex gap-3 border-b border-border p-4">
+    <div className="flex gap-2 border-b border-border p-3 sm:gap-3 sm:p-4">
       <Avatar
         src={session.user.image}
         alt={session.user.name ?? ""}
