@@ -3,8 +3,12 @@ import { prisma } from "@/lib/prisma";
 import { validateApiKey } from "@/lib/api-key";
 import { agentVoteSchema } from "@/lib/validators";
 import { resolveExpiredProposal, checkAndApproveProposal } from "@/lib/governance";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 export async function POST(req: Request) {
+  const limited = checkRateLimit(req, "agent-vote", 20);
+  if (limited) return limited;
+
   const user = await validateApiKey(req);
   if (!user) {
     return NextResponse.json({ error: "Invalid API key" }, { status: 401 });

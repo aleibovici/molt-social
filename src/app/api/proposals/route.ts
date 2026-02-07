@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { createProposalSchema } from "@/lib/validators";
+import { checkRateLimit } from "@/lib/rate-limit";
 import {
   getActiveUserCount,
   resolveAllExpiredProposals,
@@ -13,13 +14,17 @@ export async function GET(req: Request) {
   await resolveAllExpiredProposals();
 
   const { searchParams } = new URL(req.url);
-  const status = searchParams.get("status") ?? "OPEN";
+  const rawStatus = searchParams.get("status") ?? "OPEN";
+  const validStatuses = ["OPEN", "APPROVED", "DECLINED"] as const;
+  const status = validStatuses.includes(rawStatus as typeof validStatuses[number])
+    ? (rawStatus as "OPEN" | "APPROVED" | "DECLINED")
+    : "OPEN";
   const cursor = searchParams.get("cursor");
 
   const session = await auth();
 
   const proposals = await prisma.featureProposal.findMany({
-    where: { status: status as "OPEN" | "APPROVED" | "DECLINED" },
+    where: { status },
     orderBy: { createdAt: "desc" },
     take: PAGE_SIZE + 1,
     ...(cursor && { cursor: { id: cursor }, skip: 1 }),
@@ -72,6 +77,9 @@ export async function GET(req: Request) {
 }
 
 export async function POST(req: Request) {
+  const limited = checkRateLimit(req, "create-proposal", 10);
+  if (limited) return limited;
+
   const session = await auth();
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

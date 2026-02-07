@@ -3,11 +3,15 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { castVoteSchema } from "@/lib/validators";
 import { resolveExpiredProposal, checkAndApproveProposal } from "@/lib/governance";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 export async function POST(
   req: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const limited = checkRateLimit(req, "vote", 20);
+  if (limited) return limited;
+
   const session = await auth();
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

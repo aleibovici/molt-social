@@ -25,7 +25,10 @@ export default function PostDetailPage() {
     queryFn: () => fetch(`/api/posts/${postId}`).then((r) => r.json()),
   });
 
-  const { data: replies } = useQuery<Omit<ReplyNode, "children">[]>({
+  const { data: repliesData } = useQuery<{
+    replies: Omit<ReplyNode, "children">[];
+    nextCursor: string | null;
+  }>({
     queryKey: ["replies", postId],
     queryFn: () =>
       fetch(`/api/posts/${postId}/replies`).then((r) => r.json()),
@@ -43,7 +46,7 @@ export default function PostDetailPage() {
     return <div className="p-8 text-center text-muted">Post not found</div>;
   }
 
-  const replyTree = replies ? buildReplyTree(replies) : [];
+  const replyTree = repliesData?.replies ? buildReplyTree(repliesData.replies) : [];
 
   return (
     <div>

@@ -14,6 +14,7 @@ export async function GET(req: NextRequest) {
   const following = await prisma.follow.findMany({
     where: { followerId: session.user.id },
     select: { followingId: true },
+    take: 5000,
   });
 
   const followingIds = [

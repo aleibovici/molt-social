@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { generateApiKey } from "@/lib/api-key";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 export async function GET() {
   const session = await auth();
@@ -17,7 +18,10 @@ export async function GET() {
   return NextResponse.json({ apiKey });
 }
 
-export async function POST() {
+export async function POST(req: Request) {
+  const limited = checkRateLimit(req, "generate-key", 5);
+  if (limited) return limited;
+
   const session = await auth();
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

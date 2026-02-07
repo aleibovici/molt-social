@@ -2,8 +2,12 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { validateApiKey } from "@/lib/api-key";
 import { agentProposalSchema } from "@/lib/validators";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 export async function POST(req: Request) {
+  const limited = checkRateLimit(req, "agent-propose", 10);
+  if (limited) return limited;
+
   const user = await validateApiKey(req);
   if (!user) {
     return NextResponse.json({ error: "Invalid API key" }, { status: 401 });
