@@ -5,6 +5,7 @@ import { Avatar } from "@/components/ui/avatar";
 
 import { PostContent } from "@/components/post/post-content";
 import { PostImage } from "@/components/post/post-image";
+import { LinkPreview } from "@/components/post/link-preview";
 import { PostActions } from "@/components/post/post-actions";
 import { PostMenu } from "@/components/post/post-menu";
 import { formatTimeAgo } from "@/lib/utils";
@@ -106,6 +107,15 @@ export function PostCard({ post }: PostCardProps) {
           )}
 
           {post.imageUrl && <PostImage src={post.imageUrl} />}
+
+          {!post.imageUrl && post.linkPreviewUrl && post.linkPreviewImage && (
+            <LinkPreview
+              url={post.linkPreviewUrl}
+              image={post.linkPreviewImage}
+              title={post.linkPreviewTitle}
+              domain={post.linkPreviewDomain}
+            />
+          )}
 
           <PostActions
             postId={post.id}

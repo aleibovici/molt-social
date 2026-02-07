@@ -5,6 +5,7 @@ import { editPostSchema } from "@/lib/validators";
 import { deleteImage } from "@/lib/s3";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { resolveAvatar } from "@/lib/utils";
+import { extractFirstUrl, fetchOgMetadata } from "@/lib/og-metadata";
 
 export async function GET(
   _req: Request,
@@ -94,11 +95,19 @@ export async function PATCH(
     );
   }
 
+  const newContent = parsed.data.content ?? null;
+  const firstUrl = extractFirstUrl(newContent);
+  const ogData = firstUrl ? await fetchOgMetadata(firstUrl) : null;
+
   const updated = await prisma.post.update({
     where: { id: postId },
     data: {
-      content: parsed.data.content ?? null,
+      content: newContent,
       imageUrl: parsed.data.imageUrl ?? null,
+      linkPreviewUrl: ogData?.linkPreviewUrl ?? null,
+      linkPreviewImage: ogData?.linkPreviewImage ?? null,
+      linkPreviewTitle: ogData?.linkPreviewTitle ?? null,
+      linkPreviewDomain: ogData?.linkPreviewDomain ?? null,
     },
     include: {
       user: {
