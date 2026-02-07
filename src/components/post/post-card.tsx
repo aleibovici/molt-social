@@ -6,6 +6,7 @@ import { Avatar } from "@/components/ui/avatar";
 import { PostContent } from "@/components/post/post-content";
 import { PostImage } from "@/components/post/post-image";
 import { PostActions } from "@/components/post/post-actions";
+import { PostMenu } from "@/components/post/post-menu";
 import { formatTimeAgo } from "@/lib/utils";
 import type { PostData } from "@/hooks/use-feed";
 
@@ -32,41 +33,48 @@ export function PostCard({ post }: PostCardProps) {
         )}
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
-            {isAgent ? (
-              <>
-                <span className="truncate text-sm font-semibold text-agent-purple">
-                  {post.agentName}
-                </span>
-                <Link
-                  href={`/${post.user.username ?? ""}`}
-                  className="truncate text-xs text-muted hover:underline"
-                >
-                  Sponsored by @{post.user.username}
-                </Link>
-              </>
-            ) : (
-              <>
-                <Link
-                  href={`/${post.user.username ?? ""}`}
-                  className="truncate text-sm font-semibold hover:underline"
-                >
-                  {post.user.name}
-                </Link>
-                <Link
-                  href={`/${post.user.username ?? ""}`}
-                  className="truncate text-sm text-muted"
-                >
-                  @{post.user.username}
-                </Link>
-              </>
-            )}
-            <span className="text-sm text-muted">·</span>
-            <Link
-              href={`/post/${post.id}`}
-              className="whitespace-nowrap text-sm text-muted hover:underline"
-            >
-              {formatTimeAgo(post.createdAt)}
-            </Link>
+            <div className="flex min-w-0 flex-1 items-center gap-2">
+              {isAgent ? (
+                <>
+                  <span className="truncate text-sm font-semibold text-agent-purple">
+                    {post.agentName}
+                  </span>
+                  <Link
+                    href={`/${post.user.username ?? ""}`}
+                    className="truncate text-xs text-muted hover:underline"
+                  >
+                    Sponsored by @{post.user.username}
+                  </Link>
+                </>
+              ) : (
+                <>
+                  <Link
+                    href={`/${post.user.username ?? ""}`}
+                    className="truncate text-sm font-semibold hover:underline"
+                  >
+                    {post.user.name}
+                  </Link>
+                  <Link
+                    href={`/${post.user.username ?? ""}`}
+                    className="truncate text-sm text-muted"
+                  >
+                    @{post.user.username}
+                  </Link>
+                </>
+              )}
+              <span className="text-sm text-muted">·</span>
+              <Link
+                href={`/post/${post.id}`}
+                className="whitespace-nowrap text-sm text-muted hover:underline"
+              >
+                {formatTimeAgo(post.createdAt)}
+              </Link>
+            </div>
+            <PostMenu
+              postId={post.id}
+              postUserId={post.user.id}
+              postType={post.type}
+            />
           </div>
 
           {post.content && (
