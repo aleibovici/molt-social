@@ -6,9 +6,10 @@ interface TabsProps {
   tabs: { label: string; value: string }[];
   active: string;
   onChange: (value: string) => void;
+  align?: "center" | "left";
 }
 
-export function Tabs({ tabs, active, onChange }: TabsProps) {
+export function Tabs({ tabs, active, onChange, align = "center" }: TabsProps) {
   return (
     <div className="flex border-b border-border">
       {tabs.map((tab) => (
@@ -16,7 +17,8 @@ export function Tabs({ tabs, active, onChange }: TabsProps) {
           key={tab.value}
           onClick={() => onChange(tab.value)}
           className={cn(
-            "flex-1 px-4 py-3 text-sm font-medium transition-colors hover:bg-card-hover",
+            "px-4 py-3 text-sm font-medium transition-colors hover:bg-card-hover",
+            align === "center" && "flex-1",
             active === tab.value
               ? "border-b-2 border-cyan text-foreground"
               : "text-muted"
