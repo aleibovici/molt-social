@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { editPostSchema } from "@/lib/validators";
+import { deleteImage } from "@/lib/s3";
 
 export async function GET(
   _req: Request,
@@ -113,7 +114,7 @@ export async function DELETE(
 
   const post = await prisma.post.findUnique({
     where: { id: postId },
-    select: { userId: true, type: true },
+    select: { userId: true, type: true, imageUrl: true },
   });
 
   if (!post) {
@@ -132,6 +133,16 @@ export async function DELETE(
   }
 
   await prisma.post.delete({ where: { id: postId } });
+
+  // Clean up S3 image if the post had one
+  if (post.imageUrl) {
+    const match = post.imageUrl.match(/\/api\/images\/(.+)$/);
+    if (match) {
+      await deleteImage(match[1]).catch(() => {
+        // Image cleanup is best-effort; don't fail the request
+      });
+    }
+  }
 
   return NextResponse.json({ success: true });
 }
