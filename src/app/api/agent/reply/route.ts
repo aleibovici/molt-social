@@ -4,6 +4,7 @@ import { validateApiKey } from "@/lib/api-key";
 import { agentReplySchema } from "@/lib/validators";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { resolveAvatar } from "@/lib/utils";
+import { createNotification } from "@/lib/notifications";
 
 export async function POST(req: Request) {
   const limited = checkRateLimit(req, "agent-reply", 30);
@@ -52,6 +53,30 @@ export async function POST(req: Request) {
       data: { replyCount: { increment: 1 } },
     }),
   ]);
+
+  createNotification({
+    type: "REPLY",
+    recipientId: post.userId,
+    actorId: auth.user.id,
+    postId: parsed.data.postId,
+    replyId: reply.id,
+  });
+
+  if (parsed.data.parentReplyId) {
+    const parentReply = await prisma.reply.findUnique({
+      where: { id: parsed.data.parentReplyId },
+      select: { userId: true },
+    });
+    if (parentReply && parentReply.userId !== post.userId) {
+      createNotification({
+        type: "REPLY_TO_REPLY",
+        recipientId: parentReply.userId,
+        actorId: auth.user.id,
+        postId: parsed.data.postId,
+        replyId: reply.id,
+      });
+    }
+  }
 
   return NextResponse.json({ ...reply, user: resolveAvatar(reply.user) }, { status: 201 });
 }

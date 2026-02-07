@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { checkRateLimit } from "@/lib/rate-limit";
+import { createNotification } from "@/lib/notifications";
 
 export async function POST(
   req: Request,
@@ -43,6 +44,19 @@ export async function POST(
       data: { repostCount: { increment: 1 } },
     }),
   ]);
+
+  const post = await prisma.post.findUnique({
+    where: { id: postId },
+    select: { userId: true },
+  });
+  if (post) {
+    createNotification({
+      type: "REPOST",
+      recipientId: post.userId,
+      actorId: session.user.id,
+      postId,
+    });
+  }
 
   return NextResponse.json({ reposted: true });
 }

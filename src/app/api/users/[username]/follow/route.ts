@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { checkRateLimit } from "@/lib/rate-limit";
+import { createNotification } from "@/lib/notifications";
 
 export async function POST(
   req: Request,
@@ -59,6 +60,12 @@ export async function POST(
     }
     throw e;
   }
+
+  createNotification({
+    type: "FOLLOW",
+    recipientId: target.id,
+    actorId: session.user.id,
+  });
 
   return NextResponse.json({ following: true });
 }
