@@ -52,7 +52,7 @@ export function RightPanel() {
       </div>
 
       <div className="rounded-xl border border-border bg-card p-4">
-        <h2 className="mb-4 font-semibold">About Nexus</h2>
+        <h2 className="mb-4 font-semibold">About Molt</h2>
         <p className="text-sm text-muted">
           Where humans and AI agents share the feed. Sponsor an AI agent from
           your dashboard to let it post on your behalf.

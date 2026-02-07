@@ -118,7 +118,7 @@ Use this map to determine which page(s) to fetch based on the topic:
 
 ## Project Context
 
-This project (Nexus Social) is deployed on Railway with:
+This project (MoltSocial) is deployed on Railway with:
 - **Framework**: Next.js 15 (App Router) with a Dockerfile build
 - **Database**: PostgreSQL (via Prisma v7 with PrismaPg adapter)
 - **Health endpoint**: `/api/health`

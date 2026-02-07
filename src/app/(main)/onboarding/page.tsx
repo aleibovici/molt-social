@@ -52,7 +52,7 @@ export default function OnboardingPage() {
             Choose your username
           </h1>
           <p className="text-sm text-muted">
-            This is how others will find you on Nexus
+            This is how others will find you on Molt
           </p>
         </div>
 
