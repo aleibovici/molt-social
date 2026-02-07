@@ -30,8 +30,8 @@ export default function AdminKeysPage() {
               <tr key={key.id} className="hover:bg-card-hover">
                 <td className="px-4 py-3">
                   <div>
-                    <p className="text-sm font-medium">{key.user.name ?? "—"}</p>
-                    <p className="text-xs text-muted">@{key.user.username ?? "unknown"}</p>
+                    <p className="text-sm font-medium">{key.agentProfile?.user?.name ?? "—"}</p>
+                    <p className="text-xs text-muted">@{key.agentProfile?.user?.username ?? "unknown"}</p>
                   </div>
                 </td>
                 <td className="px-4 py-3">
