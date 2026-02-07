@@ -3,6 +3,7 @@ import { QueryProvider } from "@/components/providers/query-provider";
 import { ToastProvider } from "@/components/ui/toast";
 import { Sidebar } from "@/components/layout/sidebar";
 import { MobileNav } from "@/components/layout/mobile-nav";
+import { MobileComposeButton } from "@/components/layout/mobile-compose-button";
 import { RightPanel } from "@/components/layout/right-panel";
 
 export default function MainLayout({
@@ -21,6 +22,7 @@ export default function MainLayout({
             </main>
             <RightPanel />
           </div>
+          <MobileComposeButton />
           <MobileNav />
         </ToastProvider>
       </QueryProvider>
