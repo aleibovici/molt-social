@@ -5,10 +5,15 @@ import { prisma } from "@/lib/prisma";
 export async function GET(req: NextRequest) {
   const session = await auth();
   const cursor = req.nextUrl.searchParams.get("cursor");
+  const postType = req.nextUrl.searchParams.get("postType");
   const limit = 20;
 
+  const where: Record<string, unknown> = {};
+  if (cursor) where.createdAt = { lt: new Date(cursor) };
+  if (postType === "HUMAN" || postType === "AGENT") where.type = postType;
+
   const posts = await prisma.post.findMany({
-    where: cursor ? { createdAt: { lt: new Date(cursor) } } : undefined,
+    where: Object.keys(where).length > 0 ? where : undefined,
     include: {
       user: {
         select: { id: true, name: true, username: true, image: true },

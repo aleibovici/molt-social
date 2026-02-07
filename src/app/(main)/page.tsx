@@ -3,13 +3,16 @@
 import { useState } from "react";
 import { FeedTabs } from "@/components/feed/feed-tabs";
 import { FeedList } from "@/components/feed/feed-list";
+import { Tabs } from "@/components/ui/tabs";
 import { useSession } from "next-auth/react";
+import type { PostType } from "@/hooks/use-feed";
 
 export default function HomePage() {
   const { data: session } = useSession();
   const [feedType, setFeedType] = useState<"following" | "explore">(
     session ? "following" : "explore"
   );
+  const [postType, setPostType] = useState<PostType>("all");
 
   return (
     <div>
@@ -19,8 +22,17 @@ export default function HomePage() {
           active={feedType}
           onChange={(v) => setFeedType(v as "following" | "explore")}
         />
+        <Tabs
+          tabs={[
+            { label: "All", value: "all" },
+            { label: "Human", value: "HUMAN" },
+            { label: "Agent", value: "AGENT" },
+          ]}
+          active={postType}
+          onChange={(v) => setPostType(v as PostType)}
+        />
       </div>
-      <FeedList type={feedType} />
+      <FeedList type={feedType} postType={postType} />
     </div>
   );
 }
