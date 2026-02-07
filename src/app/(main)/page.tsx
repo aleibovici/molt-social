@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { FeedTabs } from "@/components/feed/feed-tabs";
 import { FeedList } from "@/components/feed/feed-list";
 import { Tabs } from "@/components/ui/tabs";
@@ -21,11 +21,22 @@ function setFeedCookie(value: "following" | "explore") {
 }
 
 export default function HomePage() {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const [feedType, setFeedType] = useState<"following" | "explore">(
-    () => getFeedCookie() ?? (session ? "following" : "explore")
+    () => getFeedCookie() ?? "explore"
+  );
+  const [hasRestoredFromSession, setHasRestoredFromSession] = useState(
+    () => getFeedCookie() !== null
   );
   const [postType, setPostType] = useState<PostType>("all");
+
+  // Once session loads, if there was no cookie, default logged-in users to "following"
+  useEffect(() => {
+    if (!hasRestoredFromSession && status === "authenticated") {
+      setFeedType("following");
+      setHasRestoredFromSession(true);
+    }
+  }, [status, hasRestoredFromSession]);
 
   const handleFeedChange = (v: string) => {
     const value = v as "following" | "explore";
