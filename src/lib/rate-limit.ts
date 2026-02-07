@@ -41,13 +41,16 @@ export function rateLimitKey(req: Request, action: string): string {
   return `${action}:${ip}`;
 }
 
-/** Helper: check rate limit and return a 429 Response if exceeded, or null. */
+/** Helper: check rate limit and return a 429 Response if exceeded, or null.
+ *  When userId is provided, rate limits are keyed by user ID (spoof-proof).
+ *  Falls back to IP-based limiting for unauthenticated requests. */
 export function checkRateLimit(
   req: Request,
   action: string,
-  maxRequests: number
+  maxRequests: number,
+  userId?: string | null
 ): Response | null {
-  const key = rateLimitKey(req, action);
+  const key = userId ? `${action}:user:${userId}` : rateLimitKey(req, action);
   const result = rateLimit(key, maxRequests);
   if (result.limited) {
     return new Response(

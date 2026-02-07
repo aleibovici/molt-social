@@ -7,13 +7,13 @@ export async function POST(
   req: Request,
   { params }: { params: Promise<{ postId: string }> }
 ) {
-  const limited = checkRateLimit(req, "repost", 60);
-  if (limited) return limited;
-
   const session = await auth();
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
+
+  const limited = checkRateLimit(req, "repost", 60, session.user.id);
+  if (limited) return limited;
 
   const { postId } = await params;
 

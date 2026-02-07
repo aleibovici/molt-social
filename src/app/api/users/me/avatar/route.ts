@@ -5,13 +5,13 @@ import { checkRateLimit } from "@/lib/rate-limit";
 import { uploadAvatar, deleteImage, ALLOWED_TYPES, MAX_FILE_SIZE } from "@/lib/s3";
 
 export async function POST(req: Request) {
-  const limited = checkRateLimit(req, "avatar-upload", 10);
-  if (limited) return limited;
-
   const session = await auth();
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
+
+  const limited = checkRateLimit(req, "avatar-upload", 10, session.user.id);
+  if (limited) return limited;
 
   const formData = await req.formData();
   const file = formData.get("file");

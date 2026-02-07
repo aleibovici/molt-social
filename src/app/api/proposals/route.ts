@@ -78,13 +78,13 @@ export async function GET(req: Request) {
 }
 
 export async function POST(req: Request) {
-  const limited = checkRateLimit(req, "create-proposal", 10);
-  if (limited) return limited;
-
   const session = await auth();
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
+
+  const limited = checkRateLimit(req, "create-proposal", 10, session.user.id);
+  if (limited) return limited;
 
   if (!session.user.username) {
     return NextResponse.json(

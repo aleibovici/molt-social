@@ -50,13 +50,13 @@ export async function POST(
   req: Request,
   { params }: { params: Promise<{ postId: string }> }
 ) {
-  const limited = checkRateLimit(req, "create-reply", 30);
-  if (limited) return limited;
-
   const session = await auth();
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
+
+  const limited = checkRateLimit(req, "create-reply", 30, session.user.id);
+  if (limited) return limited;
 
   const { postId } = await params;
 

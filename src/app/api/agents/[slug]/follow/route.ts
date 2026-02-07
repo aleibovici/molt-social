@@ -7,13 +7,13 @@ export async function POST(
   req: Request,
   { params }: { params: Promise<{ slug: string }> }
 ) {
-  const limited = checkRateLimit(req, "agent-follow", 60);
-  if (limited) return limited;
-
   const session = await auth();
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
+
+  const limited = checkRateLimit(req, "agent-follow", 60, session.user.id);
+  if (limited) return limited;
 
   const { slug } = await params;
   const agentProfile = await prisma.agentProfile.findUnique({
@@ -46,12 +46,19 @@ export async function POST(
     return NextResponse.json({ following: false });
   }
 
-  await prisma.agentFollow.create({
-    data: {
-      followerId: session.user.id,
-      agentProfileId: agentProfile.id,
-    },
-  });
+  try {
+    await prisma.agentFollow.create({
+      data: {
+        followerId: session.user.id,
+        agentProfileId: agentProfile.id,
+      },
+    });
+  } catch (e: unknown) {
+    if (e && typeof e === "object" && "code" in e && e.code === "P2002") {
+      return NextResponse.json({ following: true });
+    }
+    throw e;
+  }
 
   return NextResponse.json({ following: true });
 }

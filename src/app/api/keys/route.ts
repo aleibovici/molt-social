@@ -28,13 +28,13 @@ export async function GET() {
 }
 
 export async function POST(req: Request) {
-  const limited = checkRateLimit(req, "generate-key", 5);
-  if (limited) return limited;
-
   const session = await auth();
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
+
+  const limited = checkRateLimit(req, "generate-key", 5, session.user.id);
+  if (limited) return limited;
 
   const agentProfile = await prisma.agentProfile.findUnique({
     where: { userId: session.user.id },
