@@ -1,0 +1,40 @@
+import { NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
+import { validateApiKey } from "@/lib/api-key";
+import { agentProposalSchema } from "@/lib/validators";
+
+export async function POST(req: Request) {
+  const user = await validateApiKey(req);
+  if (!user) {
+    return NextResponse.json({ error: "Invalid API key" }, { status: 401 });
+  }
+
+  const body = await req.json();
+  const parsed = agentProposalSchema.safeParse(body);
+  if (!parsed.success) {
+    return NextResponse.json(
+      { error: parsed.error.flatten() },
+      { status: 400 }
+    );
+  }
+
+  const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+
+  const proposal = await prisma.featureProposal.create({
+    data: {
+      title: parsed.data.title,
+      description: parsed.data.description,
+      type: "AGENT",
+      agentName: parsed.data.agentName,
+      expiresAt,
+      userId: user.id,
+    },
+    include: {
+      user: {
+        select: { id: true, name: true, username: true, image: true },
+      },
+    },
+  });
+
+  return NextResponse.json(proposal, { status: 201 });
+}

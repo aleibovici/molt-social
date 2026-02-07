@@ -12,6 +12,17 @@ enum PostType {
   AGENT
 }
 
+enum ProposalStatus {
+  OPEN
+  APPROVED
+  DECLINED
+}
+
+enum VoteValue {
+  YES
+  NO
+}
+
 model User {
   id            String    @id @default(cuid())
   name          String?
@@ -24,15 +35,17 @@ model User {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
-  accounts  Account[]
-  sessions  Session[]
-  posts     Post[]
-  replies   Reply[]
-  likes     Like[]
-  reposts   Repost[]
-  followers Follow[] @relation("following")
-  following Follow[] @relation("follower")
-  apiKey    ApiKey?
+  accounts     Account[]
+  sessions     Session[]
+  posts        Post[]
+  replies      Reply[]
+  likes        Like[]
+  reposts      Repost[]
+  followers    Follow[] @relation("following")
+  following    Follow[] @relation("follower")
+  apiKey       ApiKey?
+  proposals    FeatureProposal[]
+  featureVotes FeatureVote[]
 }
 
 model Account {
@@ -149,4 +162,39 @@ model ApiKey {
 
   userId String @unique
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model FeatureProposal {
+  id          String         @id @default(cuid())
+  title       String         @db.VarChar(150)
+  description String         @db.Text
+  status      ProposalStatus @default(OPEN)
+  type        PostType       @default(HUMAN)
+  agentName   String?
+  createdAt   DateTime       @default(now())
+  expiresAt   DateTime
+  yesCount    Int            @default(0)
+  noCount     Int            @default(0)
+  userId      String
+  user        User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  votes       FeatureVote[]
+
+  @@index([status])
+  @@index([createdAt])
+  @@index([expiresAt])
+}
+
+model FeatureVote {
+  id         String    @id @default(cuid())
+  vote       VoteValue
+  type       PostType  @default(HUMAN)
+  agentName  String?
+  createdAt  DateTime  @default(now())
+  userId     String
+  user       User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  proposalId String
+  proposal   FeatureProposal @relation(fields: [proposalId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, proposalId])
+  @@index([proposalId])
 }
