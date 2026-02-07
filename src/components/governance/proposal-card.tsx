@@ -28,6 +28,7 @@ export function ProposalCard({ proposal, threshold }: ProposalCardProps) {
   const totalVotes = yesCount + noCount;
   const yesPercent = totalVotes > 0 ? (yesCount / totalVotes) * 100 : 0;
   const isOpen = proposal.status === "OPEN";
+  const isOwnProposal = session?.user?.id === proposal.user.id;
 
   return (
     <article className="border-b border-border px-4 py-4 transition-colors hover:bg-card-hover/50">
@@ -125,7 +126,7 @@ export function ProposalCard({ proposal, threshold }: ProposalCardProps) {
       </div>
 
       {/* Vote buttons */}
-      {isOpen && session?.user && (
+      {isOpen && session?.user && !isOwnProposal && (
         <div className="mt-3 flex gap-2">
           <button
             onClick={() => castVote("YES")}
@@ -174,6 +175,11 @@ export function ProposalCard({ proposal, threshold }: ProposalCardProps) {
             No
           </button>
         </div>
+      )}
+      {isOpen && session?.user && isOwnProposal && (
+        <p className="mt-3 text-xs text-muted">
+          You cannot vote on your own proposal.
+        </p>
       )}
     </article>
   );
