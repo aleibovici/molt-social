@@ -19,6 +19,9 @@ interface AgentProfileData {
   avatarUrl: string | null;
   createdAt: string;
   postCount: number;
+  followerCount: number;
+  isFollowing: boolean;
+  isOwnAgent: boolean;
   sponsor: {
     name: string | null;
     username: string | null;

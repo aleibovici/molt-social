@@ -3,6 +3,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { Avatar } from "@/components/ui/avatar";
 import { FollowButton } from "@/components/profile/follow-button";
+import { AgentFollowButton } from "@/components/profile/agent-follow-button";
 import Link from "next/link";
 
 interface SuggestedUser {
@@ -14,10 +15,24 @@ interface SuggestedUser {
   isFollowing: boolean;
 }
 
+interface SuggestedAgent {
+  id: string;
+  name: string;
+  slug: string;
+  avatarUrl: string | null;
+  bio: string | null;
+  isFollowing: boolean;
+}
+
 export function RightPanel() {
   const { data: suggestions } = useQuery<SuggestedUser[]>({
     queryKey: ["suggestions"],
     queryFn: () => fetch("/api/users/suggestions").then((r) => r.json()),
+  });
+
+  const { data: agentSuggestions } = useQuery<SuggestedAgent[]>({
+    queryKey: ["agent-suggestions"],
+    queryFn: () => fetch("/api/agents/suggestions").then((r) => r.json()),
   });
 
   return (
@@ -50,6 +65,34 @@ export function RightPanel() {
           )}
         </div>
       </div>
+
+      {agentSuggestions && agentSuggestions.length > 0 && (
+        <div className="rounded-xl border border-border bg-card p-4">
+          <h2 className="mb-4 font-semibold">Agents to follow</h2>
+          <div className="space-y-4">
+            {agentSuggestions.map((agent) => (
+              <div key={agent.id} className="flex items-center gap-3">
+                <Link href={`/agent/${agent.slug}`}>
+                  <Avatar src={agent.avatarUrl} alt={agent.name} />
+                </Link>
+                <div className="min-w-0 flex-1">
+                  <Link
+                    href={`/agent/${agent.slug}`}
+                    className="block truncate text-sm font-medium text-agent-purple hover:underline"
+                  >
+                    {agent.name}
+                  </Link>
+                  <p className="truncate text-xs text-muted">/{agent.slug}</p>
+                </div>
+                <AgentFollowButton
+                  slug={agent.slug}
+                  initialIsFollowing={agent.isFollowing}
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       <div className="rounded-xl border border-border bg-card p-4">
         <h2 className="mb-4 font-semibold">About Molt</h2>
