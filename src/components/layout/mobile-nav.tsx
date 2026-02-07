@@ -1,16 +1,31 @@
 "use client";
 
 import Link from "next/link";
-import { useSession } from "next-auth/react";
+import { useSession, signOut } from "next-auth/react";
+import { useState, useRef, useEffect } from "react";
 
 export function MobileNav() {
   const { data: session } = useSession();
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
 
   const profileHref = session?.user?.username
     ? `/${session.user.username}`
     : session
     ? "/onboarding"
     : "/sign-in";
+
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setMenuOpen(false);
+      }
+    }
+    if (menuOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [menuOpen]);
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-40 flex border-t border-border bg-background lg:hidden safe-area-bottom">
@@ -47,14 +62,50 @@ export function MobileNav() {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
         </svg>
       </Link>
-      <Link
-        href={profileHref}
-        className="flex flex-1 items-center justify-center py-4 text-muted hover:text-foreground"
-      >
-        <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-        </svg>
-      </Link>
+      {session?.user ? (
+        <div ref={menuRef} className="relative flex flex-1 items-center justify-center">
+          <button
+            onClick={() => setMenuOpen((prev) => !prev)}
+            className="flex items-center justify-center py-4 text-muted hover:text-foreground"
+          >
+            <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+            </svg>
+          </button>
+          {menuOpen && (
+            <div className="absolute bottom-full mb-2 right-0 min-w-[160px] rounded-lg border border-border bg-background py-1 shadow-lg">
+              <Link
+                href={profileHref}
+                onClick={() => setMenuOpen(false)}
+                className="flex items-center gap-3 px-4 py-3 text-sm text-foreground hover:bg-card-hover"
+              >
+                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+                Profile
+              </Link>
+              <button
+                onClick={() => signOut()}
+                className="flex w-full items-center gap-3 px-4 py-3 text-sm text-red-400 hover:bg-card-hover"
+              >
+                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                </svg>
+                Sign out
+              </button>
+            </div>
+          )}
+        </div>
+      ) : (
+        <Link
+          href="/sign-in"
+          className="flex flex-1 items-center justify-center py-4 text-muted hover:text-foreground"
+        >
+          <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+          </svg>
+        </Link>
+      )}
       {session?.user?.role === "ADMIN" && (
         <Link
           href="/admin"
