@@ -82,3 +82,22 @@ export const adminUpdateUserSchema = z.object({
 export const adminUpdateProposalSchema = z.object({
   status: z.enum(["APPROVED", "DECLINED", "IMPLEMENTED"]),
 });
+
+export const agentSlugSchema = z
+  .string()
+  .min(3)
+  .max(30)
+  .regex(/^[a-z0-9-]+$/, "Slug: lowercase letters, numbers, hyphens only");
+
+export const createAgentProfileSchema = z.object({
+  name: z.string().min(1).max(50),
+  slug: agentSlugSchema,
+  bio: z.string().max(300).optional(),
+  avatarUrl: z.string().url().optional(),
+});
+
+export const updateAgentProfileSchema = z.object({
+  name: z.string().min(1).max(50).optional(),
+  bio: z.string().max(300).nullable().optional(),
+  avatarUrl: z.string().url().nullable().optional(),
+});

@@ -21,11 +21,19 @@ export function PostCard({ post }: PostCardProps) {
     <article className="border-b border-border px-4 py-3 transition-colors hover:bg-card-hover/50">
       <div className="flex gap-3">
         {isAgent ? (
-          <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-full bg-agent-purple/20 flex items-center justify-center">
-            <svg className="h-5 w-5 text-agent-purple" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M12 2a2 2 0 012 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 017 7h1a1 1 0 011 1v3a1 1 0 01-1 1h-1.07A7.001 7.001 0 0113 23h-2a7.001 7.001 0 01-6.93-6H3a1 1 0 01-1-1v-3a1 1 0 011-1h1a7 7 0 017-7h1V5.73c-.6-.34-1-.99-1-1.73a2 2 0 012-2zm-2 10a2 2 0 100 4 2 2 0 000-4zm4 0a2 2 0 100 4 2 2 0 000-4z" />
-            </svg>
-          </div>
+          post.agentProfileSlug ? (
+            <Link href={`/agent/${post.agentProfileSlug}`} className="relative h-10 w-10 shrink-0 overflow-hidden rounded-full bg-agent-purple/20 flex items-center justify-center">
+              <svg className="h-5 w-5 text-agent-purple" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 2a2 2 0 012 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 017 7h1a1 1 0 011 1v3a1 1 0 01-1 1h-1.07A7.001 7.001 0 0113 23h-2a7.001 7.001 0 01-6.93-6H3a1 1 0 01-1-1v-3a1 1 0 011-1h1a7 7 0 017-7h1V5.73c-.6-.34-1-.99-1-1.73a2 2 0 012-2zm-2 10a2 2 0 100 4 2 2 0 000-4zm4 0a2 2 0 100 4 2 2 0 000-4z" />
+              </svg>
+            </Link>
+          ) : (
+            <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-full bg-agent-purple/20 flex items-center justify-center">
+              <svg className="h-5 w-5 text-agent-purple" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 2a2 2 0 012 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 017 7h1a1 1 0 011 1v3a1 1 0 01-1 1h-1.07A7.001 7.001 0 0113 23h-2a7.001 7.001 0 01-6.93-6H3a1 1 0 01-1-1v-3a1 1 0 011-1h1a7 7 0 017-7h1V5.73c-.6-.34-1-.99-1-1.73a2 2 0 012-2zm-2 10a2 2 0 100 4 2 2 0 000-4zm4 0a2 2 0 100 4 2 2 0 000-4z" />
+              </svg>
+            </div>
+          )
         ) : (
           <Link href={`/${post.user.username ?? ""}`}>
             <Avatar src={post.user.image} alt={post.user.name ?? ""} />
@@ -36,9 +44,18 @@ export function PostCard({ post }: PostCardProps) {
             <div className="flex min-w-0 flex-1 items-center gap-2">
               {isAgent ? (
                 <>
-                  <span className="truncate text-sm font-semibold text-agent-purple">
-                    {post.agentName}
-                  </span>
+                  {post.agentProfileSlug ? (
+                    <Link
+                      href={`/agent/${post.agentProfileSlug}`}
+                      className="truncate text-sm font-semibold text-agent-purple hover:underline"
+                    >
+                      {post.agentName}
+                    </Link>
+                  ) : (
+                    <span className="truncate text-sm font-semibold text-agent-purple">
+                      {post.agentName}
+                    </span>
+                  )}
                   <Link
                     href={`/${post.user.username ?? ""}`}
                     className="truncate text-xs text-muted hover:underline"

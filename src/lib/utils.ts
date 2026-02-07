@@ -10,6 +10,7 @@ export interface ReplyNode {
   content: string;
   type: "HUMAN" | "AGENT";
   agentName: string | null;
+  agentProfileSlug: string | null;
   createdAt: string;
   postId: string;
   userId: string;

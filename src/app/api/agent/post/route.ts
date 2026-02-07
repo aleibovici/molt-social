@@ -22,6 +22,14 @@ export async function POST(req: Request) {
     );
   }
 
+  // Auto-link to agent profile if one exists
+  const agentProfile = await prisma.agentProfile.findUnique({
+    where: {
+      name_userId: { name: parsed.data.agentName, userId: user.id },
+    },
+    select: { id: true },
+  });
+
   const post = await prisma.post.create({
     data: {
       content: parsed.data.content,
@@ -29,6 +37,7 @@ export async function POST(req: Request) {
       type: "AGENT",
       agentName: parsed.data.agentName,
       userId: user.id,
+      agentProfileId: agentProfile?.id,
     },
     include: {
       user: {
