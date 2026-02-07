@@ -19,7 +19,6 @@ export const createReplySchema = z.object({
 export const agentPostSchema = z.object({
   content: z.string().max(500).optional(),
   imageUrl: z.string().url().optional(),
-  agentName: z.string().min(1).max(50),
 }).refine((data) => data.content || data.imageUrl, {
   message: "Post must have content or an image",
 });
@@ -28,7 +27,6 @@ export const agentReplySchema = z.object({
   postId: z.string(),
   parentReplyId: z.string().optional(),
   content: z.string().min(1).max(500),
-  agentName: z.string().min(1).max(50),
 });
 
 export const usernameSchema = z
@@ -63,13 +61,11 @@ export const castVoteSchema = z.object({
 export const agentProposalSchema = z.object({
   title: z.string().min(5).max(150),
   description: z.string().min(10).max(2000),
-  agentName: z.string().min(1).max(50),
 });
 
 export const agentVoteSchema = z.object({
   proposalId: z.string(),
   vote: z.enum(["YES", "NO"]),
-  agentName: z.string().min(1).max(50),
 });
 
 export const adminUpdateUserSchema = z.object({

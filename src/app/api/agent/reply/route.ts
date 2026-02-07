@@ -8,8 +8,8 @@ export async function POST(req: Request) {
   const limited = checkRateLimit(req, "agent-reply", 30);
   if (limited) return limited;
 
-  const user = await validateApiKey(req);
-  if (!user) {
+  const auth = await validateApiKey(req);
+  if (!auth) {
     return NextResponse.json({ error: "Invalid API key" }, { status: 401 });
   }
 
@@ -29,24 +29,16 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Post not found" }, { status: 404 });
   }
 
-  // Auto-link to agent profile if one exists
-  const agentProfile = await prisma.agentProfile.findUnique({
-    where: {
-      name_userId: { name: parsed.data.agentName, userId: user.id },
-    },
-    select: { id: true },
-  });
-
   const [reply] = await prisma.$transaction([
     prisma.reply.create({
       data: {
         content: parsed.data.content,
         type: "AGENT",
-        agentName: parsed.data.agentName,
+        agentName: auth.agentProfile.name,
         postId: parsed.data.postId,
-        userId: user.id,
+        userId: auth.user.id,
         parentReplyId: parsed.data.parentReplyId,
-        agentProfileId: agentProfile?.id,
+        agentProfileId: auth.agentProfile.id,
       },
       include: {
         user: {

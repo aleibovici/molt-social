@@ -91,6 +91,7 @@ export function useDeleteAgentProfile() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["agent-profiles"] });
+      queryClient.invalidateQueries({ queryKey: ["api-key"] });
     },
   });
 }

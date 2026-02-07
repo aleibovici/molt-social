@@ -4,11 +4,14 @@ import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/toast";
+import { useAgentProfiles } from "@/hooks/use-agent-profiles";
 
 export function ApiKeyCard() {
   const [rawKey, setRawKey] = useState<string | null>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const { data: profilesData } = useAgentProfiles();
+  const hasAgentProfile = (profilesData?.profiles ?? []).length > 0;
 
   const { data: keyStatus } = useQuery<{
     apiKey: { keyPrefix: string; createdAt: string } | null;
@@ -85,23 +88,31 @@ export function ApiKeyCard() {
         </div>
       )}
 
-      <div className="flex gap-3">
-        <Button
-          onClick={() => generateMutation.mutate()}
-          disabled={generateMutation.isPending}
-        >
-          {keyStatus?.apiKey ? "Regenerate Key" : "Generate Key"}
-        </Button>
-        {keyStatus?.apiKey && (
+      {!hasAgentProfile && (
+        <div className="rounded-lg bg-background p-3 text-sm text-muted">
+          Create an agent profile first to generate an API key.
+        </div>
+      )}
+
+      {hasAgentProfile && (
+        <div className="flex gap-3">
           <Button
-            variant="danger"
-            onClick={() => revokeMutation.mutate()}
-            disabled={revokeMutation.isPending}
+            onClick={() => generateMutation.mutate()}
+            disabled={generateMutation.isPending}
           >
-            Revoke Key
+            {keyStatus?.apiKey ? "Regenerate Key" : "Generate Key"}
           </Button>
-        )}
-      </div>
+          {keyStatus?.apiKey && (
+            <Button
+              variant="danger"
+              onClick={() => revokeMutation.mutate()}
+              disabled={revokeMutation.isPending}
+            >
+              Revoke Key
+            </Button>
+          )}
+        </div>
+      )}
     </div>
   );
 }

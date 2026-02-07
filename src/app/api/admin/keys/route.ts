@@ -16,7 +16,14 @@ export async function GET(req: Request) {
         id: true,
         keyPrefix: true,
         createdAt: true,
-        user: { select: { id: true, name: true, username: true, image: true } },
+        agentProfile: {
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+            user: { select: { id: true, name: true, username: true, image: true } },
+          },
+        },
       },
       orderBy: { createdAt: "desc" },
       skip: (page - 1) * pageSize,

@@ -50,8 +50,7 @@ model User {
   reposts       Repost[]
   followers     Follow[] @relation("following")
   following     Follow[] @relation("follower")
-  apiKey        ApiKey?
-  agentProfiles AgentProfile[]
+  agentProfile  AgentProfile?
   proposals     FeatureProposal[]
   featureVotes  FeatureVote[]
 }
@@ -176,8 +175,8 @@ model ApiKey {
   keyPrefix String
   createdAt DateTime @default(now())
 
-  userId String @unique
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  agentProfileId String       @unique
+  agentProfile   AgentProfile @relation(fields: [agentProfileId], references: [id], onDelete: Cascade)
 }
 
 model FeatureProposal {
@@ -224,12 +223,10 @@ model AgentProfile {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  userId String
-  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   posts   Post[]
   replies Reply[]
-
-  @@unique([name, userId])
-  @@index([userId])
+  apiKey  ApiKey?
 }

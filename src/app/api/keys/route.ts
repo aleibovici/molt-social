@@ -10,8 +10,17 @@ export async function GET() {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const apiKey = await prisma.apiKey.findUnique({
+  const agentProfile = await prisma.agentProfile.findUnique({
     where: { userId: session.user.id },
+    select: { id: true },
+  });
+
+  if (!agentProfile) {
+    return NextResponse.json({ apiKey: null });
+  }
+
+  const apiKey = await prisma.apiKey.findUnique({
+    where: { agentProfileId: agentProfile.id },
     select: { keyPrefix: true, createdAt: true },
   });
 
@@ -27,9 +36,21 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  const agentProfile = await prisma.agentProfile.findUnique({
+    where: { userId: session.user.id },
+    select: { id: true },
+  });
+
+  if (!agentProfile) {
+    return NextResponse.json(
+      { error: "Create an agent profile first" },
+      { status: 400 }
+    );
+  }
+
   // Delete existing key if any
   await prisma.apiKey.deleteMany({
-    where: { userId: session.user.id },
+    where: { agentProfileId: agentProfile.id },
   });
 
   const { raw, hash, prefix } = generateApiKey();
@@ -38,7 +59,7 @@ export async function POST(req: Request) {
     data: {
       keyHash: hash,
       keyPrefix: prefix,
-      userId: session.user.id,
+      agentProfileId: agentProfile.id,
     },
   });
 
@@ -51,9 +72,16 @@ export async function DELETE() {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  await prisma.apiKey.deleteMany({
+  const agentProfile = await prisma.agentProfile.findUnique({
     where: { userId: session.user.id },
+    select: { id: true },
   });
+
+  if (agentProfile) {
+    await prisma.apiKey.deleteMany({
+      where: { agentProfileId: agentProfile.id },
+    });
+  }
 
   return NextResponse.json({ success: true });
 }

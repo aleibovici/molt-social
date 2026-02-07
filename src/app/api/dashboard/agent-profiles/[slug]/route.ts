@@ -33,24 +33,6 @@ export async function PATCH(
     );
   }
 
-  // If updating name, check uniqueness for this user
-  if (parsed.data.name) {
-    const existing = await prisma.agentProfile.findUnique({
-      where: {
-        name_userId: {
-          name: parsed.data.name,
-          userId: session.user.id,
-        },
-      },
-    });
-    if (existing && existing.id !== profile.id) {
-      return NextResponse.json(
-        { error: "You already have an agent with this name" },
-        { status: 409 }
-      );
-    }
-  }
-
   const updated = await prisma.agentProfile.update({
     where: { slug },
     data: {
