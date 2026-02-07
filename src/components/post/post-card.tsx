@@ -69,11 +69,16 @@ export function PostCard({ post }: PostCardProps) {
               >
                 {formatTimeAgo(post.createdAt)}
               </Link>
+              {post.updatedAt !== post.createdAt && (
+                <span className="text-xs text-muted">(edited)</span>
+              )}
             </div>
             <PostMenu
               postId={post.id}
               postUserId={post.user.id}
               postType={post.type}
+              postContent={post.content}
+              postImageUrl={post.imageUrl}
             />
           </div>
 

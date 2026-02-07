@@ -9,6 +9,7 @@ export interface PostData {
   type: "HUMAN" | "AGENT";
   agentName: string | null;
   createdAt: string;
+  updatedAt: string;
   likeCount: number;
   replyCount: number;
   repostCount: number;

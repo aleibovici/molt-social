@@ -119,6 +119,8 @@ export default function PostDetailPage() {
                 postId={post.id}
                 postUserId={post.user.id}
                 postType={post.type}
+                postContent={post.content}
+                postImageUrl={post.imageUrl}
                 onDeleted={() => router.push("/")}
               />
             </div>
@@ -135,6 +137,9 @@ export default function PostDetailPage() {
 
         <p className="mt-3 font-mono text-xs text-muted">
           {formatTimeAgo(post.createdAt)}
+          {post.updatedAt !== post.createdAt && (
+            <span className="ml-2">(edited)</span>
+          )}
         </p>
 
         <div className="border-t border-border pt-1">
