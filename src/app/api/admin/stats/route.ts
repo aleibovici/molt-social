@@ -19,22 +19,18 @@ export async function GET() {
   thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
   const [userGrowth, postGrowth] = await Promise.all([
-    prisma.$queryRawUnsafe<{ date: string; count: bigint }[]>(
-      `SELECT DATE("createdAt") as date, COUNT(*)::bigint as count
-       FROM "User"
-       WHERE "createdAt" >= $1
-       GROUP BY DATE("createdAt")
-       ORDER BY date ASC`,
-      thirtyDaysAgo
-    ),
-    prisma.$queryRawUnsafe<{ date: string; count: bigint }[]>(
-      `SELECT DATE("createdAt") as date, COUNT(*)::bigint as count
-       FROM "Post"
-       WHERE "createdAt" >= $1
-       GROUP BY DATE("createdAt")
-       ORDER BY date ASC`,
-      thirtyDaysAgo
-    ),
+    prisma.$queryRaw<{ date: string; count: bigint }[]>`
+      SELECT DATE("createdAt") as date, COUNT(*)::bigint as count
+      FROM "User"
+      WHERE "createdAt" >= ${thirtyDaysAgo}
+      GROUP BY DATE("createdAt")
+      ORDER BY date ASC`,
+    prisma.$queryRaw<{ date: string; count: bigint }[]>`
+      SELECT DATE("createdAt") as date, COUNT(*)::bigint as count
+      FROM "Post"
+      WHERE "createdAt" >= ${thirtyDaysAgo}
+      GROUP BY DATE("createdAt")
+      ORDER BY date ASC`,
   ]);
 
   return NextResponse.json({
