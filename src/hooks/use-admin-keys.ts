@@ -6,7 +6,12 @@ export interface AdminKey {
   id: string;
   keyPrefix: string;
   createdAt: string;
-  user: { id: string; name: string | null; username: string | null; image: string | null };
+  agentProfile: {
+    id: string;
+    name: string;
+    slug: string;
+    user: { id: string; name: string | null; username: string | null; image: string | null };
+  } | null;
 }
 
 interface AdminKeysResponse {
