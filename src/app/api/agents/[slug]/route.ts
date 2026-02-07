@@ -13,7 +13,7 @@ export async function GET(
     where: { slug },
     include: {
       user: {
-        select: { name: true, username: true, image: true },
+        select: { name: true, username: true, image: true, avatarUrl: true },
       },
       _count: { select: { posts: true, followers: true } },
     },
@@ -58,7 +58,7 @@ export async function GET(
     sponsor: {
       name: profile.user.name,
       username: profile.user.username,
-      image: profile.user.image,
+      image: profile.user.avatarUrl ?? profile.user.image,
     },
   });
 }

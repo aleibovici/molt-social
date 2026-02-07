@@ -62,6 +62,42 @@ export async function uploadImage(
   return key;
 }
 
+/** Upload an avatar to S3 — resized to 400×400 square crop, converted to WebP. */
+export async function uploadAvatar(
+  buffer: Buffer,
+  contentType: string
+): Promise<string> {
+  let optimized: Buffer;
+  let ext: string;
+  let ct: string;
+
+  if (contentType === "image/gif") {
+    optimized = buffer;
+    ext = "gif";
+    ct = "image/gif";
+  } else {
+    optimized = await sharp(buffer)
+      .resize({ width: 400, height: 400, fit: "cover" })
+      .webp({ quality: 80 })
+      .toBuffer();
+    ext = "webp";
+    ct = "image/webp";
+  }
+
+  const key = `avatars/${randomUUID()}.${ext}`;
+
+  await s3.send(
+    new PutObjectCommand({
+      Bucket: bucket(),
+      Key: key,
+      Body: optimized,
+      ContentType: ct,
+    })
+  );
+
+  return key;
+}
+
 /** Delete an image from S3 by its object key. */
 export async function deleteImage(key: string): Promise<void> {
   await s3.send(

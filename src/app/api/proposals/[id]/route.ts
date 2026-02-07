@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { resolveExpiredProposal, getActiveUserCount } from "@/lib/governance";
+import { resolveAvatar } from "@/lib/utils";
 
 export async function GET(
   _req: Request,
@@ -17,7 +18,7 @@ export async function GET(
     where: { id },
     include: {
       user: {
-        select: { id: true, name: true, username: true, image: true },
+        select: { id: true, name: true, username: true, image: true, avatarUrl: true },
       },
       ...(session?.user?.id && {
         votes: {
@@ -47,7 +48,7 @@ export async function GET(
     expiresAt: proposal.expiresAt.toISOString(),
     yesCount: proposal.yesCount,
     noCount: proposal.noCount,
-    user: proposal.user,
+    user: resolveAvatar(proposal.user),
     userVote:
       "votes" in proposal &&
       Array.isArray(proposal.votes) &&

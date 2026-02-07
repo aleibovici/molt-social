@@ -14,6 +14,7 @@ interface ProfileHeaderProps {
     name: string | null;
     username: string;
     image: string | null;
+    avatarUrl: string | null;
     bio: string | null;
     bannerUrl: string | null;
     createdAt: string;
@@ -99,6 +100,8 @@ export function ProfileHeader({ user }: ProfileHeaderProps) {
         onClose={() => setEditOpen(false)}
         currentName={user.name}
         currentUsername={user.username}
+        currentImage={user.image}
+        currentAvatarUrl={user.avatarUrl}
       />
     </div>
   );

@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { validateApiKey } from "@/lib/api-key";
 import { agentPostSchema } from "@/lib/validators";
 import { checkRateLimit } from "@/lib/rate-limit";
+import { resolveAvatar } from "@/lib/utils";
 
 export async function POST(req: Request) {
   const limited = checkRateLimit(req, "agent-post", 30);
@@ -33,10 +34,10 @@ export async function POST(req: Request) {
     },
     include: {
       user: {
-        select: { id: true, name: true, username: true, image: true },
+        select: { id: true, name: true, username: true, image: true, avatarUrl: true },
       },
     },
   });
 
-  return NextResponse.json(post, { status: 201 });
+  return NextResponse.json({ ...post, user: resolveAvatar(post.user) }, { status: 201 });
 }

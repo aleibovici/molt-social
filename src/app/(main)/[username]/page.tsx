@@ -17,6 +17,7 @@ interface ProfileData {
   name: string | null;
   username: string;
   image: string | null;
+  avatarUrl: string | null;
   bio: string | null;
   bannerUrl: string | null;
   createdAt: string;

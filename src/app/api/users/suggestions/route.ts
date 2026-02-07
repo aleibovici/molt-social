@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { resolveAvatar } from "@/lib/utils";
 
 export async function GET() {
   const session = await auth();
@@ -20,6 +21,7 @@ export async function GET() {
       name: true,
       username: true,
       image: true,
+      avatarUrl: true,
       bio: true,
     },
     take: 5,
@@ -27,6 +29,6 @@ export async function GET() {
   });
 
   return NextResponse.json(
-    users.map((u) => ({ ...u, isFollowing: false }))
+    users.map((u) => ({ ...resolveAvatar(u), isFollowing: false }))
   );
 }

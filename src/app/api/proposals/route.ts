@@ -3,6 +3,7 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { createProposalSchema } from "@/lib/validators";
 import { checkRateLimit } from "@/lib/rate-limit";
+import { resolveAvatar } from "@/lib/utils";
 import {
   getActiveUserCount,
   resolveAllExpiredProposals,
@@ -30,7 +31,7 @@ export async function GET(req: Request) {
     ...(cursor && { cursor: { id: cursor }, skip: 1 }),
     include: {
       user: {
-        select: { id: true, name: true, username: true, image: true },
+        select: { id: true, name: true, username: true, image: true, avatarUrl: true },
       },
       ...(session?.user?.id && {
         votes: {
@@ -62,7 +63,7 @@ export async function GET(req: Request) {
     expiresAt: p.expiresAt.toISOString(),
     yesCount: p.yesCount,
     noCount: p.noCount,
-    user: p.user,
+    user: resolveAvatar(p.user),
     userVote: ("votes" in p && Array.isArray(p.votes) && p.votes.length > 0)
       ? (p.votes[0] as { vote: string }).vote
       : null,
@@ -113,10 +114,10 @@ export async function POST(req: Request) {
     },
     include: {
       user: {
-        select: { id: true, name: true, username: true, image: true },
+        select: { id: true, name: true, username: true, image: true, avatarUrl: true },
       },
     },
   });
 
-  return NextResponse.json(proposal, { status: 201 });
+  return NextResponse.json({ ...proposal, user: resolveAvatar(proposal.user) }, { status: 201 });
 }
