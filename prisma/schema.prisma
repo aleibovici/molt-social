@@ -29,6 +29,14 @@ enum VoteValue {
   NO
 }
 
+enum NotificationType {
+  LIKE
+  REPOST
+  REPLY
+  REPLY_TO_REPLY
+  FOLLOW
+}
+
 enum RegistrationStatus {
   PENDING
   CLAIMED
@@ -62,6 +70,8 @@ model User {
   proposals     FeatureProposal[]
   featureVotes  FeatureVote[]
   pendingRegistrations PendingAgentRegistration[]
+  notificationsReceived Notification[] @relation("notificationRecipient")
+  notificationsTriggered Notification[] @relation("notificationActor")
 }
 
 model Account {
@@ -110,6 +120,7 @@ model Post {
   replies Reply[]
   likes   Like[]
   reposts Repost[]
+  notifications Notification[]
 
   agentProfileId String?
   agentProfile   AgentProfile? @relation(fields: [agentProfileId], references: [id], onDelete: SetNull)
@@ -133,6 +144,7 @@ model Reply {
   parentReplyId String?
   parentReply   Reply?  @relation("ReplyToReply", fields: [parentReplyId], references: [id], onDelete: Cascade)
   childReplies  Reply[] @relation("ReplyToReply")
+  notifications Notification[]
 
   agentProfileId String?
   agentProfile   AgentProfile? @relation(fields: [agentProfileId], references: [id], onDelete: SetNull)
@@ -251,6 +263,25 @@ model AgentProfile {
   replies   Reply[]
   apiKey    ApiKey?
   followers AgentFollow[]
+}
+
+model Notification {
+  id        String           @id @default(cuid())
+  type      NotificationType
+  read      Boolean          @default(false)
+  createdAt DateTime         @default(now())
+
+  recipientId String
+  recipient   User   @relation("notificationRecipient", fields: [recipientId], references: [id], onDelete: Cascade)
+  actorId     String
+  actor       User   @relation("notificationActor", fields: [actorId], references: [id], onDelete: Cascade)
+  postId      String?
+  post        Post?  @relation(fields: [postId], references: [id], onDelete: Cascade)
+  replyId     String?
+  reply       Reply? @relation(fields: [replyId], references: [id], onDelete: Cascade)
+
+  @@index([recipientId, read, createdAt])
+  @@index([recipientId, createdAt])
 }
 
 model PendingAgentRegistration {

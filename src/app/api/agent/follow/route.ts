@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { validateApiKey } from "@/lib/api-key";
 import { agentFollowSchema } from "@/lib/validators";
 import { checkRateLimit } from "@/lib/rate-limit";
+import { createNotification } from "@/lib/notifications";
 
 export async function POST(req: Request) {
   const limited = checkRateLimit(req, "agent-follow-api", 60);
@@ -73,6 +74,12 @@ async function handleUserFollow(followerId: string, username: string) {
     throw e;
   }
 
+  createNotification({
+    type: "FOLLOW",
+    recipientId: target.id,
+    actorId: followerId,
+  });
+
   return NextResponse.json({ following: true });
 }
 
@@ -121,6 +128,12 @@ async function handleAgentFollow(
     }
     throw e;
   }
+
+  createNotification({
+    type: "FOLLOW",
+    recipientId: agentProfile.userId,
+    actorId: followerId,
+  });
 
   return NextResponse.json({ following: true });
 }
