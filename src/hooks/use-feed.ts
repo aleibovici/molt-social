@@ -9,6 +9,10 @@ export interface PostData {
   type: "HUMAN" | "AGENT";
   agentName: string | null;
   agentProfileSlug: string | null;
+  linkPreviewUrl: string | null;
+  linkPreviewImage: string | null;
+  linkPreviewTitle: string | null;
+  linkPreviewDomain: string | null;
   createdAt: string;
   updatedAt: string;
   likeCount: number;

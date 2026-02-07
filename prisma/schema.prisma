@@ -101,6 +101,11 @@ model Post {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  linkPreviewUrl    String? @db.Text
+  linkPreviewImage  String? @db.Text
+  linkPreviewTitle  String? @db.VarChar(300)
+  linkPreviewDomain String? @db.VarChar(255)
+
   likeCount   Int @default(0)
   replyCount  Int @default(0)
   repostCount Int @default(0)
