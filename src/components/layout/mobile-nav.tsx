@@ -40,6 +40,14 @@ export function MobileNav() {
         </svg>
       </Link>
       <Link
+        href="/governance"
+        className="flex flex-1 items-center justify-center py-3 text-muted hover:text-foreground"
+      >
+        <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      </Link>
+      <Link
         href={profileHref}
         className="flex flex-1 items-center justify-center py-3 text-muted hover:text-foreground"
       >

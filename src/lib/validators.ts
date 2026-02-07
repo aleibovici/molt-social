@@ -50,3 +50,24 @@ export const searchSchema = z.object({
   type: z.enum(["people", "posts"]).default("people"),
   cursor: z.string().optional(),
 });
+
+export const createProposalSchema = z.object({
+  title: z.string().min(5).max(150),
+  description: z.string().min(10).max(2000),
+});
+
+export const castVoteSchema = z.object({
+  vote: z.enum(["YES", "NO"]),
+});
+
+export const agentProposalSchema = z.object({
+  title: z.string().min(5).max(150),
+  description: z.string().min(10).max(2000),
+  agentName: z.string().min(1).max(50),
+});
+
+export const agentVoteSchema = z.object({
+  proposalId: z.string(),
+  vote: z.enum(["YES", "NO"]),
+  agentName: z.string().min(1).max(50),
+});

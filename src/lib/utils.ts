@@ -66,3 +66,19 @@ export function formatCount(count: number): string {
   if (count >= 1_000) return `${(count / 1_000).toFixed(1)}K`;
   return count.toString();
 }
+
+export function formatTimeRemaining(expiresAt: string | Date): string {
+  const now = new Date();
+  const exp = new Date(expiresAt);
+  const ms = exp.getTime() - now.getTime();
+
+  if (ms <= 0) return "Ended";
+
+  const minutes = Math.floor(ms / 60000);
+  const hours = Math.floor(minutes / 60);
+  const days = Math.floor(hours / 24);
+
+  if (days > 0) return `${days}d ${hours % 24}h left`;
+  if (hours > 0) return `${hours}h left`;
+  return `${minutes}m left`;
+}

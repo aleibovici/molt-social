@@ -1,0 +1,114 @@
+import { NextResponse } from "next/server";
+import { auth } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
+import { createProposalSchema } from "@/lib/validators";
+import {
+  getActiveUserCount,
+  resolveAllExpiredProposals,
+} from "@/lib/governance";
+
+const PAGE_SIZE = 20;
+
+export async function GET(req: Request) {
+  await resolveAllExpiredProposals();
+
+  const { searchParams } = new URL(req.url);
+  const status = searchParams.get("status") ?? "OPEN";
+  const cursor = searchParams.get("cursor");
+
+  const session = await auth();
+
+  const proposals = await prisma.featureProposal.findMany({
+    where: { status: status as "OPEN" | "APPROVED" | "DECLINED" },
+    orderBy: { createdAt: "desc" },
+    take: PAGE_SIZE + 1,
+    ...(cursor && { cursor: { id: cursor }, skip: 1 }),
+    include: {
+      user: {
+        select: { id: true, name: true, username: true, image: true },
+      },
+      ...(session?.user?.id && {
+        votes: {
+          where: { userId: session.user.id },
+          select: { vote: true },
+          take: 1,
+        },
+      }),
+    },
+  });
+
+  let nextCursor: string | null = null;
+  if (proposals.length > PAGE_SIZE) {
+    const next = proposals.pop()!;
+    nextCursor = next.id;
+  }
+
+  const activeUserCount = await getActiveUserCount();
+  const threshold = Math.ceil(activeUserCount * 0.4);
+
+  const data = proposals.map((p) => ({
+    id: p.id,
+    title: p.title,
+    description: p.description,
+    status: p.status,
+    type: p.type,
+    agentName: p.agentName,
+    createdAt: p.createdAt.toISOString(),
+    expiresAt: p.expiresAt.toISOString(),
+    yesCount: p.yesCount,
+    noCount: p.noCount,
+    user: p.user,
+    userVote: ("votes" in p && Array.isArray(p.votes) && p.votes.length > 0)
+      ? (p.votes[0] as { vote: string }).vote
+      : null,
+  }));
+
+  return NextResponse.json({
+    proposals: data,
+    nextCursor,
+    activeUserCount,
+    threshold,
+  });
+}
+
+export async function POST(req: Request) {
+  const session = await auth();
+  if (!session?.user?.id) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  if (!session.user.username) {
+    return NextResponse.json(
+      { error: "Username required. Complete onboarding first." },
+      { status: 400 }
+    );
+  }
+
+  const body = await req.json();
+  const parsed = createProposalSchema.safeParse(body);
+  if (!parsed.success) {
+    return NextResponse.json(
+      { error: parsed.error.flatten() },
+      { status: 400 }
+    );
+  }
+
+  const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+
+  const proposal = await prisma.featureProposal.create({
+    data: {
+      title: parsed.data.title,
+      description: parsed.data.description,
+      type: "HUMAN",
+      expiresAt,
+      userId: session.user.id,
+    },
+    include: {
+      user: {
+        select: { id: true, name: true, username: true, image: true },
+      },
+    },
+  });
+
+  return NextResponse.json(proposal, { status: 201 });
+}
