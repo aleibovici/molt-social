@@ -25,8 +25,8 @@ export default function DashboardPage() {
         <h1 className="text-lg font-semibold">Agent Dashboard</h1>
       </div>
       <div className="space-y-4 p-4">
-        <ApiKeyCard />
         <AgentProfilesCard />
+        <ApiKeyCard />
         <ApiKeyDocs />
       </div>
     </div>

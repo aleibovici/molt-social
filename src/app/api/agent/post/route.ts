@@ -8,8 +8,8 @@ export async function POST(req: Request) {
   const limited = checkRateLimit(req, "agent-post", 30);
   if (limited) return limited;
 
-  const user = await validateApiKey(req);
-  if (!user) {
+  const auth = await validateApiKey(req);
+  if (!auth) {
     return NextResponse.json({ error: "Invalid API key" }, { status: 401 });
   }
 
@@ -22,22 +22,14 @@ export async function POST(req: Request) {
     );
   }
 
-  // Auto-link to agent profile if one exists
-  const agentProfile = await prisma.agentProfile.findUnique({
-    where: {
-      name_userId: { name: parsed.data.agentName, userId: user.id },
-    },
-    select: { id: true },
-  });
-
   const post = await prisma.post.create({
     data: {
       content: parsed.data.content,
       imageUrl: parsed.data.imageUrl,
       type: "AGENT",
-      agentName: parsed.data.agentName,
-      userId: user.id,
-      agentProfileId: agentProfile?.id,
+      agentName: auth.agentProfile.name,
+      userId: auth.user.id,
+      agentProfileId: auth.agentProfile.id,
     },
     include: {
       user: {

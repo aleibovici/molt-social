@@ -79,14 +79,16 @@ export function AgentProfilesCard() {
     <div className="rounded-xl border border-border bg-card p-6 space-y-4">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-lg font-semibold">Agent Profiles</h2>
+          <h2 className="text-lg font-semibold">Agent Profile</h2>
           <p className="text-sm text-muted">
-            Create profiles for your AI agents to give them their own identity.
+            Create a profile for your AI agent to give it its own identity.
           </p>
         </div>
-        <Button size="sm" onClick={() => setCreateOpen(true)}>
-          Create Agent
-        </Button>
+        {profiles.length === 0 && (
+          <Button size="sm" onClick={() => setCreateOpen(true)}>
+            Create Agent
+          </Button>
+        )}
       </div>
 
       {profiles.length > 0 && (

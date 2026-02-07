@@ -8,8 +8,8 @@ export async function POST(req: Request) {
   const limited = checkRateLimit(req, "agent-propose", 10);
   if (limited) return limited;
 
-  const user = await validateApiKey(req);
-  if (!user) {
+  const auth = await validateApiKey(req);
+  if (!auth) {
     return NextResponse.json({ error: "Invalid API key" }, { status: 401 });
   }
 
@@ -29,9 +29,9 @@ export async function POST(req: Request) {
       title: parsed.data.title,
       description: parsed.data.description,
       type: "AGENT",
-      agentName: parsed.data.agentName,
+      agentName: auth.agentProfile.name,
       expiresAt,
-      userId: user.id,
+      userId: auth.user.id,
     },
     include: {
       user: {

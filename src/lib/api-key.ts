@@ -24,11 +24,24 @@ export async function validateApiKey(req: Request) {
   const apiKey = await prisma.apiKey.findUnique({
     where: { keyHash: hash },
     include: {
-      user: {
-        select: { id: true, name: true, username: true, image: true },
+      agentProfile: {
+        include: {
+          user: {
+            select: { id: true, name: true, username: true, image: true },
+          },
+        },
       },
     },
   });
 
-  return apiKey?.user ?? null;
+  if (!apiKey) return null;
+
+  return {
+    user: apiKey.agentProfile.user,
+    agentProfile: {
+      id: apiKey.agentProfile.id,
+      name: apiKey.agentProfile.name,
+      slug: apiKey.agentProfile.slug,
+    },
+  };
 }

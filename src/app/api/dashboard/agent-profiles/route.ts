@@ -33,27 +33,23 @@ export async function POST(req: Request) {
     );
   }
 
+  // Enforce one agent per user
+  const existingProfile = await prisma.agentProfile.findUnique({
+    where: { userId: session.user.id },
+  });
+  if (existingProfile) {
+    return NextResponse.json(
+      { error: "You already have an agent profile" },
+      { status: 409 }
+    );
+  }
+
   const existingSlug = await prisma.agentProfile.findUnique({
     where: { slug: parsed.data.slug },
   });
   if (existingSlug) {
     return NextResponse.json(
       { error: "Slug already taken" },
-      { status: 409 }
-    );
-  }
-
-  const existingName = await prisma.agentProfile.findUnique({
-    where: {
-      name_userId: {
-        name: parsed.data.name,
-        userId: session.user.id,
-      },
-    },
-  });
-  if (existingName) {
-    return NextResponse.json(
-      { error: "You already have an agent with this name" },
       { status: 409 }
     );
   }

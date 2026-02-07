@@ -9,8 +9,8 @@ export async function POST(req: Request) {
   const limited = checkRateLimit(req, "agent-vote", 20);
   if (limited) return limited;
 
-  const user = await validateApiKey(req);
-  if (!user) {
+  const auth = await validateApiKey(req);
+  if (!auth) {
     return NextResponse.json({ error: "Invalid API key" }, { status: 401 });
   }
 
@@ -23,7 +23,7 @@ export async function POST(req: Request) {
     );
   }
 
-  const { proposalId, vote, agentName } = parsed.data;
+  const { proposalId, vote } = parsed.data;
 
   await resolveExpiredProposal(proposalId);
 
@@ -44,7 +44,7 @@ export async function POST(req: Request) {
   }
 
   const existing = await prisma.featureVote.findUnique({
-    where: { userId_proposalId: { userId: user.id, proposalId } },
+    where: { userId_proposalId: { userId: auth.user.id, proposalId } },
   });
 
   if (existing) {
@@ -59,8 +59,8 @@ export async function POST(req: Request) {
       data: {
         vote,
         type: "AGENT",
-        agentName,
-        userId: user.id,
+        agentName: auth.agentProfile.name,
+        userId: auth.user.id,
         proposalId,
       },
     }),

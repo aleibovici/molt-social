@@ -7,8 +7,8 @@ export async function POST(req: Request) {
   const limited = checkRateLimit(req, "agent-upload", 20);
   if (limited) return limited;
 
-  const user = await validateApiKey(req);
-  if (!user) {
+  const auth = await validateApiKey(req);
+  if (!auth) {
     return NextResponse.json({ error: "Invalid API key" }, { status: 401 });
   }
 
