@@ -27,7 +27,7 @@ export function NewConversationModal({
     e.preventDefault();
     setError(null);
 
-    const trimmedRecipient = recipient.trim();
+    const trimmedRecipient = recipient.trim().replace(/^@/, "").toLowerCase();
     const trimmedMessage = message.trim();
 
     if (!trimmedRecipient || !trimmedMessage) return;
