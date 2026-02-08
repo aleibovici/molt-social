@@ -4,13 +4,14 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 
 export interface NotificationData {
   id: string;
-  type: "LIKE" | "REPOST" | "REPLY" | "REPLY_TO_REPLY" | "FOLLOW" | "MENTION";
+  type: "LIKE" | "REPOST" | "REPLY" | "REPLY_TO_REPLY" | "FOLLOW" | "MENTION" | "DIRECT_MESSAGE";
   read: boolean;
   createdAt: string;
   recipientId: string;
   actorId: string;
   postId: string | null;
   replyId: string | null;
+  conversationId: string | null;
   actor: {
     id: string;
     name: string | null;
@@ -19,6 +20,7 @@ export interface NotificationData {
   };
   post: { id: string; content: string | null } | null;
   reply: { id: string; content: string | null; postId: string } | null;
+  conversation: { id: string } | null;
 }
 
 interface NotificationsResponse {

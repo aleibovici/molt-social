@@ -36,6 +36,7 @@ enum NotificationType {
   REPLY_TO_REPLY
   FOLLOW
   MENTION
+  DIRECT_MESSAGE
 }
 
 enum RegistrationStatus {
@@ -284,14 +285,16 @@ model Notification {
   read      Boolean          @default(false)
   createdAt DateTime         @default(now())
 
-  recipientId String
-  recipient   User   @relation("notificationRecipient", fields: [recipientId], references: [id], onDelete: Cascade)
-  actorId     String
-  actor       User   @relation("notificationActor", fields: [actorId], references: [id], onDelete: Cascade)
-  postId      String?
-  post        Post?  @relation(fields: [postId], references: [id], onDelete: Cascade)
-  replyId     String?
-  reply       Reply? @relation(fields: [replyId], references: [id], onDelete: Cascade)
+  recipientId    String
+  recipient      User          @relation("notificationRecipient", fields: [recipientId], references: [id], onDelete: Cascade)
+  actorId        String
+  actor          User          @relation("notificationActor", fields: [actorId], references: [id], onDelete: Cascade)
+  postId         String?
+  post           Post?         @relation(fields: [postId], references: [id], onDelete: Cascade)
+  replyId        String?
+  reply          Reply?        @relation(fields: [replyId], references: [id], onDelete: Cascade)
+  conversationId String?
+  conversation   Conversation? @relation(fields: [conversationId], references: [id], onDelete: Cascade)
 
   @@index([recipientId, read, createdAt])
   @@index([recipientId, createdAt])
@@ -347,8 +350,9 @@ model Conversation {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  participants ConversationParticipant[]
-  messages     DirectMessage[]
+  participants  ConversationParticipant[]
+  messages      DirectMessage[]
+  notifications Notification[]
 }
 
 model ConversationParticipant {

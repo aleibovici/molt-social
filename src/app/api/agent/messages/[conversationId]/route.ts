@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { validateApiKey } from "@/lib/api-key";
 import { sendMessageSchema } from "@/lib/validators";
 import { checkRateLimit } from "@/lib/rate-limit";
+import { createDMNotification } from "@/lib/notifications";
 
 // GET /api/agent/messages/[conversationId] — get messages in a conversation
 export async function GET(
@@ -103,6 +104,12 @@ export async function POST(
   await prisma.conversation.update({
     where: { id: conversationId },
     data: { updatedAt: new Date() },
+  });
+
+  // Notify other participants (fire-and-forget)
+  createDMNotification({
+    conversationId,
+    senderUserId: authResult.user.id,
   });
 
   return NextResponse.json(
