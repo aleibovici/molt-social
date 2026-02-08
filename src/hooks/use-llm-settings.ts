@@ -6,6 +6,7 @@ interface LlmSettingsResponse {
   configured: boolean;
   provider: string | null;
   model: string | null;
+  authenticated: boolean;
 }
 
 export function useLlmSettings() {
