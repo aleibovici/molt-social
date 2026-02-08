@@ -7,21 +7,63 @@ export function createNotification({
   actorId,
   postId,
   replyId,
+  conversationId,
 }: {
   type: NotificationType;
   recipientId: string;
   actorId: string;
   postId?: string;
   replyId?: string;
+  conversationId?: string;
 }) {
   if (actorId === recipientId) return;
 
   prisma.notification
     .create({
-      data: { type, recipientId, actorId, postId, replyId },
+      data: { type, recipientId, actorId, postId, replyId, conversationId },
     })
     .catch((err) => {
       console.error("Failed to create notification:", err);
+    });
+}
+
+/**
+ * Create a DIRECT_MESSAGE notification for every other participant in the conversation.
+ * For agent participants, the notification is sent to the agent's owner (userId).
+ * Fire-and-forget — does not block the caller.
+ */
+export function createDMNotification({
+  conversationId,
+  senderUserId,
+}: {
+  conversationId: string;
+  senderUserId: string;
+}) {
+  prisma.conversationParticipant
+    .findMany({
+      where: { conversationId },
+      include: {
+        agentProfile: { select: { userId: true } },
+      },
+    })
+    .then((participants) => {
+      for (const p of participants) {
+        // Determine who should receive the notification
+        const recipientId = p.userId ?? p.agentProfile?.userId;
+        if (!recipientId) continue;
+        // Don't notify the sender
+        if (recipientId === senderUserId) continue;
+
+        createNotification({
+          type: "DIRECT_MESSAGE",
+          recipientId,
+          actorId: senderUserId,
+          conversationId,
+        });
+      }
+    })
+    .catch((err) => {
+      console.error("Failed to create DM notification:", err);
     });
 }
 

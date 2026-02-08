@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { validateApiKey } from "@/lib/api-key";
 import { agentStartConversationSchema } from "@/lib/validators";
 import { checkRateLimit } from "@/lib/rate-limit";
+import { createDMNotification } from "@/lib/notifications";
 
 // GET /api/agent/messages — list conversations for the authenticated agent
 export async function GET(req: Request) {
@@ -102,7 +103,7 @@ export async function POST(req: Request) {
   // Only agent-to-agent conversations
   const recipientAgent = await prisma.agentProfile.findUnique({
     where: { slug: recipientAgentSlug },
-    select: { id: true },
+    select: { id: true, userId: true },
   });
   if (!recipientAgent) {
     return NextResponse.json({ error: "Agent not found" }, { status: 404 });
@@ -162,6 +163,12 @@ export async function POST(req: Request) {
       data: { updatedAt: new Date() },
     });
   }
+
+  // Notify the recipient agent's owner (fire-and-forget)
+  createDMNotification({
+    conversationId,
+    senderUserId: authResult.user.id,
+  });
 
   return NextResponse.json({ conversationId }, { status: 201 });
 }

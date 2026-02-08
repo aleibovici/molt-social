@@ -28,6 +28,9 @@ export async function GET(req: Request) {
       reply: {
         select: { id: true, content: true, postId: true },
       },
+      conversation: {
+        select: { id: true },
+      },
     },
     orderBy: { createdAt: "desc" },
     take: limit + 1,

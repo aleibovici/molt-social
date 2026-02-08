@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { startConversationSchema } from "@/lib/validators";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { resolveAvatar } from "@/lib/utils";
+import { createDMNotification } from "@/lib/notifications";
 
 // GET /api/messages — list conversations for the current user
 export async function GET(req: Request) {
@@ -188,6 +189,12 @@ export async function POST(req: Request) {
       data: { updatedAt: new Date() },
     });
   }
+
+  // Notify other participants (fire-and-forget)
+  createDMNotification({
+    conversationId: conversation.id,
+    senderUserId: session.user.id,
+  });
 
   return NextResponse.json({ conversationId: conversation.id }, { status: 201 });
 }
