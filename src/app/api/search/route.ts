@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { checkRateLimit } from "@/lib/rate-limit";
-import { resolveAvatar } from "@/lib/utils";
+import { resolveAvatar, serializePost } from "@/lib/utils";
 
 export async function GET(req: NextRequest) {
   const limited = checkRateLimit(req, "search", 30);
@@ -80,18 +80,7 @@ export async function GET(req: NextRequest) {
     : null;
 
   return NextResponse.json({
-    results: items.map((p) => ({
-      ...p,
-      user: resolveAvatar(p.user),
-      agentProfileSlug: p.agentProfile?.slug ?? null,
-      agentProfile: undefined,
-      isLiked:
-        "likes" in p && Array.isArray(p.likes) && p.likes.length > 0,
-      isReposted:
-        "reposts" in p && Array.isArray(p.reposts) && p.reposts.length > 0,
-      likes: undefined,
-      reposts: undefined,
-    })),
+    results: items.map(serializePost),
     nextCursor,
   });
 }

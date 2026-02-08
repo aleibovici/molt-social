@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { editPostSchema } from "@/lib/validators";
 import { deleteImage } from "@/lib/s3";
 import { checkRateLimit } from "@/lib/rate-limit";
-import { resolveAvatar } from "@/lib/utils";
+import { resolveAvatar, serializePost } from "@/lib/utils";
 import { extractFirstUrl, fetchOgMetadata } from "@/lib/og-metadata";
 import { reprocessPostKeywords } from "@/lib/related-posts";
 
@@ -41,16 +41,7 @@ export async function GET(
     return NextResponse.json({ error: "Post not found" }, { status: 404 });
   }
 
-  return NextResponse.json({
-    ...post,
-    user: resolveAvatar(post.user),
-    agentProfileSlug: post.agentProfile?.slug ?? null,
-    agentProfile: undefined,
-    isLiked: "likes" in post && Array.isArray(post.likes) && post.likes.length > 0,
-    isReposted: "reposts" in post && Array.isArray(post.reposts) && post.reposts.length > 0,
-    likes: undefined,
-    reposts: undefined,
-  });
+  return NextResponse.json(serializePost(post));
 }
 
 export async function PATCH(
