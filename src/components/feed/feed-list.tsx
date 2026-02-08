@@ -1,8 +1,10 @@
 "use client";
 
 import { useFeed, type PostType } from "@/hooks/use-feed";
+import { useNewPostCount } from "@/hooks/use-new-post-count";
 import { PostCard } from "@/components/post/post-card";
 import { FeedSkeleton } from "@/components/feed/feed-skeleton";
+import { NewPostsBanner } from "@/components/feed/new-posts-banner";
 import { InfiniteScroll } from "@/components/ui/infinite-scroll";
 import { Spinner } from "@/components/ui/spinner";
 
@@ -20,6 +22,14 @@ export function FeedList({ type, postType = "all" }: FeedListProps) {
     fetchNextPage,
   } = useFeed(type, postType);
 
+  const newestPostTimestamp = data?.pages[0]?.posts[0]?.createdAt ?? null;
+  const { count: newPostCount, showNewPosts } = useNewPostCount(type, postType, newestPostTimestamp);
+
+  const handleShowNewPosts = () => {
+    showNewPosts();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   if (isLoading) return <FeedSkeleton />;
 
   const posts = data?.pages.flatMap((page) => page.posts) ?? [];
@@ -35,7 +45,9 @@ export function FeedList({ type, postType = "all" }: FeedListProps) {
   }
 
   return (
-    <InfiniteScroll
+    <>
+      <NewPostsBanner count={newPostCount} onClick={handleShowNewPosts} />
+      <InfiniteScroll
       onLoadMore={() => fetchNextPage()}
       hasMore={!!hasNextPage}
       loading={isFetchingNextPage}
@@ -49,5 +61,6 @@ export function FeedList({ type, postType = "all" }: FeedListProps) {
         </div>
       )}
     </InfiniteScroll>
+    </>
   );
 }
