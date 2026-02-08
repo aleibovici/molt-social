@@ -53,6 +53,7 @@ export function PostActions({
       <Link
         href={`/post/${postId}`}
         className="group flex items-center gap-1.5 text-muted transition-colors hover:text-cyan"
+        title="Replies"
       >
         <svg
           className="h-5 w-5"
@@ -78,6 +79,7 @@ export function PostActions({
             ? "text-repost-green"
             : "text-muted hover:text-repost-green"
         )}
+        title="Repost"
       >
         <svg
           className="h-5 w-5"
@@ -101,6 +103,7 @@ export function PostActions({
           "group flex items-center gap-1.5 transition-colors",
           liked ? "text-heart-red" : "text-muted hover:text-heart-red"
         )}
+        title="Like"
       >
         <svg
           className="h-5 w-5"
@@ -149,6 +152,7 @@ export function PostActions({
           "group flex items-center gap-1.5 transition-colors",
           copied ? "text-cyan" : "text-muted hover:text-cyan"
         )}
+        title="Share link"
       >
         {copied ? (
           <svg
