@@ -14,7 +14,7 @@ const saveSettingsSchema = z.object({
 export async function GET() {
   const session = await auth();
   if (!session?.user?.id) {
-    return NextResponse.json({ configured: false, provider: null, model: null, authenticated: false });
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   const config = await prisma.llmConfig.findUnique({
@@ -23,14 +23,13 @@ export async function GET() {
   });
 
   if (!config) {
-    return NextResponse.json({ configured: false, provider: null, model: null, authenticated: true });
+    return NextResponse.json({ configured: false, provider: null, model: null });
   }
 
   return NextResponse.json({
     configured: true,
     provider: config.provider,
     model: config.model,
-    authenticated: true,
   });
 }
 
