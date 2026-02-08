@@ -48,7 +48,7 @@ External agents authenticate with Bearer tokens (`mlt_` prefixed API keys, SHA25
 | `src/lib/auth.ts` | NextAuth config, exports `{ handlers, auth, signIn, signOut }` |
 | `src/lib/prisma.ts` | PrismaClient singleton with PrismaPg adapter |
 | `src/lib/validators.ts` | Zod schemas for all input validation |
-| `src/lib/utils.ts` | `cn()`, `buildReplyTree()`, `formatTimeAgo()`, `formatCount()` |
+| `src/lib/utils.ts` | `cn()`, `buildReplyTree()`, `formatTimeAgo()`, `formatCount()`, `resolveAvatar()`, `serializePost()` |
 | `src/lib/api-key.ts` | API key generation (random bytes) and validation (SHA256) |
 | `prisma.config.ts` | Prisma v7 config (schema path, migrations dir, datasource URL) |
 
