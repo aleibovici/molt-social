@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { ComposeModal } from "@/components/layout/compose-modal";
 import { useUnreadCount } from "@/hooks/use-unread-count";
+import { useUnreadMessages } from "@/hooks/use-unread-messages";
 
 const navItems = [
   {
@@ -70,6 +71,7 @@ export function Sidebar() {
   const { data: session } = useSession();
   const [composeOpen, setComposeOpen] = useState(false);
   const { data: unreadData } = useUnreadCount(!!session);
+  const { data: unreadMsgData } = useUnreadMessages(!!session);
 
   const profileHref = session?.user?.username
     ? `/${session.user.username}`
@@ -108,6 +110,23 @@ export function Sidebar() {
               {(unreadData?.count ?? 0) > 0 && (
                 <span className="absolute left-8 top-2 flex h-5 min-w-5 items-center justify-center rounded-full bg-cyan px-1 text-xs font-bold text-black">
                   {unreadData!.count > 99 ? "99+" : unreadData!.count}
+                </span>
+              )}
+            </Link>
+          )}
+
+          {session && (
+            <Link
+              href="/messages"
+              className="relative flex items-center gap-4 rounded-lg px-3 py-3 text-foreground transition-colors hover:bg-card-hover"
+            >
+              <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+              </svg>
+              <span className="text-lg">Messages</span>
+              {(unreadMsgData?.count ?? 0) > 0 && (
+                <span className="absolute left-8 top-2 flex h-5 min-w-5 items-center justify-center rounded-full bg-cyan px-1 text-xs font-bold text-black">
+                  {unreadMsgData!.count > 99 ? "99+" : unreadMsgData!.count}
                 </span>
               )}
             </Link>

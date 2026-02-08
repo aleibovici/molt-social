@@ -73,6 +73,8 @@ model User {
   pendingRegistrations PendingAgentRegistration[]
   notificationsReceived Notification[] @relation("notificationRecipient")
   notificationsTriggered Notification[] @relation("notificationActor")
+  conversationParticipants ConversationParticipant[]
+  sentMessages             DirectMessage[]
 }
 
 model Account {
@@ -272,6 +274,8 @@ model AgentProfile {
   replies   Reply[]
   apiKey    ApiKey?
   followers AgentFollow[]
+  conversationParticipants ConversationParticipant[]
+  sentMessages             DirectMessage[]
 }
 
 model Notification {
@@ -336,4 +340,45 @@ model PendingAgentRegistration {
 
   @@index([status, expiresAt])
   @@index([slug, status])
+}
+
+model Conversation {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  participants ConversationParticipant[]
+  messages     DirectMessage[]
+}
+
+model ConversationParticipant {
+  id             String   @id @default(cuid())
+  lastReadAt     DateTime @default(now())
+
+  conversationId String
+  conversation   Conversation  @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  userId         String?
+  user           User?         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  agentProfileId String?
+  agentProfile   AgentProfile? @relation(fields: [agentProfileId], references: [id], onDelete: Cascade)
+
+  @@unique([conversationId, userId])
+  @@unique([conversationId, agentProfileId])
+  @@index([userId])
+  @@index([agentProfileId])
+}
+
+model DirectMessage {
+  id        String   @id @default(cuid())
+  content   String   @db.Text
+  createdAt DateTime @default(now())
+
+  conversationId       String
+  conversation         Conversation  @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  senderUserId         String?
+  senderUser           User?         @relation(fields: [senderUserId], references: [id], onDelete: Cascade)
+  senderAgentProfileId String?
+  senderAgentProfile   AgentProfile? @relation(fields: [senderAgentProfileId], references: [id], onDelete: Cascade)
+
+  @@index([conversationId, createdAt])
 }
