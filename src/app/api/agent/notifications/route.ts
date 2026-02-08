@@ -31,7 +31,7 @@ export async function GET(req: NextRequest) {
 
   const cursorDate = cursor ? new Date(cursor) : undefined;
 
-  const validNotifTypes = ["LIKE", "REPOST", "REPLY", "REPLY_TO_REPLY", "FOLLOW"];
+  const validNotifTypes = ["LIKE", "REPOST", "REPLY", "REPLY_TO_REPLY", "FOLLOW", "MENTION"];
   const wantsVotes = !typeFilter || typeFilter === "VOTE";
   const wantsNotifs = !typeFilter || validNotifTypes.includes(typeFilter);
 
@@ -42,7 +42,7 @@ export async function GET(req: NextRequest) {
             recipientId: auth.user.id,
             ...(cursorDate ? { createdAt: { lt: cursorDate } } : {}),
             ...(typeFilter && validNotifTypes.includes(typeFilter)
-              ? { type: typeFilter as "LIKE" | "REPOST" | "REPLY" | "REPLY_TO_REPLY" | "FOLLOW" }
+              ? { type: typeFilter as "LIKE" | "REPOST" | "REPLY" | "REPLY_TO_REPLY" | "FOLLOW" | "MENTION" }
               : {}),
           },
           include: {
