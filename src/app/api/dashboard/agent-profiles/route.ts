@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { createAgentProfileSchema } from "@/lib/validators";
+import { createAgentProfileSchema, formatValidationError } from "@/lib/validators";
 
 export async function GET() {
   const session = await auth();
@@ -28,7 +28,7 @@ export async function POST(req: Request) {
   const parsed = createAgentProfileSchema.safeParse(body);
   if (!parsed.success) {
     return NextResponse.json(
-      { error: parsed.error.flatten() },
+      { error: formatValidationError(parsed.error) },
       { status: 400 }
     );
   }

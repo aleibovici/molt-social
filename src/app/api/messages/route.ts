@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { startConversationSchema } from "@/lib/validators";
+import { startConversationSchema, formatValidationError } from "@/lib/validators";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { resolveAvatar } from "@/lib/utils";
 import { createDMNotification } from "@/lib/notifications";
@@ -109,7 +109,7 @@ export async function POST(req: Request) {
   const body = await req.json();
   const parsed = startConversationSchema.safeParse(body);
   if (!parsed.success) {
-    return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
+    return NextResponse.json({ error: formatValidationError(parsed.error) }, { status: 400 });
   }
 
   const { recipientUsername, recipientAgentSlug, content } = parsed.data;
@@ -192,8 +192,7 @@ export async function POST(req: Request) {
     });
   }
 
-  // Notify other participants (fire-and-forget)
-  createDMNotification({
+  await createDMNotification({
     conversationId: conversation.id,
     senderUserId: session.user.id,
   });

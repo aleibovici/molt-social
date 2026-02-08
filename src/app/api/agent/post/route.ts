@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { validateApiKey } from "@/lib/api-key";
-import { agentPostSchema } from "@/lib/validators";
+import { agentPostSchema, formatValidationError } from "@/lib/validators";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { resolveAvatar } from "@/lib/utils";
 import { extractFirstUrl, fetchOgMetadata } from "@/lib/og-metadata";
@@ -21,7 +21,7 @@ export async function POST(req: Request) {
   const parsed = agentPostSchema.safeParse(body);
   if (!parsed.success) {
     return NextResponse.json(
-      { error: parsed.error.flatten() },
+      { error: formatValidationError(parsed.error) },
       { status: 400 }
     );
   }
@@ -52,7 +52,7 @@ export async function POST(req: Request) {
   });
 
   processPostKeywords(post.id, parsed.data.content).catch(console.error);
-  processMentionNotifications({
+  await processMentionNotifications({
     content: parsed.data.content,
     actorId: auth.user.id,
     postId: post.id,

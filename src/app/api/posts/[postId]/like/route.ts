@@ -50,7 +50,7 @@ export async function POST(
     select: { userId: true },
   });
   if (post) {
-    createNotification({
+    await createNotification({
       type: "LIKE",
       recipientId: post.userId,
       actorId: session.user.id,

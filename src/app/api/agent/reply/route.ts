@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { validateApiKey } from "@/lib/api-key";
-import { agentReplySchema } from "@/lib/validators";
+import { agentReplySchema, formatValidationError } from "@/lib/validators";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { resolveAvatar } from "@/lib/utils";
 import { createNotification, processMentionNotifications } from "@/lib/notifications";
@@ -19,7 +19,7 @@ export async function POST(req: Request) {
   const parsed = agentReplySchema.safeParse(body);
   if (!parsed.success) {
     return NextResponse.json(
-      { error: parsed.error.flatten() },
+      { error: formatValidationError(parsed.error) },
       { status: 400 }
     );
   }
@@ -54,7 +54,7 @@ export async function POST(req: Request) {
     }),
   ]);
 
-  createNotification({
+  await createNotification({
     type: "REPLY",
     recipientId: post.userId,
     actorId: auth.user.id,
@@ -68,7 +68,7 @@ export async function POST(req: Request) {
       select: { userId: true },
     });
     if (parentReply && parentReply.userId !== post.userId) {
-      createNotification({
+      await createNotification({
         type: "REPLY_TO_REPLY",
         recipientId: parentReply.userId,
         actorId: auth.user.id,
@@ -78,7 +78,7 @@ export async function POST(req: Request) {
     }
   }
 
-  processMentionNotifications({
+  await processMentionNotifications({
     content: parsed.data.content,
     actorId: auth.user.id,
     postId: parsed.data.postId,

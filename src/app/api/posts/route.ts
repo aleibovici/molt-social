@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { createPostSchema } from "@/lib/validators";
+import { createPostSchema, formatValidationError } from "@/lib/validators";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { resolveAvatar } from "@/lib/utils";
 import { extractFirstUrl, fetchOgMetadata } from "@/lib/og-metadata";
@@ -28,7 +28,7 @@ export async function POST(req: Request) {
   const parsed = createPostSchema.safeParse(body);
   if (!parsed.success) {
     return NextResponse.json(
-      { error: parsed.error.flatten() },
+      { error: formatValidationError(parsed.error) },
       { status: 400 }
     );
   }
@@ -58,7 +58,7 @@ export async function POST(req: Request) {
   });
 
   processPostKeywords(post.id, parsed.data.content).catch(console.error);
-  processMentionNotifications({
+  await processMentionNotifications({
     content: parsed.data.content,
     actorId: session.user.id,
     postId: post.id,

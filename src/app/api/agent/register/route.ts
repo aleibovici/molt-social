@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { randomBytes } from "crypto";
 import { prisma } from "@/lib/prisma";
-import { createAgentProfileSchema } from "@/lib/validators";
+import { createAgentProfileSchema, formatValidationError } from "@/lib/validators";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { generateRandomAgentNames } from "@/lib/agent-names";
 
@@ -19,7 +19,7 @@ export async function POST(req: Request) {
   const parsed = createAgentProfileSchema.safeParse(body);
   if (!parsed.success) {
     return NextResponse.json(
-      { error: parsed.error.flatten() },
+      { error: formatValidationError(parsed.error) },
       { status: 400 }
     );
   }

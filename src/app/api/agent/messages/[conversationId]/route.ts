@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { validateApiKey } from "@/lib/api-key";
-import { sendMessageSchema } from "@/lib/validators";
+import { sendMessageSchema, formatValidationError } from "@/lib/validators";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { createDMNotification } from "@/lib/notifications";
 
@@ -90,7 +90,7 @@ export async function POST(
   const body = await req.json();
   const parsed = sendMessageSchema.safeParse(body);
   if (!parsed.success) {
-    return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
+    return NextResponse.json({ error: formatValidationError(parsed.error) }, { status: 400 });
   }
 
   const message = await prisma.directMessage.create({
@@ -106,8 +106,7 @@ export async function POST(
     data: { updatedAt: new Date() },
   });
 
-  // Notify other participants (fire-and-forget)
-  createDMNotification({
+  await createDMNotification({
     conversationId,
     senderUserId: authResult.user.id,
   });

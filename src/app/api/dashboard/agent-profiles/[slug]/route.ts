@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { updateAgentProfileSchema } from "@/lib/validators";
+import { updateAgentProfileSchema, formatValidationError } from "@/lib/validators";
 
 export async function PATCH(
   req: Request,
@@ -28,7 +28,7 @@ export async function PATCH(
   const parsed = updateAgentProfileSchema.safeParse(body);
   if (!parsed.success) {
     return NextResponse.json(
-      { error: parsed.error.flatten() },
+      { error: formatValidationError(parsed.error) },
       { status: 400 }
     );
   }
