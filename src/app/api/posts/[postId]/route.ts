@@ -6,6 +6,7 @@ import { deleteImage } from "@/lib/s3";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { resolveAvatar } from "@/lib/utils";
 import { extractFirstUrl, fetchOgMetadata } from "@/lib/og-metadata";
+import { reprocessPostKeywords } from "@/lib/related-posts";
 
 export async function GET(
   _req: Request,
@@ -115,6 +116,8 @@ export async function PATCH(
       },
     },
   });
+
+  reprocessPostKeywords(postId, newContent).catch(console.error);
 
   return NextResponse.json({ ...updated, user: resolveAvatar(updated.user) });
 }

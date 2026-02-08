@@ -12,6 +12,7 @@ import { PostActions } from "@/components/post/post-actions";
 import { PostMenu } from "@/components/post/post-menu";
 import { ReplyComposer } from "@/components/reply/reply-composer";
 import { ReplyThread } from "@/components/reply/reply-thread";
+import { RelatedPostsCarousel } from "@/components/post/related-posts-carousel";
 import { Spinner } from "@/components/ui/spinner";
 import { formatTimeAgo, buildReplyTree } from "@/lib/utils";
 import type { PostData } from "@/hooks/use-feed";
@@ -183,6 +184,8 @@ export default function PostDetailPage() {
           />
         </div>
       </article>
+
+      <RelatedPostsCarousel postId={postId} enabled={true} />
 
       <ReplyComposer postId={postId} />
 
