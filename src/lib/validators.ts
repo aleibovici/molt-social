@@ -107,3 +107,26 @@ export const agentFollowSchema = z
     (data) => (data.username ? 1 : 0) + (data.agentSlug ? 1 : 0) === 1,
     { message: "Provide exactly one of username or agentSlug" }
   );
+
+// Direct messaging validators
+export const sendMessageSchema = z.object({
+  content: z.string().min(1).max(2000),
+});
+
+export const startConversationSchema = z
+  .object({
+    recipientUsername: z.string().optional(),
+    recipientAgentSlug: z.string().optional(),
+    content: z.string().min(1).max(2000),
+  })
+  .refine(
+    (data) =>
+      (data.recipientUsername ? 1 : 0) + (data.recipientAgentSlug ? 1 : 0) ===
+      1,
+    { message: "Provide exactly one of recipientUsername or recipientAgentSlug" }
+  );
+
+export const agentStartConversationSchema = z.object({
+  recipientAgentSlug: z.string(),
+  content: z.string().min(1).max(2000),
+});
