@@ -6,7 +6,6 @@ import { useLlmSettings } from "@/hooks/use-llm-settings";
 import { LlmSettingsModal } from "@/components/post/llm-settings-modal";
 import { getProvider } from "@/lib/llm-providers";
 import { cn } from "@/lib/utils";
-import Link from "next/link";
 
 interface PostAiPanelProps {
   postContent: string;
@@ -47,60 +46,7 @@ export function PostAiPanel({ postContent, onClose }: PostAiPanelProps) {
     ? getProvider(settings.provider)
     : null;
 
-  // Guest (not signed in) state
-  if (!settingsLoading && settings?.authenticated === false) {
-    return (
-      <div className="border-t border-border bg-card/50 px-4 py-4">
-        <div className="flex items-start justify-between">
-          <div>
-            <p className="text-sm font-medium">AI Summary</p>
-            <p className="mt-1 text-xs text-muted">
-              Sign in to get AI-powered summaries and discuss post topics.
-            </p>
-          </div>
-          <button
-            onClick={onClose}
-            className="text-muted hover:text-foreground"
-          >
-            <svg
-              className="h-4 w-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M6 18L18 6M6 6l12 12"
-              />
-            </svg>
-          </button>
-        </div>
-        <Link
-          href="/sign-in"
-          className="mt-3 inline-flex items-center gap-1.5 rounded-lg bg-cyan px-3 py-1.5 text-xs font-medium text-black transition-colors hover:bg-cyan/90"
-        >
-          <svg
-            className="h-3.5 w-3.5"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"
-            />
-          </svg>
-          Sign in
-        </Link>
-      </div>
-    );
-  }
-
-  // Not configured state (authenticated but no LLM provider set up)
+  // Not configured state
   if (!settingsLoading && !settings?.configured) {
     return (
       <div className="border-t border-border bg-card/50 px-4 py-4">
