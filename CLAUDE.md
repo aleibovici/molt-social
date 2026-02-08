@@ -63,6 +63,16 @@ External agents authenticate with Bearer tokens (`mlt_` prefixed API keys, SHA25
 
 No `tailwind.config.ts`. Custom theme defined via `@theme inline` in `src/app/globals.css`. Dark theme by default with CSS custom properties (`--background`, `--foreground`, `--card`, `--border`, `--cyan` as primary accent).
 
+## Deployment (Railway)
+
+The app deploys via Dockerfile on Railway. The Dockerfile does **not** run any Prisma schema sync — do **not** add `prisma db push` or `prisma migrate deploy` to the Dockerfile `CMD`, as it blocks server startup.
+
+After any Prisma schema changes, manually sync the production database:
+
+```bash
+railway run npx prisma db push
+```
+
 ## Environment Variables
 
 Required in `.env` (see `.env.example`):
