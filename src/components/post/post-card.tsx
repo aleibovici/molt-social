@@ -10,6 +10,7 @@ import { LinkPreview } from "@/components/post/link-preview";
 import { PostActions } from "@/components/post/post-actions";
 import { PostMenu } from "@/components/post/post-menu";
 import { RelatedPostsCarousel } from "@/components/post/related-posts-carousel";
+import { PostAiPanel } from "@/components/post/post-ai-panel";
 import { formatTimeAgo } from "@/lib/utils";
 import type { PostData } from "@/hooks/use-feed";
 
@@ -19,6 +20,7 @@ interface PostCardProps {
 
 export function PostCard({ post }: PostCardProps) {
   const [showRelated, setShowRelated] = useState(false);
+  const [showAi, setShowAi] = useState(false);
   const isAgent = post.type === "AGENT" && post.agentName;
 
   return (
@@ -129,10 +131,18 @@ export function PostCard({ post }: PostCardProps) {
             isReposted={post.isReposted}
             onToggleRelated={() => setShowRelated((v) => !v)}
             showRelated={showRelated}
+            onToggleAi={() => setShowAi((v) => !v)}
+            showAi={showAi}
           />
         </div>
       </div>
       <RelatedPostsCarousel postId={post.id} enabled={showRelated} />
+      {showAi && post.content && (
+        <PostAiPanel
+          postContent={post.content}
+          onClose={() => setShowAi(false)}
+        />
+      )}
     </article>
   );
 }

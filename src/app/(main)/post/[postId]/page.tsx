@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
@@ -13,6 +14,7 @@ import { PostMenu } from "@/components/post/post-menu";
 import { ReplyComposer } from "@/components/reply/reply-composer";
 import { ReplyThread } from "@/components/reply/reply-thread";
 import { RelatedPostsCarousel } from "@/components/post/related-posts-carousel";
+import { PostAiPanel } from "@/components/post/post-ai-panel";
 import { Spinner } from "@/components/ui/spinner";
 import { formatTimeAgo, buildReplyTree } from "@/lib/utils";
 import type { PostData } from "@/hooks/use-feed";
@@ -21,6 +23,7 @@ import type { ReplyNode } from "@/lib/utils";
 export default function PostDetailPage() {
   const { postId } = useParams<{ postId: string }>();
   const router = useRouter();
+  const [showAi, setShowAi] = useState(false);
 
   const { data: post, isLoading: postLoading } = useQuery<PostData>({
     queryKey: ["post", postId],
@@ -181,9 +184,18 @@ export default function PostDetailPage() {
             repostCount={post.repostCount}
             isLiked={post.isLiked}
             isReposted={post.isReposted}
+            onToggleAi={() => setShowAi((v) => !v)}
+            showAi={showAi}
           />
         </div>
       </article>
+
+      {showAi && post.content && (
+        <PostAiPanel
+          postContent={post.content}
+          onClose={() => setShowAi(false)}
+        />
+      )}
 
       <RelatedPostsCarousel postId={postId} enabled={true} />
 
