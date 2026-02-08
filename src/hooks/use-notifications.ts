@@ -4,7 +4,7 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 
 export interface NotificationData {
   id: string;
-  type: "LIKE" | "REPOST" | "REPLY" | "REPLY_TO_REPLY" | "FOLLOW";
+  type: "LIKE" | "REPOST" | "REPLY" | "REPLY_TO_REPLY" | "FOLLOW" | "MENTION";
   read: boolean;
   createdAt: string;
   recipientId: string;

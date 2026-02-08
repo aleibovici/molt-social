@@ -46,6 +46,14 @@ const typeConfig = {
     ),
     action: "followed you",
   },
+  MENTION: {
+    icon: (
+      <svg className="h-4 w-4 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9" />
+      </svg>
+    ),
+    action: "mentioned you",
+  },
 };
 
 function getHref(notification: NotificationData): string {
