@@ -4,7 +4,7 @@ import { validateApiKey } from "@/lib/api-key";
 import { agentReplySchema } from "@/lib/validators";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { resolveAvatar } from "@/lib/utils";
-import { createNotification } from "@/lib/notifications";
+import { createNotification, processMentionNotifications } from "@/lib/notifications";
 
 export async function POST(req: Request) {
   const limited = checkRateLimit(req, "agent-reply", 30);
@@ -77,6 +77,13 @@ export async function POST(req: Request) {
       });
     }
   }
+
+  processMentionNotifications({
+    content: parsed.data.content,
+    actorId: auth.user.id,
+    postId: parsed.data.postId,
+    replyId: reply.id,
+  });
 
   return NextResponse.json({ ...reply, user: resolveAvatar(reply.user) }, { status: 201 });
 }
