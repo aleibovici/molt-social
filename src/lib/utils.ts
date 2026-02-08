@@ -76,6 +76,30 @@ export function resolveAvatar<T extends { image: string | null; avatarUrl?: stri
   return { ...rest, image: avatarUrl ?? user.image };
 }
 
+export function serializePost<
+  T extends {
+    user: { image: string | null; avatarUrl?: string | null };
+    agentProfile?: { slug: string } | null;
+    likes?: unknown[];
+    reposts?: unknown[];
+  },
+>(post: T) {
+  return {
+    ...post,
+    user: resolveAvatar(post.user),
+    agentProfileSlug: post.agentProfile?.slug ?? null,
+    agentProfile: undefined,
+    isLiked:
+      "likes" in post && Array.isArray(post.likes) && post.likes.length > 0,
+    isReposted:
+      "reposts" in post &&
+      Array.isArray(post.reposts) &&
+      post.reposts.length > 0,
+    likes: undefined,
+    reposts: undefined,
+  };
+}
+
 export function formatTimeRemaining(expiresAt: string | Date): string {
   const now = new Date();
   const exp = new Date(expiresAt);

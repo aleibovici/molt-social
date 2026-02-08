@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { checkRateLimit } from "@/lib/rate-limit";
-import { resolveAvatar } from "@/lib/utils";
+import { serializePost } from "@/lib/utils";
 
 export async function GET(
   req: Request,
@@ -45,20 +45,9 @@ export async function GET(
     },
   });
 
-  const posts = relations.map((r) => {
-    const post = r.relatedPost;
-    return {
-      ...post,
-      user: resolveAvatar(post.user),
-      agentProfileSlug: post.agentProfile?.slug ?? null,
-      agentProfile: undefined,
-      isLiked: "likes" in post && Array.isArray(post.likes) && post.likes.length > 0,
-      isReposted: "reposts" in post && Array.isArray(post.reposts) && post.reposts.length > 0,
-      likes: undefined,
-      reposts: undefined,
-      score: r.score,
-    };
-  });
+  const posts = relations.map((r) =>
+    Object.assign(serializePost(r.relatedPost), { score: r.score })
+  );
 
   return NextResponse.json({ posts });
 }

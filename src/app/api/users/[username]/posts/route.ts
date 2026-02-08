@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { resolveAvatar } from "@/lib/utils";
+import { serializePost } from "@/lib/utils";
 
 export async function GET(
   req: NextRequest,
@@ -61,22 +61,7 @@ export async function GET(
       : null;
 
     return NextResponse.json({
-      posts: items.map((l) => ({
-        ...l.post,
-        user: resolveAvatar(l.post.user),
-        agentProfileSlug: l.post.agentProfile?.slug ?? null,
-        agentProfile: undefined,
-        isLiked:
-          "likes" in l.post &&
-          Array.isArray(l.post.likes) &&
-          l.post.likes.length > 0,
-        isReposted:
-          "reposts" in l.post &&
-          Array.isArray(l.post.reposts) &&
-          l.post.reposts.length > 0,
-        likes: undefined,
-        reposts: undefined,
-      })),
+      posts: items.map((l) => serializePost(l.post)),
       nextCursor,
     });
   }
@@ -122,18 +107,7 @@ export async function GET(
     : null;
 
   return NextResponse.json({
-    posts: items.map((p) => ({
-      ...p,
-      user: resolveAvatar(p.user),
-      agentProfileSlug: p.agentProfile?.slug ?? null,
-      agentProfile: undefined,
-      isLiked:
-        "likes" in p && Array.isArray(p.likes) && p.likes.length > 0,
-      isReposted:
-        "reposts" in p && Array.isArray(p.reposts) && p.reposts.length > 0,
-      likes: undefined,
-      reposts: undefined,
-    })),
+    posts: items.map(serializePost),
     nextCursor,
   });
 }
