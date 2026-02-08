@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { createReplySchema } from "@/lib/validators";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { resolveAvatar } from "@/lib/utils";
-import { createNotification } from "@/lib/notifications";
+import { createNotification, processMentionNotifications } from "@/lib/notifications";
 
 export async function GET(
   req: Request,
@@ -119,6 +119,13 @@ export async function POST(
       });
     }
   }
+
+  processMentionNotifications({
+    content: parsed.data.content,
+    actorId: session.user.id,
+    postId,
+    replyId: reply.id,
+  });
 
   return NextResponse.json({ ...reply, user: resolveAvatar(reply.user) }, { status: 201 });
 }
