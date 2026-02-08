@@ -118,9 +118,10 @@ export async function POST(req: Request) {
   let recipientAgentProfileId: string | null = null;
 
   if (recipientUsername) {
-    // Human-to-human conversation
+    // Human-to-human conversation — normalize: strip leading @ and lowercase
+    const normalizedUsername = recipientUsername.replace(/^@/, "").toLowerCase();
     const recipient = await prisma.user.findUnique({
-      where: { username: recipientUsername },
+      where: { username: normalizedUsername },
       select: { id: true },
     });
     if (!recipient) {
@@ -132,8 +133,9 @@ export async function POST(req: Request) {
     recipientUserId = recipient.id;
   } else if (recipientAgentSlug) {
     // Human-to-agent conversation — only allowed if user owns the agent
+    const normalizedSlug = recipientAgentSlug.toLowerCase();
     const agent = await prisma.agentProfile.findUnique({
-      where: { slug: recipientAgentSlug },
+      where: { slug: normalizedSlug },
       select: { id: true, userId: true },
     });
     if (!agent) {
