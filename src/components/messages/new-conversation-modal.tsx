@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Modal } from "@/components/ui/modal";
 import { Button } from "@/components/ui/button";
@@ -10,18 +10,27 @@ import { useStartConversation } from "@/hooks/use-start-conversation";
 interface NewConversationModalProps {
   open: boolean;
   onClose: () => void;
+  initialRecipient?: string;
 }
 
 export function NewConversationModal({
   open,
   onClose,
+  initialRecipient,
 }: NewConversationModalProps) {
   const router = useRouter();
-  const [recipient, setRecipient] = useState("");
+  const [recipient, setRecipient] = useState(initialRecipient ?? "");
   const [message, setMessage] = useState("");
   const [isAgent, setIsAgent] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const startConversation = useStartConversation();
+
+  useEffect(() => {
+    if (initialRecipient) {
+      setRecipient(initialRecipient);
+      setIsAgent(false);
+    }
+  }, [initialRecipient]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -51,45 +60,51 @@ export function NewConversationModal({
 
   return (
     <Modal open={open} onClose={onClose}>
-      <h2 className="mb-4 text-lg font-semibold">New Message</h2>
+      <h2 className="mb-4 text-lg font-semibold">
+        {initialRecipient ? `Message @${initialRecipient}` : "New Message"}
+      </h2>
       <form onSubmit={handleSubmit} className="space-y-4">
-        <div className="flex items-center gap-3">
-          <label className="flex items-center gap-2 text-sm text-muted">
-            <input
-              type="radio"
-              name="recipientType"
-              checked={!isAgent}
-              onChange={() => setIsAgent(false)}
-              className="accent-cyan"
-            />
-            User
-          </label>
-          <label className="flex items-center gap-2 text-sm text-muted">
-            <input
-              type="radio"
-              name="recipientType"
-              checked={isAgent}
-              onChange={() => setIsAgent(true)}
-              className="accent-cyan"
-            />
-            My Agent
-          </label>
-        </div>
+        {!initialRecipient && (
+          <>
+            <div className="flex items-center gap-3">
+              <label className="flex items-center gap-2 text-sm text-muted">
+                <input
+                  type="radio"
+                  name="recipientType"
+                  checked={!isAgent}
+                  onChange={() => setIsAgent(false)}
+                  className="accent-cyan"
+                />
+                User
+              </label>
+              <label className="flex items-center gap-2 text-sm text-muted">
+                <input
+                  type="radio"
+                  name="recipientType"
+                  checked={isAgent}
+                  onChange={() => setIsAgent(true)}
+                  className="accent-cyan"
+                />
+                My Agent
+              </label>
+            </div>
 
-        <div>
-          <input
-            type="text"
-            placeholder={isAgent ? "Agent slug" : "Username"}
-            value={recipient}
-            onChange={(e) => setRecipient(e.target.value)}
-            className="w-full rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground placeholder:text-muted focus:border-cyan focus:outline-none"
-          />
-          {isAgent && (
-            <p className="mt-1 text-xs text-muted">
-              You can only message agents you own.
-            </p>
-          )}
-        </div>
+            <div>
+              <input
+                type="text"
+                placeholder={isAgent ? "Agent slug" : "Username"}
+                value={recipient}
+                onChange={(e) => setRecipient(e.target.value)}
+                className="w-full rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground placeholder:text-muted focus:border-cyan focus:outline-none"
+              />
+              {isAgent && (
+                <p className="mt-1 text-xs text-muted">
+                  You can only message agents you own.
+                </p>
+              )}
+            </div>
+          </>
+        )}
 
         <textarea
           placeholder="Write your message..."

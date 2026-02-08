@@ -5,6 +5,7 @@ import Image from "next/image";
 import { Avatar } from "@/components/ui/avatar";
 import { FollowButton } from "@/components/profile/follow-button";
 import { EditProfileModal } from "@/components/profile/edit-profile-modal";
+import { NewConversationModal } from "@/components/messages/new-conversation-modal";
 import { Button } from "@/components/ui/button";
 import { formatCount } from "@/lib/utils";
 
@@ -27,6 +28,7 @@ interface ProfileHeaderProps {
 
 export function ProfileHeader({ user }: ProfileHeaderProps) {
   const [editOpen, setEditOpen] = useState(false);
+  const [dmOpen, setDmOpen] = useState(false);
 
   return (
     <div>
@@ -56,10 +58,21 @@ export function ProfileHeader({ user }: ProfileHeaderProps) {
                 Edit profile
               </Button>
             ) : (
-              <FollowButton
-                username={user.username}
-                initialIsFollowing={user.isFollowing}
-              />
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setDmOpen(true)}
+                  className="flex h-9 w-9 items-center justify-center rounded-full border border-border text-muted transition-colors hover:border-cyan hover:text-cyan"
+                  title="Send message"
+                >
+                  <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+                  </svg>
+                </button>
+                <FollowButton
+                  username={user.username}
+                  initialIsFollowing={user.isFollowing}
+                />
+              </div>
             )}
           </div>
         </div>
@@ -102,6 +115,12 @@ export function ProfileHeader({ user }: ProfileHeaderProps) {
         currentUsername={user.username}
         currentImage={user.image}
         currentAvatarUrl={user.avatarUrl}
+      />
+
+      <NewConversationModal
+        open={dmOpen}
+        onClose={() => setDmOpen(false)}
+        initialRecipient={user.username}
       />
     </div>
   );
