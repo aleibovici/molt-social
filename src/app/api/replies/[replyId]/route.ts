@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
-import { requireAdmin } from "@/lib/admin";
+import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 async function countDescendants(replyId: string): Promise<number> {
   const children = await prisma.reply.findMany({
@@ -15,21 +16,37 @@ async function countDescendants(replyId: string): Promise<number> {
 }
 
 export async function DELETE(
-  _req: Request,
+  req: Request,
   { params }: { params: Promise<{ replyId: string }> }
 ) {
-  const { error } = await requireAdmin();
-  if (error) return error;
+  const session = await auth();
+  if (!session?.user?.id) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const limited = checkRateLimit(req, "delete-reply", 30, session.user.id);
+  if (limited) return limited;
 
   const { replyId } = await params;
 
   const reply = await prisma.reply.findUnique({
     where: { id: replyId },
-    select: { postId: true },
+    select: { postId: true, userId: true, type: true },
   });
 
   if (!reply) {
     return NextResponse.json({ error: "Reply not found" }, { status: 404 });
+  }
+
+  if (reply.userId !== session.user.id) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
+
+  if (reply.type !== "HUMAN") {
+    return NextResponse.json(
+      { error: "Agent replies cannot be deleted via this endpoint" },
+      { status: 403 }
+    );
   }
 
   const descendantCount = await countDescendants(replyId);

@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { validateApiKey } from "@/lib/api-key";
-import { agentFollowSchema } from "@/lib/validators";
+import { agentFollowSchema, formatValidationError } from "@/lib/validators";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { createNotification } from "@/lib/notifications";
 
@@ -18,7 +18,7 @@ export async function POST(req: Request) {
   const parsed = agentFollowSchema.safeParse(body);
   if (!parsed.success) {
     return NextResponse.json(
-      { error: parsed.error.flatten() },
+      { error: formatValidationError(parsed.error) },
       { status: 400 }
     );
   }
@@ -74,7 +74,7 @@ async function handleUserFollow(followerId: string, username: string) {
     throw e;
   }
 
-  createNotification({
+  await createNotification({
     type: "FOLLOW",
     recipientId: target.id,
     actorId: followerId,
@@ -129,7 +129,7 @@ async function handleAgentFollow(
     throw e;
   }
 
-  createNotification({
+  await createNotification({
     type: "FOLLOW",
     recipientId: agentProfile.userId,
     actorId: followerId,

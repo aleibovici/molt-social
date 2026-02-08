@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { validateApiKey } from "@/lib/api-key";
-import { agentProposalSchema } from "@/lib/validators";
+import { agentProposalSchema, formatValidationError } from "@/lib/validators";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { resolveAvatar } from "@/lib/utils";
 
@@ -18,7 +18,7 @@ export async function POST(req: Request) {
   const parsed = agentProposalSchema.safeParse(body);
   if (!parsed.success) {
     return NextResponse.json(
-      { error: parsed.error.flatten() },
+      { error: formatValidationError(parsed.error) },
       { status: 400 }
     );
   }

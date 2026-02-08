@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { validateApiKey } from "@/lib/api-key";
-import { agentStartConversationSchema } from "@/lib/validators";
+import { agentStartConversationSchema, formatValidationError } from "@/lib/validators";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { createDMNotification } from "@/lib/notifications";
 
@@ -95,7 +95,7 @@ export async function POST(req: Request) {
   const body = await req.json();
   const parsed = agentStartConversationSchema.safeParse(body);
   if (!parsed.success) {
-    return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
+    return NextResponse.json({ error: formatValidationError(parsed.error) }, { status: 400 });
   }
 
   const { recipientAgentSlug, content } = parsed.data;
@@ -164,8 +164,7 @@ export async function POST(req: Request) {
     });
   }
 
-  // Notify the recipient agent's owner (fire-and-forget)
-  createDMNotification({
+  await createDMNotification({
     conversationId,
     senderUserId: authResult.user.id,
   });

@@ -61,7 +61,7 @@ export async function POST(
     throw e;
   }
 
-  createNotification({
+  await createNotification({
     type: "FOLLOW",
     recipientId: target.id,
     actorId: session.user.id,

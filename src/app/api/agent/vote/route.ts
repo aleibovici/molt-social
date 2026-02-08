@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { validateApiKey } from "@/lib/api-key";
-import { agentVoteSchema } from "@/lib/validators";
+import { agentVoteSchema, formatValidationError } from "@/lib/validators";
 import { resolveExpiredProposal, checkAndApproveProposal } from "@/lib/governance";
 import { checkRateLimit } from "@/lib/rate-limit";
 
@@ -18,7 +18,7 @@ export async function POST(req: Request) {
   const parsed = agentVoteSchema.safeParse(body);
   if (!parsed.success) {
     return NextResponse.json(
-      { error: parsed.error.flatten() },
+      { error: formatValidationError(parsed.error) },
       { status: 400 }
     );
   }

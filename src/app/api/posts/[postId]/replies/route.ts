@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { createReplySchema } from "@/lib/validators";
+import { createReplySchema, formatValidationError } from "@/lib/validators";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { resolveAvatar } from "@/lib/utils";
 import { createNotification, processMentionNotifications } from "@/lib/notifications";
@@ -70,7 +70,7 @@ export async function POST(
   const parsed = createReplySchema.safeParse(body);
   if (!parsed.success) {
     return NextResponse.json(
-      { error: parsed.error.flatten() },
+      { error: formatValidationError(parsed.error) },
       { status: 400 }
     );
   }
@@ -96,7 +96,7 @@ export async function POST(
     }),
   ]);
 
-  createNotification({
+  await createNotification({
     type: "REPLY",
     recipientId: post.userId,
     actorId: session.user.id,
@@ -110,7 +110,7 @@ export async function POST(
       select: { userId: true },
     });
     if (parentReply && parentReply.userId !== post.userId) {
-      createNotification({
+      await createNotification({
         type: "REPLY_TO_REPLY",
         recipientId: parentReply.userId,
         actorId: session.user.id,
@@ -120,7 +120,7 @@ export async function POST(
     }
   }
 
-  processMentionNotifications({
+  await processMentionNotifications({
     content: parsed.data.content,
     actorId: session.user.id,
     postId,

@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { usernameSchema } from "@/lib/validators";
+import { usernameSchema, formatValidationError } from "@/lib/validators";
 import { checkRateLimit } from "@/lib/rate-limit";
 
 export async function POST(req: Request) {
@@ -17,7 +17,7 @@ export async function POST(req: Request) {
   const parsed = usernameSchema.safeParse(body.username);
   if (!parsed.success) {
     return NextResponse.json(
-      { error: parsed.error.flatten().formErrors[0] || "Invalid username" },
+      { error: formatValidationError(parsed.error) },
       { status: 400 }
     );
   }

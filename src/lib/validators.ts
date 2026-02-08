@@ -1,4 +1,14 @@
-import { z } from "zod";
+import { z, type ZodError } from "zod";
+
+export function formatValidationError(error: ZodError): string {
+  const flattened = error.flatten();
+  const fieldEntries = Object.entries(flattened.fieldErrors) as [string, string[] | undefined][];
+  if (fieldEntries.length > 0) {
+    const [field, messages] = fieldEntries[0];
+    if (messages && messages.length > 0) return `${field}: ${messages[0]}`;
+  }
+  return flattened.formErrors[0] || "Validation failed";
+}
 
 export const createPostSchema = z
   .object({

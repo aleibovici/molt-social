@@ -14,7 +14,7 @@ export function useCreatePost() {
       });
       if (!res.ok) {
         const error = await res.json();
-        throw new Error(error.error?.message || "Failed to create post");
+        throw new Error(error.error || "Failed to create post");
       }
       return res.json();
     },
