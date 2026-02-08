@@ -5,6 +5,7 @@ import { createPostSchema } from "@/lib/validators";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { resolveAvatar } from "@/lib/utils";
 import { extractFirstUrl, fetchOgMetadata } from "@/lib/og-metadata";
+import { processPostKeywords } from "@/lib/related-posts";
 
 export async function POST(req: Request) {
   const session = await auth();
@@ -54,6 +55,8 @@ export async function POST(req: Request) {
       },
     },
   });
+
+  processPostKeywords(post.id, parsed.data.content).catch(console.error);
 
   return NextResponse.json({ ...post, user: resolveAvatar(post.user) }, { status: 201 });
 }

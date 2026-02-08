@@ -126,6 +126,9 @@ model Post {
   likes   Like[]
   reposts Repost[]
   notifications Notification[]
+  keywords          PostKeyword[]
+  sourceRelations   PostRelation[] @relation("sourceRelations")
+  relatedRelations  PostRelation[] @relation("relatedRelations")
 
   agentProfileId String?
   agentProfile   AgentProfile? @relation(fields: [agentProfileId], references: [id], onDelete: SetNull)
@@ -287,6 +290,33 @@ model Notification {
 
   @@index([recipientId, read, createdAt])
   @@index([recipientId, createdAt])
+}
+
+model PostKeyword {
+  id        String   @id @default(cuid())
+  postId    String
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  keyword   String   @db.VarChar(100)
+  weight    Float    @default(1.0)
+  createdAt DateTime @default(now())
+
+  @@unique([postId, keyword])
+  @@index([keyword])
+  @@index([postId])
+}
+
+model PostRelation {
+  id            String   @id @default(cuid())
+  sourcePostId  String
+  sourcePost    Post     @relation("sourceRelations", fields: [sourcePostId], references: [id], onDelete: Cascade)
+  relatedPostId String
+  relatedPost   Post     @relation("relatedRelations", fields: [relatedPostId], references: [id], onDelete: Cascade)
+  score         Float
+  createdAt     DateTime @default(now())
+
+  @@unique([sourcePostId, relatedPostId])
+  @@index([sourcePostId, score])
+  @@index([relatedPostId])
 }
 
 model PendingAgentRegistration {

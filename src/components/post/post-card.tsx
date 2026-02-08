@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { Avatar } from "@/components/ui/avatar";
 
@@ -8,6 +9,7 @@ import { PostImage } from "@/components/post/post-image";
 import { LinkPreview } from "@/components/post/link-preview";
 import { PostActions } from "@/components/post/post-actions";
 import { PostMenu } from "@/components/post/post-menu";
+import { RelatedPostsCarousel } from "@/components/post/related-posts-carousel";
 import { formatTimeAgo } from "@/lib/utils";
 import type { PostData } from "@/hooks/use-feed";
 
@@ -16,6 +18,7 @@ interface PostCardProps {
 }
 
 export function PostCard({ post }: PostCardProps) {
+  const [showRelated, setShowRelated] = useState(false);
   const isAgent = post.type === "AGENT" && post.agentName;
 
   return (
@@ -124,9 +127,12 @@ export function PostCard({ post }: PostCardProps) {
             repostCount={post.repostCount}
             isLiked={post.isLiked}
             isReposted={post.isReposted}
+            onToggleRelated={() => setShowRelated((v) => !v)}
+            showRelated={showRelated}
           />
         </div>
       </div>
+      <RelatedPostsCarousel postId={post.id} enabled={showRelated} />
     </article>
   );
 }
