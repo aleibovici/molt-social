@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Modal } from "@/components/ui/modal";
 import { Button } from "@/components/ui/button";
 import {
   useLlmSettings,
@@ -14,12 +13,7 @@ import {
   getDefaultModel,
 } from "@/lib/llm-providers";
 
-interface LlmSettingsModalProps {
-  open: boolean;
-  onClose: () => void;
-}
-
-export function LlmSettingsModal({ open, onClose }: LlmSettingsModalProps) {
+export function LlmSettingsForm() {
   const { data: settings } = useLlmSettings();
   const saveMutation = useSaveLlmSettings();
   const deleteMutation = useDeleteLlmSettings();
@@ -29,17 +23,15 @@ export function LlmSettingsModal({ open, onClose }: LlmSettingsModalProps) {
   const [apiKey, setApiKey] = useState("");
   const [error, setError] = useState("");
 
-  // Populate from saved settings when modal opens
   useEffect(() => {
-    if (open && settings) {
+    if (settings) {
       setProvider(settings.provider ?? "");
       setModel(settings.model ?? "");
       setApiKey("");
       setError("");
     }
-  }, [open, settings]);
+  }, [settings]);
 
-  // When provider changes, reset model to first available
   const handleProviderChange = (newProvider: string) => {
     setProvider(newProvider);
     setModel(getDefaultModel(newProvider));
@@ -56,7 +48,6 @@ export function LlmSettingsModal({ open, onClose }: LlmSettingsModalProps) {
     try {
       await saveMutation.mutateAsync({ provider, model, apiKey });
       setApiKey("");
-      onClose();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to save");
     }
@@ -68,20 +59,13 @@ export function LlmSettingsModal({ open, onClose }: LlmSettingsModalProps) {
       setProvider("");
       setModel("");
       setApiKey("");
-      onClose();
     } catch {
       setError("Failed to remove settings");
     }
   };
 
   return (
-    <Modal open={open} onClose={onClose}>
-      <h2 className="mb-1 text-lg font-semibold">AI Settings</h2>
-      <p className="mb-4 text-sm text-muted">
-        Configure your LLM provider to summarize and discuss posts. Your API key
-        is encrypted and stored securely.
-      </p>
-
+    <>
       {error && (
         <p className="mb-3 rounded-lg bg-heart-red/10 px-3 py-2 text-sm text-heart-red">
           {error}
@@ -89,7 +73,6 @@ export function LlmSettingsModal({ open, onClose }: LlmSettingsModalProps) {
       )}
 
       <div className="space-y-4">
-        {/* Provider select */}
         <div>
           <label className="mb-1 block text-sm font-medium">Provider</label>
           <select
@@ -106,7 +89,6 @@ export function LlmSettingsModal({ open, onClose }: LlmSettingsModalProps) {
           </select>
         </div>
 
-        {/* Model select */}
         {selectedProvider && (
           <div>
             <label className="mb-1 block text-sm font-medium">Model</label>
@@ -124,7 +106,6 @@ export function LlmSettingsModal({ open, onClose }: LlmSettingsModalProps) {
           </div>
         )}
 
-        {/* API Key */}
         {selectedProvider && (
           <div>
             <label className="mb-1 block text-sm font-medium">API Key</label>
@@ -159,9 +140,6 @@ export function LlmSettingsModal({ open, onClose }: LlmSettingsModalProps) {
           )}
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" size="sm" onClick={onClose}>
-            Cancel
-          </Button>
           <Button
             size="sm"
             onClick={handleSave}
@@ -176,6 +154,6 @@ export function LlmSettingsModal({ open, onClose }: LlmSettingsModalProps) {
           </Button>
         </div>
       </div>
-    </Modal>
+    </>
   );
 }
