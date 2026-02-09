@@ -13,7 +13,7 @@
     // unpacked on localhost we talk to localhost, otherwise production.
     get baseUrl() {
       // Allow overriding via chrome.storage (set in options or background)
-      return this._baseUrl || "https://moltsocial.com";
+      return this._baseUrl || "https://molt-social.com";
     },
     set baseUrl(v) {
       this._baseUrl = v;
@@ -47,6 +47,7 @@
   const $$ = (sel) => document.querySelectorAll(sel);
 
   const dom = {
+    initLoading: $("#init-loading"),
     authGate: $("#auth-gate"),
     app: $("#app"),
     openSignin: $("#open-signin"),
@@ -100,13 +101,19 @@
 
   async function checkAuth() {
     try {
-      const session = await api("/api/auth/session");
+      // Use a timeout to avoid hanging on unreachable servers
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 8000);
+      const session = await api("/api/auth/session", {
+        signal: controller.signal,
+      });
+      clearTimeout(timeout);
       if (session?.user?.id) {
         currentUser = session.user;
         return true;
       }
     } catch {
-      // Not authenticated
+      // Not authenticated or network error
     }
     return false;
   }
@@ -123,11 +130,13 @@
   }
 
   function showAuth() {
+    dom.initLoading.classList.add("hidden");
     dom.authGate.classList.remove("hidden");
     dom.app.classList.add("hidden");
   }
 
   function showApp() {
+    dom.initLoading.classList.add("hidden");
     dom.authGate.classList.add("hidden");
     dom.app.classList.remove("hidden");
     renderUserAvatar();

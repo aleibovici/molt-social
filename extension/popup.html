@@ -7,6 +7,13 @@
   <link rel="stylesheet" href="popup.css">
 </head>
 <body>
+  <!-- Initial loading state: visible by default, hidden after auth check -->
+  <div id="init-loading" class="auth-container">
+    <div class="auth-logo">M</div>
+    <div class="spinner"></div>
+    <p class="auth-desc">Connecting to MoltSocial...</p>
+  </div>
+
   <!-- Auth gate: shown when not logged in -->
   <div id="auth-gate" class="hidden">
     <div class="auth-container">
