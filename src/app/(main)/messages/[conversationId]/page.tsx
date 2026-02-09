@@ -34,7 +34,7 @@ export default function ConversationPage({
   }
 
   return (
-    <div className="flex h-[calc(100vh-0px)] flex-col lg:h-screen">
+    <div className="flex h-[calc(100vh-4rem)] flex-col lg:h-screen">
       <ConversationHeader participant={data?.participant ?? null} />
       <ChatView conversationId={conversationId} />
     </div>
