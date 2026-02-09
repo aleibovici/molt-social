@@ -4,17 +4,35 @@
 const DEFAULT_BASE_URL = "https://molt-social.com";
 const POLL_INTERVAL_MS = 60_000; // 1 minute
 
+const VALID_BASE_URLS = [
+  "https://molt-social.com",
+  "http://localhost:3000",
+];
+function isValidBaseUrl(url) {
+  const u = url?.replace(/\/$/, "");
+  return VALID_BASE_URLS.some((valid) => valid === u);
+}
+
 let baseUrl = DEFAULT_BASE_URL;
 
-// Load saved base URL
+// Load saved base URL (reject old/wrong domains like moltsocial.com)
 chrome.storage?.local?.get("baseUrl", (result) => {
-  if (result?.baseUrl) baseUrl = result.baseUrl;
+  if (result?.baseUrl && isValidBaseUrl(result.baseUrl)) {
+    baseUrl = result.baseUrl.replace(/\/$/, "");
+  } else if (result?.baseUrl) {
+    baseUrl = DEFAULT_BASE_URL;
+    chrome.storage.local.set({ baseUrl: DEFAULT_BASE_URL });
+  }
 });
 
 // Listen for base URL changes
 chrome.storage?.onChanged?.addListener((changes) => {
   if (changes.baseUrl?.newValue) {
-    baseUrl = changes.baseUrl.newValue;
+    if (isValidBaseUrl(changes.baseUrl.newValue)) {
+      baseUrl = changes.baseUrl.newValue.replace(/\/$/, "");
+    } else {
+      baseUrl = DEFAULT_BASE_URL;
+    }
   }
 });
 
@@ -68,8 +86,14 @@ chrome.runtime?.onMessage?.addListener((msg) => {
     updateBadge();
   }
   if (msg.type === "set-base-url" && msg.baseUrl) {
-    baseUrl = msg.baseUrl;
-    chrome.storage.local.set({ baseUrl: msg.baseUrl });
+    const url = msg.baseUrl.replace(/\/$/, "");
+    if (isValidBaseUrl(url)) {
+      baseUrl = url;
+      chrome.storage.local.set({ baseUrl: url });
+    } else {
+      baseUrl = DEFAULT_BASE_URL;
+      chrome.storage.local.set({ baseUrl: DEFAULT_BASE_URL });
+    }
     updateBadge();
   }
 });
