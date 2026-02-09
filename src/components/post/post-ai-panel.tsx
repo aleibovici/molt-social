@@ -2,10 +2,88 @@
 
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { useLlmChat } from "@/hooks/use-llm-chat";
 import { useLlmSettings } from "@/hooks/use-llm-settings";
 import { getProvider } from "@/lib/llm-providers";
 import { cn } from "@/lib/utils";
+
+const markdownComponents = {
+  p: ({ children }: { children?: React.ReactNode }) => (
+    <p className="mb-2 last:mb-0 text-sm leading-relaxed text-foreground/90">
+      {children}
+    </p>
+  ),
+  ul: ({ children }: { children?: React.ReactNode }) => (
+    <ul className="mb-2 list-disc pl-4 text-sm leading-relaxed text-foreground/90">
+      {children}
+    </ul>
+  ),
+  ol: ({ children }: { children?: React.ReactNode }) => (
+    <ol className="mb-2 list-decimal pl-4 text-sm leading-relaxed text-foreground/90">
+      {children}
+    </ol>
+  ),
+  li: ({ children }: { children?: React.ReactNode }) => <li className="mb-0.5">{children}</li>,
+  strong: ({ children }: { children?: React.ReactNode }) => (
+    <strong className="font-semibold text-foreground/90">{children}</strong>
+  ),
+  em: ({ children }: { children?: React.ReactNode }) => (
+    <em className="italic text-foreground/90">{children}</em>
+  ),
+  code: ({ className, children, ...props }: { className?: string; children?: React.ReactNode }) => {
+    const isBlock = className?.includes("language-");
+    return isBlock ? (
+      <code
+        className={cn(
+          "block overflow-x-auto rounded bg-foreground/10 px-2 py-1.5 text-xs",
+          className
+        )}
+        {...props}
+      >
+        {children}
+      </code>
+    ) : (
+      <code
+        className="rounded bg-foreground/10 px-1 py-0.5 text-xs"
+        {...props}
+      >
+        {children}
+      </code>
+    );
+  },
+  pre: ({ children }: { children?: React.ReactNode }) => (
+    <pre className="mb-2 overflow-x-auto rounded bg-foreground/10 p-2 text-xs">
+      {children}
+    </pre>
+  ),
+  a: ({ href, children }: { href?: string; children?: React.ReactNode }) => (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="text-cyan underline hover:text-cyan/90"
+    >
+      {children}
+    </a>
+  ),
+  h1: ({ children }: { children?: React.ReactNode }) => (
+    <h1 className="mb-1 mt-2 text-base font-semibold text-foreground first:mt-0">
+      {children}
+    </h1>
+  ),
+  h2: ({ children }: { children?: React.ReactNode }) => (
+    <h2 className="mb-1 mt-2 text-sm font-semibold text-foreground first:mt-0">
+      {children}
+    </h2>
+  ),
+  h3: ({ children }: { children?: React.ReactNode }) => (
+    <h3 className="mb-1 mt-1.5 text-sm font-semibold text-foreground first:mt-0">
+      {children}
+    </h3>
+  ),
+};
 
 interface PostAiPanelProps {
   postContent: string;
@@ -206,16 +284,22 @@ export function PostAiPanel({ postContent, onClose, embedded }: PostAiPanelProps
                 {msg.content}
               </div>
             ) : (
-              <div className="text-sm leading-relaxed text-foreground/90 [&_strong]:font-semibold [&_em]:italic">
-                {msg.content || (
+              <div className="text-sm leading-relaxed text-foreground/90">
+                {msg.content ? (
+                  <>
+                    <ReactMarkdown remarkPlugins={[remarkGfm]} components={markdownComponents}>
+                      {msg.content}
+                    </ReactMarkdown>
+                    {streaming && i === messages.length - 1 && (
+                      <span className="ml-0.5 inline-block h-3.5 w-0.5 animate-pulse bg-cyan" />
+                    )}
+                  </>
+                ) : (
                   <span className="inline-flex items-center gap-1.5 text-muted">
                     <span className="inline-block h-1.5 w-1.5 animate-pulse rounded-full bg-cyan" />
                     <span className="inline-block h-1.5 w-1.5 animate-pulse rounded-full bg-cyan [animation-delay:0.2s]" />
                     <span className="inline-block h-1.5 w-1.5 animate-pulse rounded-full bg-cyan [animation-delay:0.4s]" />
                   </span>
-                )}
-                {streaming && i === messages.length - 1 && msg.content && (
-                  <span className="ml-0.5 inline-block h-3.5 w-0.5 animate-pulse bg-cyan" />
                 )}
               </div>
             )}
