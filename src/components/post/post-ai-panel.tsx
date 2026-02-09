@@ -10,9 +10,11 @@ import { cn } from "@/lib/utils";
 interface PostAiPanelProps {
   postContent: string;
   onClose: () => void;
+  /** When true, omit top border (e.g. when inside a right-panel tile). */
+  embedded?: boolean;
 }
 
-export function PostAiPanel({ postContent, onClose }: PostAiPanelProps) {
+export function PostAiPanel({ postContent, onClose, embedded }: PostAiPanelProps) {
   const { data: settings, isLoading: settingsLoading } = useLlmSettings();
   const { messages, streaming, error, sendMessage, reset } =
     useLlmChat(postContent);
@@ -49,7 +51,7 @@ export function PostAiPanel({ postContent, onClose }: PostAiPanelProps) {
   // Not configured state
   if (!settingsLoading && !settings?.configured) {
     return (
-      <div className="border-t border-border bg-card/50 px-4 py-4">
+      <div className={cn(!embedded && "border-t border-border", "bg-card/50 px-4 py-4")}>
         <div className="flex items-start justify-between">
           <div>
             <p className="text-sm font-medium">Set up AI</p>
@@ -111,7 +113,7 @@ export function PostAiPanel({ postContent, onClose }: PostAiPanelProps) {
   }
 
   return (
-    <div className="border-t border-border bg-card/50">
+    <div className={cn(!embedded && "border-t border-border", "bg-card/50")}>
       {/* Header */}
       <div className="flex items-center justify-between border-b border-border px-4 py-2">
         <div className="flex items-center gap-2">
