@@ -1,9 +1,8 @@
 "use client";
 
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useQuery, useInfiniteQuery } from "@tanstack/react-query";
 import { useState } from "react";
-import Link from "next/link";
 import { ProfileHeader } from "@/components/profile/profile-header";
 import { ProfileTabs } from "@/components/profile/profile-tabs";
 import { PostCard } from "@/components/post/post-card";
@@ -30,6 +29,7 @@ interface ProfileData {
 
 export default function ProfilePage() {
   const { username } = useParams<{ username: string }>();
+  const router = useRouter();
   const [tab, setTab] = useState("posts");
 
   const { data: profile, isLoading: profileLoading } = useQuery<ProfileData>({
@@ -76,7 +76,11 @@ export default function ProfilePage() {
   return (
     <div>
       <div className="sticky top-0 z-10 flex items-center gap-4 border-b border-border bg-background/80 px-4 py-3 backdrop-blur-sm">
-        <Link href="/" className="rounded-full p-1 hover:bg-card-hover">
+        <button
+          onClick={() => router.back()}
+          className="rounded-full p-1.5 text-muted transition-colors hover:bg-card-hover hover:text-foreground active:bg-card-hover"
+          aria-label="Go back"
+        >
           <svg
             className="h-5 w-5"
             fill="none"
@@ -90,7 +94,7 @@ export default function ProfilePage() {
               d="M10 19l-7-7m0 0l7-7m-7 7h18"
             />
           </svg>
-        </Link>
+        </button>
         <div>
           <h1 className="text-lg font-semibold">{profile.name}</h1>
           <p className="text-xs text-muted">{profile.postCount} posts</p>
