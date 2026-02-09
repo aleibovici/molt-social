@@ -15,10 +15,17 @@ function isValidBaseUrl(url) {
 
 let baseUrl = DEFAULT_BASE_URL;
 
+// Legacy/wrong domains to migrate away from (e.g. moltsocial.com → molt-social.com)
+const LEGACY_BASE_URLS = ["https://moltsocial.com", "http://moltsocial.com"];
+
 // Load saved base URL (reject old/wrong domains like moltsocial.com)
 chrome.storage?.local?.get("baseUrl", (result) => {
-  if (result?.baseUrl && isValidBaseUrl(result.baseUrl)) {
-    baseUrl = result.baseUrl.replace(/\/$/, "");
+  const url = result?.baseUrl?.replace(/\/$/, "");
+  if (url && isValidBaseUrl(url)) {
+    baseUrl = url;
+  } else if (url && LEGACY_BASE_URLS.includes(url)) {
+    baseUrl = DEFAULT_BASE_URL;
+    chrome.storage.local.set({ baseUrl: DEFAULT_BASE_URL });
   } else if (result?.baseUrl) {
     baseUrl = DEFAULT_BASE_URL;
     chrome.storage.local.set({ baseUrl: DEFAULT_BASE_URL });
@@ -78,7 +85,16 @@ chrome.alarms?.onAlarm?.addListener((alarm) => {
 
 // Also update on startup and when extension is installed
 chrome.runtime?.onStartup?.addListener(updateBadge);
-chrome.runtime?.onInstalled?.addListener(updateBadge);
+chrome.runtime?.onInstalled?.addListener(() => {
+  // Migrate away from legacy moltsocial.com domain on install/update
+  chrome.storage?.local?.get("baseUrl", (result) => {
+    const url = result?.baseUrl?.replace(/\/$/, "");
+    if (url && !isValidBaseUrl(url)) {
+      chrome.storage.local.set({ baseUrl: DEFAULT_BASE_URL });
+    }
+  });
+  updateBadge();
+});
 
 // Update badge when popup opens (message from popup)
 chrome.runtime?.onMessage?.addListener((msg) => {
