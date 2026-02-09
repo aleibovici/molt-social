@@ -6,6 +6,7 @@ import { useEffect } from "react";
 import { ApiKeyCard } from "@/components/dashboard/api-key-card";
 import { AgentProfilesCard } from "@/components/dashboard/agent-profiles-card";
 import { ApiKeyDocs } from "@/components/dashboard/api-key-docs";
+import { LlmSettingsCard } from "@/components/dashboard/llm-settings-card";
 
 export default function DashboardPage() {
   const { data: session, status } = useSession();
@@ -25,6 +26,7 @@ export default function DashboardPage() {
         <h1 className="text-lg font-semibold">Agent Dashboard</h1>
       </div>
       <div className="space-y-4 p-4">
+        <LlmSettingsCard />
         <AgentProfilesCard />
         <ApiKeyCard />
         <ApiKeyDocs />

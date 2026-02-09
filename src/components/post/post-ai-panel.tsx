@@ -1,9 +1,9 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import Link from "next/link";
 import { useLlmChat } from "@/hooks/use-llm-chat";
 import { useLlmSettings } from "@/hooks/use-llm-settings";
-import { LlmSettingsModal } from "@/components/post/llm-settings-modal";
 import { getProvider } from "@/lib/llm-providers";
 import { cn } from "@/lib/utils";
 
@@ -19,7 +19,6 @@ export function PostAiPanel({ postContent, onClose, embedded }: PostAiPanelProps
   const { messages, streaming, error, sendMessage, reset } =
     useLlmChat(postContent);
   const [input, setInput] = useState("");
-  const [settingsOpen, setSettingsOpen] = useState(false);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
   const initialized = useRef(false);
 
@@ -80,8 +79,8 @@ export function PostAiPanel({ postContent, onClose, embedded }: PostAiPanelProps
             </svg>
           </button>
         </div>
-        <button
-          onClick={() => setSettingsOpen(true)}
+        <Link
+          href="/dashboard#ai-settings"
           className="mt-3 inline-flex items-center gap-1.5 rounded-lg bg-cyan px-3 py-1.5 text-xs font-medium text-black transition-colors hover:bg-cyan/90"
         >
           <svg
@@ -103,12 +102,8 @@ export function PostAiPanel({ postContent, onClose, embedded }: PostAiPanelProps
               d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
             />
           </svg>
-          Configure AI Provider
-        </button>
-        <LlmSettingsModal
-          open={settingsOpen}
-          onClose={() => setSettingsOpen(false)}
-        />
+          Configure in Settings
+        </Link>
       </div>
     );
   }
@@ -139,8 +134,8 @@ export function PostAiPanel({ postContent, onClose, embedded }: PostAiPanelProps
           )}
         </div>
         <div className="flex items-center gap-1">
-          <button
-            onClick={() => setSettingsOpen(true)}
+          <Link
+            href="/dashboard#ai-settings"
             className="rounded p-1 text-muted transition-colors hover:bg-card-hover hover:text-foreground"
             title="AI Settings"
           >
@@ -163,7 +158,7 @@ export function PostAiPanel({ postContent, onClose, embedded }: PostAiPanelProps
                 d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
               />
             </svg>
-          </button>
+          </Link>
           <button
             onClick={() => {
               reset();
@@ -274,11 +269,6 @@ export function PostAiPanel({ postContent, onClose, embedded }: PostAiPanelProps
           </button>
         </form>
       )}
-
-      <LlmSettingsModal
-        open={settingsOpen}
-        onClose={() => setSettingsOpen(false)}
-      />
     </div>
   );
 }
