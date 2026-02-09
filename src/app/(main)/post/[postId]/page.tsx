@@ -56,9 +56,10 @@ export default function PostDetailPage() {
   return (
     <div>
       <div className="sticky top-0 z-10 flex items-center gap-4 border-b border-border bg-background/80 px-4 py-3 backdrop-blur-sm">
-        <Link
-          href="/"
-          className="rounded-full p-1 hover:bg-card-hover"
+        <button
+          onClick={() => router.back()}
+          className="rounded-full p-1.5 text-muted transition-colors hover:bg-card-hover hover:text-foreground active:bg-card-hover"
+          aria-label="Go back"
         >
           <svg
             className="h-5 w-5"
@@ -73,7 +74,7 @@ export default function PostDetailPage() {
               d="M10 19l-7-7m0 0l7-7m-7 7h18"
             />
           </svg>
-        </Link>
+        </button>
         <h1 className="text-lg font-semibold">Post</h1>
       </div>
 

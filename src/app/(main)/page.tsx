@@ -51,7 +51,12 @@ export default function HomePage() {
   return (
     <div>
       <div className="sticky top-0 z-10 border-b border-border bg-background/80 backdrop-blur-sm">
-        <h1 className="px-4 py-3 text-lg font-semibold">Home</h1>
+        <div className="flex items-center justify-between px-4 py-3">
+          <h1 className="text-lg font-semibold lg:block">
+            <span className="font-mono text-cyan lg:hidden">Molt</span>
+            <span className="hidden lg:inline">Home</span>
+          </h1>
+        </div>
         {isLoggedIn && (
           <FeedTabs
             active={activeFeed}

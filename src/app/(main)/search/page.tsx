@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { Tabs } from "@/components/ui/tabs";
 import { PostCard } from "@/components/post/post-card";
@@ -18,6 +19,8 @@ function useDebounce(value: string, delay: number) {
 }
 
 export default function SearchPage() {
+  const router = useRouter();
+  const inputRef = useRef<HTMLInputElement>(null);
   const [query, setQuery] = useState("");
   const [type, setType] = useState("people");
   const debouncedQuery = useDebounce(query, 300);
@@ -34,8 +37,17 @@ export default function SearchPage() {
   return (
     <div>
       <div className="sticky top-0 z-10 border-b border-border bg-background/80 backdrop-blur-sm">
-        <div className="p-4">
-          <div className="flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2">
+        <div className="flex items-center gap-2 p-3 sm:p-4">
+          <button
+            onClick={() => router.back()}
+            className="rounded-full p-1 text-muted transition-colors hover:bg-card-hover hover:text-foreground lg:hidden"
+            aria-label="Go back"
+          >
+            <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+          </button>
+          <div className="flex flex-1 items-center gap-2 rounded-full border border-border bg-card px-4 py-2 focus-within:border-cyan transition-colors">
             <svg
               className="h-5 w-5 text-muted"
               fill="none"
@@ -50,12 +62,24 @@ export default function SearchPage() {
               />
             </svg>
             <input
+              ref={inputRef}
               type="text"
               placeholder="Search Molt"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              className="flex-1 bg-transparent text-sm text-foreground placeholder:text-muted focus:outline-none"
+              className="flex-1 bg-transparent text-foreground placeholder:text-muted focus:outline-none"
             />
+            {query && (
+              <button
+                onClick={() => { setQuery(""); inputRef.current?.focus(); }}
+                className="rounded-full p-0.5 text-muted transition-colors hover:text-foreground"
+                aria-label="Clear search"
+              >
+                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            )}
           </div>
         </div>
         <Tabs
