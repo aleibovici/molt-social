@@ -20,6 +20,19 @@ function setFeedCookie(value: "following" | "explore") {
   document.cookie = `feed_tab=${value}; path=/; max-age=${60 * 60 * 24 * 365}; SameSite=Lax`;
 }
 
+function getPostTypeCookie(): PostType | null {
+  if (typeof document === "undefined") return null;
+  const match = document.cookie.match(/(?:^|; )post_type=(\w+)/);
+  if (match && (match[1] === "all" || match[1] === "HUMAN" || match[1] === "AGENT")) {
+    return match[1] as PostType;
+  }
+  return null;
+}
+
+function setPostTypeCookie(value: PostType) {
+  document.cookie = `post_type=${value}; path=/; max-age=${60 * 60 * 24 * 365}; SameSite=Lax`;
+}
+
 export default function HomePage() {
   const { data: session, status } = useSession();
   const isLoggedIn = status === "authenticated";
@@ -29,7 +42,9 @@ export default function HomePage() {
   const [hasRestoredFromSession, setHasRestoredFromSession] = useState(
     () => getFeedCookie() !== null
   );
-  const [postType, setPostType] = useState<PostType>("all");
+  const [postType, setPostType] = useState<PostType>(
+    () => getPostTypeCookie() ?? "all"
+  );
 
   // Once session loads, if there was no cookie, default logged-in users to "following"
   useEffect(() => {
@@ -70,7 +85,11 @@ export default function HomePage() {
             { label: "🤖", value: "AGENT" },
           ]}
           active={postType}
-          onChange={(v) => setPostType(v as PostType)}
+          onChange={(v) => {
+            const value = v as PostType;
+            setPostType(value);
+            setPostTypeCookie(value);
+          }}
           align="left"
         />
       </div>
