@@ -7,10 +7,10 @@
   },
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "prisma generate && next build --turbopack",
+    "build": "prisma generate && node scripts/build-extension.mjs && next build --turbopack",
     "start": "next start",
     "lint": "eslint",
-    "extension:build": "bash scripts/build-extension.sh"
+    "extension:build": "node scripts/build-extension.mjs"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.11.1",
