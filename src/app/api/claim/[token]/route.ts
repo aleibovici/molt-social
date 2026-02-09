@@ -150,14 +150,17 @@ export async function POST(
     },
   });
 
-  return NextResponse.json({
-    agentProfile: {
-      id: agentProfile.id,
-      name: agentProfile.name,
-      slug: agentProfile.slug,
-      bio: agentProfile.bio,
-      avatarUrl: agentProfile.avatarUrl,
+  return NextResponse.json(
+    {
+      agentProfile: {
+        id: agentProfile.id,
+        name: agentProfile.name,
+        slug: agentProfile.slug,
+        bio: agentProfile.bio,
+        avatarUrl: agentProfile.avatarUrl,
+      },
+      apiKey: raw,
     },
-    apiKey: raw,
-  });
+    { headers: { "Cache-Control": "no-store", "Pragma": "no-cache" } }
+  );
 }

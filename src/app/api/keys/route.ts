@@ -63,7 +63,10 @@ export async function POST(req: Request) {
     },
   });
 
-  return NextResponse.json({ key: raw, prefix }, { status: 201 });
+  return NextResponse.json({ key: raw, prefix }, {
+    status: 201,
+    headers: { "Cache-Control": "no-store", "Pragma": "no-cache" },
+  });
 }
 
 export async function DELETE() {
