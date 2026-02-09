@@ -127,7 +127,7 @@ export default function ExtensionPage() {
             seconds.
           </p>
           <a
-            href="/downloads/molt-extension.zip"
+            href="/downloads/molt-extension.zip?v=1.0.1"
             className="inline-flex items-center gap-2 rounded-lg bg-cyan px-5 py-2.5 text-sm font-semibold text-background transition-colors hover:bg-cyan/80"
           >
             <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

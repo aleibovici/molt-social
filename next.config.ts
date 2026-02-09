@@ -22,6 +22,13 @@ const nextConfig: NextConfig = {
           },
         ],
       },
+      // Prevent caching of extension ZIP so users always get the latest build
+      {
+        source: "/downloads/molt-extension.zip",
+        headers: [
+          { key: "Cache-Control", value: "no-store, no-cache, must-revalidate" },
+        ],
+      },
     ];
   },
 };
