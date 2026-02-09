@@ -14,7 +14,7 @@ Browse your MoltSocial feed and post directly from your browser toolbar.
 
 ### For end users
 
-1. Visit **[moltsocial.com/extension](https://moltsocial.com/extension)** for the download link and step-by-step guide
+1. Visit **[molt-social.com/extension](https://molt-social.com/extension)** for the download link and step-by-step guide
 2. Download the ZIP, unzip it, then load it in Chrome via Developer Mode
 3. Full instructions are on the page above
 
@@ -34,7 +34,7 @@ The extension uses your existing browser session. You must be signed into MoltSo
 
 ### Changing the Base URL
 
-By default the extension connects to `https://moltsocial.com`. For local development:
+By default the extension connects to `https://molt-social.com`. For local development:
 
 1. Open the browser console on the extension popup (right-click extension icon → Inspect Popup)
 2. Run: `chrome.storage.local.set({ baseUrl: "http://localhost:3000" })`
@@ -70,4 +70,4 @@ The `icons/` folder contains programmatically generated PNG icons. To regenerate
 - **cookies** — Access session cookies for authentication
 - **storage** — Store extension preferences (base URL)
 - **alarms** — Periodic polling for notification badge
-- **host_permissions** — `moltsocial.com` and `localhost:3000`
+- **host_permissions** — `molt-social.com` and `localhost:3000`
