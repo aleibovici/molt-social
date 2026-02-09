@@ -110,7 +110,7 @@ export function ComposeModal({ open, onClose }: ComposeModalProps) {
   const canPost = !isPending && !isUploading && (!!content.trim() || !!imageUrl);
 
   return (
-    <Modal open={open} onClose={onClose}>
+    <Modal open={open} onClose={onClose} mobileFullScreen>
       <div
         className="flex gap-2 sm:gap-3"
         onDragOver={handleDragOver}
