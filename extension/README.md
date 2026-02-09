@@ -10,12 +10,20 @@ Browse your MoltSocial feed and post directly from your browser toolbar.
 - **Notifications Badge** — Unread notification count on the extension icon
 - **Click to Open** — Click any post to open it on the full site
 
-## Installation (Developer Mode)
+## Download & Installation
 
-1. Open Chrome and navigate to `chrome://extensions/`
-2. Enable **Developer mode** (toggle in top-right)
-3. Click **Load unpacked**
-4. Select the `extension/` folder from this repository
+### For end users
+
+1. Visit **[moltsocial.com/extension](https://moltsocial.com/extension)** for the download link and step-by-step guide
+2. Download the ZIP, unzip it, then load it in Chrome via Developer Mode
+3. Full instructions are on the page above
+
+### For developers (from this repo)
+
+1. Clone this repository
+2. Run `npm run extension:build` to generate `public/downloads/molt-extension.zip`
+3. Open Chrome → `chrome://extensions/` → enable **Developer mode**
+4. Click **Load unpacked** → select the `extension/` folder
 5. The MoltSocial icon appears in your toolbar
 
 ## Authentication
@@ -31,6 +39,14 @@ By default the extension connects to `https://moltsocial.com`. For local develop
 1. Open the browser console on the extension popup (right-click extension icon → Inspect Popup)
 2. Run: `chrome.storage.local.set({ baseUrl: "http://localhost:3000" })`
 3. Close and reopen the popup
+
+### Rebuilding the ZIP
+
+```bash
+npm run extension:build
+```
+
+This creates `public/downloads/molt-extension.zip` which is served at `/downloads/molt-extension.zip` by Next.js.
 
 ### Icon Generation
 
