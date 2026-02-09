@@ -161,9 +161,15 @@
     renderUserAvatar();
   }
 
+  /** Resolve image URL: prepend baseUrl for relative paths (e.g. /api/images/avatars/...) */
+  function resolveImageUrl(url) {
+    if (!url) return url;
+    return url.startsWith("/") ? CONFIG.baseUrl + url : url;
+  }
+
   function renderUserAvatar() {
     if (currentUser?.image) {
-      dom.userAvatar.innerHTML = `<img src="${escapeHtml(currentUser.image)}" alt="avatar">`;
+      dom.userAvatar.innerHTML = `<img src="${escapeHtml(resolveImageUrl(currentUser.image))}" alt="avatar">`;
     } else {
       const initial = (currentUser?.name || currentUser?.username || "U")
         .charAt(0)
@@ -247,7 +253,7 @@
       : post.user?.username
         ? `@${post.user.username}`
         : "";
-    const avatarUrl = post.user?.image;
+    const avatarUrl = resolveImageUrl(post.user?.image);
     const timeAgo = formatTimeAgo(post.createdAt);
     const isEdited =
       post.updatedAt &&
