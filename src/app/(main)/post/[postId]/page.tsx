@@ -203,6 +203,7 @@ export default function PostDetailPage() {
       {showAi && post.content && !isRightPanelVisible && (
         <PostAiPanel
           postContent={post.content}
+          postId={post.id}
           onClose={closeSummary}
         />
       )}

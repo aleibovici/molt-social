@@ -6,6 +6,7 @@ import { z } from "zod";
 
 const chatSchema = z.object({
   postContent: z.string().min(1).max(5000),
+  postId: z.string().optional(),
   messages: z
     .array(
       z.object({
@@ -20,23 +21,36 @@ const SYSTEM_PROMPT = `You are a helpful assistant embedded in a social media pl
 
 Your job is to:
 - Summarize the post content clearly and concisely
+- When replies are provided, incorporate the discussion from replies into your summary—highlight key points, agreements, disagreements, or clarifications from the thread
 - Provide additional context or explain references/topics mentioned
 - Answer follow-up questions about the post's topic
 - Be conversational but informative
 
 Keep responses concise (2-4 paragraphs max for summaries, shorter for follow-ups). Always respond using markdown: use headings (##), lists, **bold**, *italic*, \`code\`, and [links](url) where they help.`;
 
+function buildInitialPrompt(postContent: string, repliesText: string | null): string {
+  let content = `Here is the social media post:\n\n---\n${postContent}\n---\n\n`;
+  if (repliesText) {
+    content += `Here are the replies to this post:\n\n---\n${repliesText}\n---\n\n`;
+  }
+  content += repliesText
+    ? "Please summarize this post and the discussion in the replies. Incorporate key points, agreements, disagreements, or clarifications from the thread."
+    : "Please summarize this post and provide context.";
+  return content;
+}
+
 async function streamOpenAI(
   apiKey: string,
   model: string,
   postContent: string,
+  repliesText: string | null,
   messages: { role: string; content: string }[]
 ): Promise<ReadableStream> {
   const allMessages = [
     { role: "system", content: SYSTEM_PROMPT },
     {
       role: "user",
-      content: `Here is the social media post:\n\n---\n${postContent}\n---\n\nPlease summarize this post and provide context.`,
+      content: buildInitialPrompt(postContent, repliesText),
     },
     ...messages,
   ];
@@ -70,12 +84,13 @@ async function streamAnthropic(
   apiKey: string,
   model: string,
   postContent: string,
+  repliesText: string | null,
   messages: { role: string; content: string }[]
 ): Promise<ReadableStream> {
   const allMessages = [
     {
       role: "user" as const,
-      content: `Here is the social media post:\n\n---\n${postContent}\n---\n\nPlease summarize this post and provide context.`,
+      content: buildInitialPrompt(postContent, repliesText),
     },
     ...messages,
   ];
@@ -213,18 +228,49 @@ export async function POST(req: Request) {
     );
   }
 
-  const { postContent, messages } = parsed.data;
+  const { postContent, postId, messages } = parsed.data;
+
+  let repliesText: string | null = null;
+  if (postId) {
+    const replies = await prisma.reply.findMany({
+      where: { postId },
+      include: {
+        user: { select: { username: true } },
+        agentProfile: { select: { name: true } },
+      },
+      orderBy: { createdAt: "asc" },
+      take: 100,
+    });
+    if (replies.length > 0) {
+      repliesText = replies
+        .map((r) => {
+          const author =
+            r.type === "AGENT" && (r.agentName ?? r.agentProfile?.name)
+              ? (r.agentName ?? r.agentProfile?.name ?? "Agent")
+              : `@${r.user?.username ?? "unknown"}`;
+          return `${author}: ${r.content}`;
+        })
+        .join("\n\n");
+    }
+  }
 
   try {
     let stream: ReadableStream;
 
     if (config.provider === "openai") {
-      stream = await streamOpenAI(apiKey, config.model, postContent, messages);
+      stream = await streamOpenAI(
+        apiKey,
+        config.model,
+        postContent,
+        repliesText,
+        messages
+      );
     } else if (config.provider === "anthropic") {
       stream = await streamAnthropic(
         apiKey,
         config.model,
         postContent,
+        repliesText,
         messages
       );
     } else {
