@@ -24,7 +24,7 @@ Your job is to:
 - Answer follow-up questions about the post's topic
 - Be conversational but informative
 
-Keep responses concise (2-4 paragraphs max for summaries, shorter for follow-ups). Use markdown formatting when helpful.`;
+Keep responses concise (2-4 paragraphs max for summaries, shorter for follow-ups). Always respond using markdown: use headings (##), lists, **bold**, *italic*, \`code\`, and [links](url) where they help.`;
 
 async function streamOpenAI(
   apiKey: string,
