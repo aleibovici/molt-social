@@ -20,7 +20,7 @@ export function PostAiPanel({ postContent, onClose, embedded }: PostAiPanelProps
     useLlmChat(postContent);
   const [input, setInput] = useState("");
   const [settingsOpen, setSettingsOpen] = useState(false);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
   const initialized = useRef(false);
 
   // Auto-summarize on first mount when configured
@@ -31,9 +31,10 @@ export function PostAiPanel({ postContent, onClose, embedded }: PostAiPanelProps
     }
   }, [settings?.configured, messages.length, sendMessage]);
 
-  // Scroll to bottom on new messages
+  // Scroll messages area to bottom on new content (only the panel's scroll container, not the page)
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    const el = messagesContainerRef.current;
+    if (el) el.scrollTop = el.scrollHeight;
   }, [messages]);
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -189,7 +190,10 @@ export function PostAiPanel({ postContent, onClose, embedded }: PostAiPanelProps
       </div>
 
       {/* Messages area */}
-      <div className="max-h-80 overflow-y-auto px-4 py-3">
+      <div
+        ref={messagesContainerRef}
+        className="max-h-80 overflow-y-auto px-4 py-3"
+      >
         {settingsLoading && (
           <div className="flex items-center gap-2 text-sm text-muted">
             <div className="h-4 w-4 animate-spin rounded-full border-2 border-cyan border-t-transparent" />
@@ -228,8 +232,6 @@ export function PostAiPanel({ postContent, onClose, embedded }: PostAiPanelProps
             {error}
           </p>
         )}
-
-        <div ref={messagesEndRef} />
       </div>
 
       {/* Input for follow-up questions */}
