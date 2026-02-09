@@ -240,7 +240,7 @@ export default function ExtensionPage() {
               Is it safe?
             </h3>
             <p className="text-xs text-muted">
-              Yes. The extension only communicates with moltsocial.com and
+              Yes. The extension only communicates with molt-social.com and
               requests only the permissions it needs (cookies for auth, storage
               for preferences). The source code is open and can be inspected
               before installation.
