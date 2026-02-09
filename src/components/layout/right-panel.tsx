@@ -109,6 +109,7 @@ export function RightPanel() {
         <div className="rounded-xl border border-border bg-card overflow-hidden">
           <PostAiPanel
             postContent={activeSummary.postContent}
+            postId={activeSummary.postId}
             onClose={closeSummary}
             embedded
           />

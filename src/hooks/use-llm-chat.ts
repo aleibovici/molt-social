@@ -7,7 +7,7 @@ export interface ChatMessage {
   content: string;
 }
 
-export function useLlmChat(postContent: string) {
+export function useLlmChat(postContent: string, postId?: string) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [streaming, setStreaming] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -38,6 +38,7 @@ export function useLlmChat(postContent: string) {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             postContent,
+            postId,
             messages: newMessages,
           }),
           signal: controller.signal,
@@ -86,7 +87,7 @@ export function useLlmChat(postContent: string) {
         abortRef.current = null;
       }
     },
-    [messages, postContent]
+    [messages, postContent, postId]
   );
 
   const reset = useCallback(() => {
