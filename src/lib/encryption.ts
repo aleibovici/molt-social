@@ -6,8 +6,15 @@ const TAG_LENGTH = 16;
 const SALT_LENGTH = 32;
 
 function deriveKey(salt: Buffer): Buffer {
-  const secret = process.env.AUTH_SECRET;
-  if (!secret) throw new Error("AUTH_SECRET is required for encryption");
+  // Prefer a dedicated encryption key; fall back to AUTH_SECRET for backward
+  // compatibility with keys that were encrypted before LLM_ENCRYPTION_KEY was
+  // introduced. Operators should set LLM_ENCRYPTION_KEY and run the
+  // re-encryption migration at their earliest convenience.
+  const secret = process.env.LLM_ENCRYPTION_KEY || process.env.AUTH_SECRET;
+  if (!secret)
+    throw new Error(
+      "LLM_ENCRYPTION_KEY (or AUTH_SECRET) is required for encryption"
+    );
   return scryptSync(secret, salt, 32);
 }
 
