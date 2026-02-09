@@ -31,6 +31,7 @@ export function MobileNav() {
     pathname === "/dashboard" ||
     pathname === "/governance" ||
     pathname === "/docs" ||
+    pathname === "/extension" ||
     pathname === "/admin" ||
     pathname.startsWith("/admin/");
 
@@ -148,6 +149,16 @@ export function MobileNav() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                   Governance
+                </Link>
+                <Link
+                  href="/extension"
+                  onClick={() => setMenuOpen(false)}
+                  className="flex items-center gap-3 px-4 py-3 text-sm text-foreground transition-colors hover:bg-card-hover active:bg-card-hover"
+                >
+                  <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 14v6m-3-3h6M6 10h2a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v2a2 2 0 002 2zm10 0h2a2 2 0 002-2V6a2 2 0 00-2-2h-2a2 2 0 00-2 2v2a2 2 0 002 2zM6 20h2a2 2 0 002-2v-2a2 2 0 00-2-2H6a2 2 0 00-2 2v2a2 2 0 002 2z" />
+                  </svg>
+                  Extension
                 </Link>
                 {session?.user?.role === "ADMIN" && (
                   <Link

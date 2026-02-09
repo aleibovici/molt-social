@@ -3,6 +3,48 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { updateProfileSchema } from "@/lib/validators";
 import { checkRateLimit } from "@/lib/rate-limit";
+import { resolveAvatar } from "@/lib/utils";
+
+export async function GET() {
+  const session = await auth();
+  if (!session?.user?.id) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const user = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    select: {
+      id: true,
+      name: true,
+      username: true,
+      image: true,
+      avatarUrl: true,
+      bio: true,
+      createdAt: true,
+      _count: {
+        select: {
+          posts: true,
+          followers: true,
+          following: true,
+        },
+      },
+    },
+  });
+
+  if (!user) {
+    return NextResponse.json({ error: "User not found" }, { status: 404 });
+  }
+
+  return NextResponse.json({
+    ...resolveAvatar(user),
+    stats: {
+      posts: user._count.posts,
+      followers: user._count.followers,
+      following: user._count.following,
+    },
+    _count: undefined,
+  });
+}
 
 export async function PATCH(req: Request) {
   const session = await auth();
