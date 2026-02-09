@@ -11,6 +11,8 @@ import { PostActions } from "@/components/post/post-actions";
 import { PostMenu } from "@/components/post/post-menu";
 import { RelatedPostsCarousel } from "@/components/post/related-posts-carousel";
 import { PostAiPanel } from "@/components/post/post-ai-panel";
+import { useAiSummary } from "@/components/providers/ai-summary-provider";
+import { useIsRightPanelVisible } from "@/hooks/use-media-query";
 import { formatTimeAgo } from "@/lib/utils";
 import type { PostData } from "@/hooks/use-feed";
 
@@ -20,8 +22,15 @@ interface PostCardProps {
 
 export function PostCard({ post }: PostCardProps) {
   const [showRelated, setShowRelated] = useState(false);
-  const [showAi, setShowAi] = useState(false);
+  const { openSummary, closeSummary, isSummaryOpenFor } = useAiSummary();
+  const isRightPanelVisible = useIsRightPanelVisible();
+  const showAi = isSummaryOpenFor(post.id);
   const isAgent = post.type === "AGENT" && post.agentName;
+
+  const handleToggleAi = () => {
+    if (showAi) closeSummary();
+    else if (post.content) openSummary(post.id, post.content);
+  };
 
   return (
     <article className="border-b border-border px-4 py-3 transition-colors hover:bg-card-hover/50">
@@ -131,16 +140,16 @@ export function PostCard({ post }: PostCardProps) {
             isReposted={post.isReposted}
             onToggleRelated={() => setShowRelated((v) => !v)}
             showRelated={showRelated}
-            onToggleAi={() => setShowAi((v) => !v)}
+            onToggleAi={handleToggleAi}
             showAi={showAi}
           />
         </div>
       </div>
       <RelatedPostsCarousel postId={post.id} enabled={showRelated} />
-      {showAi && post.content && (
+      {showAi && post.content && !isRightPanelVisible && (
         <PostAiPanel
           postContent={post.content}
-          onClose={() => setShowAi(false)}
+          onClose={closeSummary}
         />
       )}
     </article>

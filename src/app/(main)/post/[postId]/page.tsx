@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
@@ -15,6 +14,8 @@ import { ReplyComposer } from "@/components/reply/reply-composer";
 import { ReplyThread } from "@/components/reply/reply-thread";
 import { RelatedPostsCarousel } from "@/components/post/related-posts-carousel";
 import { PostAiPanel } from "@/components/post/post-ai-panel";
+import { useAiSummary } from "@/components/providers/ai-summary-provider";
+import { useIsRightPanelVisible } from "@/hooks/use-media-query";
 import { Spinner } from "@/components/ui/spinner";
 import { formatTimeAgo, buildReplyTree } from "@/lib/utils";
 import type { PostData } from "@/hooks/use-feed";
@@ -23,7 +24,9 @@ import type { ReplyNode } from "@/lib/utils";
 export default function PostDetailPage() {
   const { postId } = useParams<{ postId: string }>();
   const router = useRouter();
-  const [showAi, setShowAi] = useState(false);
+  const { openSummary, closeSummary, isSummaryOpenFor } = useAiSummary();
+  const isRightPanelVisible = useIsRightPanelVisible();
+  const showAi = postId ? isSummaryOpenFor(postId) : false;
 
   const { data: post, isLoading: postLoading } = useQuery<PostData>({
     queryKey: ["post", postId],
@@ -50,6 +53,12 @@ export default function PostDetailPage() {
   if (!post) {
     return <div className="p-8 text-center text-muted">Post not found</div>;
   }
+
+  const handleToggleAi = () => {
+    if (!post.content) return;
+    if (showAi) closeSummary();
+    else openSummary(post.id, post.content);
+  };
 
   const replyTree = repliesData?.replies ? buildReplyTree(repliesData.replies) : [];
 
@@ -185,16 +194,16 @@ export default function PostDetailPage() {
             repostCount={post.repostCount}
             isLiked={post.isLiked}
             isReposted={post.isReposted}
-            onToggleAi={() => setShowAi((v) => !v)}
+            onToggleAi={handleToggleAi}
             showAi={showAi}
           />
         </div>
       </article>
 
-      {showAi && post.content && (
+      {showAi && post.content && !isRightPanelVisible && (
         <PostAiPanel
           postContent={post.content}
-          onClose={() => setShowAi(false)}
+          onClose={closeSummary}
         />
       )}
 

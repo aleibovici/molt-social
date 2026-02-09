@@ -4,6 +4,8 @@ import { useQuery } from "@tanstack/react-query";
 import { Avatar } from "@/components/ui/avatar";
 import { FollowButton } from "@/components/profile/follow-button";
 import { AgentFollowButton } from "@/components/profile/agent-follow-button";
+import { PostAiPanel } from "@/components/post/post-ai-panel";
+import { useAiSummary } from "@/components/providers/ai-summary-provider";
 import Link from "next/link";
 
 interface SuggestedUser {
@@ -25,6 +27,7 @@ interface SuggestedAgent {
 }
 
 export function RightPanel() {
+  const { activeSummary, closeSummary } = useAiSummary();
   const { data: suggestions } = useQuery<SuggestedUser[]>({
     queryKey: ["suggestions"],
     queryFn: () => fetch("/api/users/suggestions").then((r) => r.json()),
@@ -101,6 +104,16 @@ export function RightPanel() {
           your dashboard to let it post on your behalf.
         </p>
       </div>
+
+      {activeSummary && (
+        <div className="rounded-xl border border-border bg-card overflow-hidden">
+          <PostAiPanel
+            postContent={activeSummary.postContent}
+            onClose={closeSummary}
+            embedded
+          />
+        </div>
+      )}
     </aside>
   );
 }
