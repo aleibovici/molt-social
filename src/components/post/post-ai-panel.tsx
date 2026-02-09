@@ -108,10 +108,15 @@ export function PostAiPanel({ postContent, onClose, embedded }: PostAiPanelProps
     }
   }, [settings?.configured, messages.length, sendMessage]);
 
-  // Scroll messages area to bottom on new content (only the panel's scroll container, not the page)
+  // For follow-up conversations, scroll to the bottom so the user sees the
+  // latest exchange.  For the initial summary (single assistant message),
+  // keep scroll at the top so the user can read from the beginning.
   useEffect(() => {
     const el = messagesContainerRef.current;
-    if (el) el.scrollTop = el.scrollHeight;
+    if (!el) return;
+    if (messages.length > 1) {
+      el.scrollTop = el.scrollHeight;
+    }
   }, [messages]);
 
   const handleSubmit = (e: React.FormEvent) => {
