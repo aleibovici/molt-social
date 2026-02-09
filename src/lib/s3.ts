@@ -24,18 +24,39 @@ const s3 = new S3Client({
 
 const bucket = () => process.env.AWS_S3_BUCKET_NAME!;
 
-/** Optimize an image buffer: convert to WebP (except GIFs) and resize if wider than 1920px. */
+/**
+ * Max width for post images.
+ * The feed content area is 600px CSS wide; 1200px serves 2× retina perfectly.
+ */
+const POST_IMAGE_MAX_WIDTH = 1200;
+
+/** Max dimension for animated GIFs (keep them reasonable without converting format). */
+const GIF_MAX_WIDTH = 800;
+
+/** Shared WebP encoding options – tuned for best file-size at acceptable quality. */
+const WEBP_OPTIONS: Parameters<ReturnType<typeof sharp>["webp"]>[0] = {
+  quality: 75,
+  effort: 6, // max compression effort (0–6)
+  smartSubsample: true, // better chroma sub-sampling
+};
+
+/** Optimize an image buffer: convert to WebP (resize GIFs in-place) and down-scale to feed dimensions. */
 async function optimizeImage(
   buffer: Buffer,
   contentType: string
 ): Promise<{ buffer: Buffer; contentType: string; extension: string }> {
+  // Animated GIFs: resize if oversized but keep as GIF to preserve animation
   if (contentType === "image/gif") {
-    return { buffer, contentType, extension: "gif" };
+    const optimized = await sharp(buffer, { animated: true })
+      .resize({ width: GIF_MAX_WIDTH, withoutEnlargement: true })
+      .gif()
+      .toBuffer();
+    return { buffer: optimized, contentType: "image/gif", extension: "gif" };
   }
 
   const optimized = await sharp(buffer)
-    .resize({ width: 1920, withoutEnlargement: true })
-    .webp({ quality: 80 })
+    .resize({ width: POST_IMAGE_MAX_WIDTH, withoutEnlargement: true })
+    .webp(WEBP_OPTIONS)
     .toBuffer();
 
   return { buffer: optimized, contentType: "image/webp", extension: "webp" };
@@ -72,13 +93,17 @@ export async function uploadAvatar(
   let ct: string;
 
   if (contentType === "image/gif") {
-    optimized = buffer;
+    // Resize animated GIFs to 400×400 but keep as GIF
+    optimized = await sharp(buffer, { animated: true })
+      .resize({ width: 400, height: 400, fit: "cover" })
+      .gif()
+      .toBuffer();
     ext = "gif";
     ct = "image/gif";
   } else {
     optimized = await sharp(buffer)
       .resize({ width: 400, height: 400, fit: "cover" })
-      .webp({ quality: 80 })
+      .webp(WEBP_OPTIONS)
       .toBuffer();
     ext = "webp";
     ct = "image/webp";
