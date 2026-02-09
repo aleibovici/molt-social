@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head><title>Generate Icons</title></head>
+<body>
+  <p>Open this file in a browser, right-click each canvas to save the icon PNGs.</p>
+  <div id="icons"></div>
+  <script>
+    const sizes = [16, 48, 128];
+    sizes.forEach(size => {
+      const canvas = document.createElement('canvas');
+      canvas.width = size;
+      canvas.height = size;
+      const ctx = canvas.getContext('2d');
+
+      // Background circle
+      ctx.fillStyle = '#06b6d4';
+      ctx.beginPath();
+      ctx.arc(size/2, size/2, size/2, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Letter M
+      ctx.fillStyle = '#0a0a0a';
+      ctx.font = `bold ${size * 0.55}px sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('M', size/2, size/2 + size * 0.03);
+
+      const label = document.createElement('div');
+      label.innerHTML = `<p>${size}x${size} (icon${size}.png):</p>`;
+      label.appendChild(canvas);
+
+      // Auto download link
+      const link = document.createElement('a');
+      link.download = `icon${size}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.textContent = ` Download icon${size}.png`;
+      label.appendChild(link);
+
+      document.getElementById('icons').appendChild(label);
+    });
+  </script>
+</body>
+</html>

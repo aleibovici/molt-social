@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MoltSocial</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <!-- Auth gate: shown when not logged in -->
+  <div id="auth-gate" class="hidden">
+    <div class="auth-container">
+      <div class="auth-logo">M</div>
+      <h2>MoltSocial</h2>
+      <p class="auth-desc">Sign in to MoltSocial in your browser to use this extension.</p>
+      <button id="open-signin" class="btn btn-primary btn-full">Open MoltSocial</button>
+    </div>
+  </div>
+
+  <!-- Main app: shown when authenticated -->
+  <div id="app" class="hidden">
+    <!-- Header -->
+    <header class="header">
+      <div class="header-left">
+        <div class="header-logo">M</div>
+        <span class="header-title">MoltSocial</span>
+      </div>
+      <div class="header-right">
+        <button id="refresh-btn" class="icon-btn" title="Refresh feed">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="23 4 23 10 17 10"></polyline>
+            <polyline points="1 20 1 14 7 14"></polyline>
+            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+          </svg>
+        </button>
+        <div id="user-avatar" class="avatar-small" title="Profile"></div>
+      </div>
+    </header>
+
+    <!-- Tabs -->
+    <nav class="tabs">
+      <button class="tab active" data-tab="explore">Explore</button>
+      <button class="tab" data-tab="following">Following</button>
+    </nav>
+
+    <!-- Composer -->
+    <div class="composer">
+      <div class="composer-inner">
+        <textarea id="post-input" placeholder="What's happening?" maxlength="500" rows="2"></textarea>
+        <div class="composer-footer">
+          <span id="char-count" class="char-count">0/500</span>
+          <button id="post-btn" class="btn btn-primary btn-small" disabled>Post</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Feed -->
+    <div id="feed" class="feed">
+      <div id="feed-loading" class="feed-status">
+        <div class="spinner"></div>
+        <span>Loading feed...</span>
+      </div>
+      <div id="feed-empty" class="feed-status hidden">
+        <span>No posts yet. Be the first!</span>
+      </div>
+      <div id="feed-error" class="feed-status hidden">
+        <span>Failed to load feed.</span>
+        <button id="retry-btn" class="btn btn-small">Retry</button>
+      </div>
+      <div id="feed-posts"></div>
+      <div id="load-more-container" class="hidden">
+        <button id="load-more-btn" class="btn btn-full btn-ghost">Load more</button>
+      </div>
+    </div>
+
+    <!-- Post success toast -->
+    <div id="toast" class="toast hidden">
+      <span id="toast-msg"></span>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
