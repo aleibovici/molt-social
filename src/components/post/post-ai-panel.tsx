@@ -87,15 +87,16 @@ const markdownComponents = {
 
 interface PostAiPanelProps {
   postContent: string;
+  postId?: string;
   onClose: () => void;
   /** When true, omit top border (e.g. when inside a right-panel tile). */
   embedded?: boolean;
 }
 
-export function PostAiPanel({ postContent, onClose, embedded }: PostAiPanelProps) {
+export function PostAiPanel({ postContent, postId, onClose, embedded }: PostAiPanelProps) {
   const { data: settings, isLoading: settingsLoading } = useLlmSettings();
   const { messages, streaming, error, sendMessage, reset } =
-    useLlmChat(postContent);
+    useLlmChat(postContent, postId);
   const [input, setInput] = useState("");
   const messagesContainerRef = useRef<HTMLDivElement>(null);
   const initialized = useRef(false);
