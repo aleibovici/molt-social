@@ -47,8 +47,19 @@ export function PostActions({
   } = useRepost(postId, isReposted, repostCount);
   const [copied, setCopied] = useState(false);
 
-  const handleShare = useCallback(() => {
+  const handleShare = useCallback(async () => {
     const url = `${window.location.origin}/post/${postId}`;
+
+    // Use native share sheet on mobile when available
+    if (typeof navigator.share === "function") {
+      try {
+        await navigator.share({ url });
+        return;
+      } catch {
+        // User cancelled or share failed — fall through to clipboard
+      }
+    }
+
     navigator.clipboard.writeText(url).then(() => {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
@@ -56,14 +67,14 @@ export function PostActions({
   }, [postId]);
 
   return (
-    <div className="mt-3 flex gap-2 sm:gap-6">
+    <div className="mt-3 flex items-center gap-1 sm:gap-6">
       <Link
         href={`/post/${postId}`}
-        className="group flex items-center gap-1.5 text-muted transition-colors hover:text-cyan"
+        className="group flex items-center gap-1 rounded-full p-1.5 text-muted transition-colors hover:text-cyan active:bg-cyan/10 sm:gap-1.5 sm:p-0"
         title="Replies"
       >
         <svg
-          className="h-5 w-5"
+          className="h-[18px] w-[18px] sm:h-5 sm:w-5"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -81,7 +92,7 @@ export function PostActions({
       <button
         onClick={toggleRepost}
         className={cn(
-          "group flex items-center gap-1.5 transition-colors",
+          "group flex items-center gap-1 rounded-full p-1.5 transition-colors active:bg-repost-green/10 sm:gap-1.5 sm:p-0",
           reposted
             ? "text-repost-green"
             : "text-muted hover:text-repost-green"
@@ -89,7 +100,7 @@ export function PostActions({
         title="Repost"
       >
         <svg
-          className="h-5 w-5"
+          className="h-[18px] w-[18px] sm:h-5 sm:w-5"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -107,13 +118,13 @@ export function PostActions({
       <button
         onClick={toggleLike}
         className={cn(
-          "group flex items-center gap-1.5 transition-colors",
+          "group flex items-center gap-1 rounded-full p-1.5 transition-colors active:bg-heart-red/10 sm:gap-1.5 sm:p-0",
           liked ? "text-heart-red" : "text-muted hover:text-heart-red"
         )}
         title="Like"
       >
         <svg
-          className="h-5 w-5"
+          className="h-[18px] w-[18px] sm:h-5 sm:w-5"
           fill={liked ? "currentColor" : "none"}
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -132,13 +143,13 @@ export function PostActions({
         <button
           onClick={onToggleRelated}
           className={cn(
-            "group flex items-center gap-1.5 transition-colors",
+            "group flex items-center gap-1 rounded-full p-1.5 transition-colors active:bg-cyan/10 sm:gap-1.5 sm:p-0",
             showRelated ? "text-cyan" : "text-muted hover:text-cyan"
           )}
           title="Related posts"
         >
           <svg
-            className="h-5 w-5"
+            className="h-[18px] w-[18px] sm:h-5 sm:w-5"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -157,13 +168,13 @@ export function PostActions({
         <button
           onClick={onToggleAi}
           className={cn(
-            "group flex items-center gap-1.5 transition-colors",
+            "group flex items-center gap-1 rounded-full p-1.5 transition-colors active:bg-cyan/10 sm:gap-1.5 sm:p-0",
             showAi ? "text-cyan" : "text-muted hover:text-cyan"
           )}
           title="AI Summary"
         >
           <svg
-            className="h-5 w-5"
+            className="h-[18px] w-[18px] sm:h-5 sm:w-5"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -178,11 +189,11 @@ export function PostActions({
         </button>
       ) : !isAuthenticated && (
         <span
-          className="group flex items-center gap-1.5 text-muted/50 cursor-default"
+          className="group flex items-center gap-1 p-1.5 text-muted/50 cursor-default sm:gap-1.5 sm:p-0"
           title="Sign in to use AI Summary"
         >
           <svg
-            className="h-5 w-5"
+            className="h-[18px] w-[18px] sm:h-5 sm:w-5"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -200,14 +211,14 @@ export function PostActions({
       <button
         onClick={handleShare}
         className={cn(
-          "group flex items-center gap-1.5 transition-colors",
+          "group flex items-center gap-1 rounded-full p-1.5 transition-colors active:bg-cyan/10 sm:gap-1.5 sm:p-0",
           copied ? "text-cyan" : "text-muted hover:text-cyan"
         )}
         title="Share link"
       >
         {copied ? (
           <svg
-            className="h-5 w-5"
+            className="h-[18px] w-[18px] sm:h-5 sm:w-5"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -221,7 +232,7 @@ export function PostActions({
           </svg>
         ) : (
           <svg
-            className="h-5 w-5"
+            className="h-[18px] w-[18px] sm:h-5 sm:w-5"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -234,7 +245,7 @@ export function PostActions({
             />
           </svg>
         )}
-        {copied && <span className="text-sm">Copied</span>}
+        {copied && <span className="hidden text-sm sm:inline">Copied</span>}
       </button>
     </div>
   );
