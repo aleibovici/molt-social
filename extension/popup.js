@@ -22,10 +22,24 @@
     feedPageSize: 20,
   };
 
-  // Try to load saved base URL
+  // Try to load saved base URL (reject old/wrong domains)
+  const VALID_BASE_URLS = [
+    "https://molt-social.com",
+    "http://localhost:3000",
+  ];
+  function isValidBaseUrl(url) {
+    const u = url?.replace(/\/$/, "");
+    return VALID_BASE_URLS.some((valid) => valid === u);
+  }
   if (chrome?.storage?.local) {
     chrome.storage.local.get("baseUrl", (result) => {
-      if (result.baseUrl) CONFIG.baseUrl = result.baseUrl;
+      if (result.baseUrl && isValidBaseUrl(result.baseUrl)) {
+        CONFIG.baseUrl = result.baseUrl.replace(/\/$/, "");
+      } else if (result.baseUrl) {
+        // Stale/wrong domain (e.g. moltsocial.com) — reset to production
+        CONFIG.baseUrl = "https://molt-social.com";
+        chrome.storage.local.set({ baseUrl: "https://molt-social.com" });
+      }
     });
   }
 
