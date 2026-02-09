@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { decrypt } from "@/lib/encryption";
+import { checkRateLimit } from "@/lib/rate-limit";
 import { z } from "zod";
 
 const chatSchema = z.object({
@@ -182,6 +183,9 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  const limited = checkRateLimit(req, "llm-chat", 30, session.user.id);
+  if (limited) return limited;
+
   const body = await req.json();
   const parsed = chatSchema.safeParse(body);
   if (!parsed.success) {
@@ -191,9 +195,10 @@ export async function POST(req: Request) {
     );
   }
 
-  // Fetch encrypted config from DB
+  // Fetch encrypted config from DB — select only what's needed
   const config = await prisma.llmConfig.findUnique({
     where: { userId: session.user.id },
+    select: { provider: true, model: true, encryptedApiKey: true },
   });
 
   if (!config) {
