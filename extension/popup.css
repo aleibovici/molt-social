@@ -24,10 +24,16 @@
   --radius-lg: 12px;
 }
 
-html,
+/* Use explicit height for Chrome side panel—100vh can use browser viewport, not panel */
+html {
+  height: 100%;
+  overflow: hidden;
+}
+
 body {
   width: 100%;
-  min-height: 100vh;
+  height: 100%;
+  min-height: 0;
   margin: 0;
   display: flex;
   flex-direction: column;
@@ -79,7 +85,8 @@ body {
   justify-content: center;
   padding: 60px 32px;
   text-align: center;
-  min-height: 100vh;
+  min-height: 0;
+  flex: 1;
 }
 
 .auth-logo {
