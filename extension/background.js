@@ -83,6 +83,11 @@ chrome.alarms?.onAlarm?.addListener((alarm) => {
   }
 });
 
+// Open side panel when extension icon is clicked
+chrome.sidePanel?.setPanelBehavior?.({ openPanelOnActionClick: true }).catch(
+  (err) => console.warn("sidePanel.setPanelBehavior:", err)
+);
+
 // Also update on startup and when extension is installed
 chrome.runtime?.onStartup?.addListener(updateBadge);
 chrome.runtime?.onInstalled?.addListener(() => {
