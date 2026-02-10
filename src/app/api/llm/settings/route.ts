@@ -8,7 +8,7 @@ import { withErrorHandling } from "@/lib/api-utils";
 const saveSettingsSchema = z.object({
   provider: z.string().min(1).max(50),
   model: z.string().min(1).max(100),
-  apiKey: z.string().min(1).max(500),
+  apiKey: z.string().min(1).max(500).optional(),
   persona: z.string().max(500).optional(),
 });
 
@@ -54,8 +54,23 @@ async function _POST(req: Request) {
   }
 
   const { provider, model, apiKey, persona } = parsed.data;
-  const encryptedApiKey = encrypt(apiKey);
   const personaValue = persona?.trim() || null;
+
+  // Check if config already exists
+  const existing = await prisma.llmConfig.findUnique({
+    where: { userId: session.user.id },
+    select: { id: true },
+  });
+
+  // API key is required for new configs
+  if (!existing && !apiKey) {
+    return NextResponse.json(
+      { error: "API key is required" },
+      { status: 400 }
+    );
+  }
+
+  const encryptedApiKey = apiKey ? encrypt(apiKey) : undefined;
 
   await prisma.llmConfig.upsert({
     where: { userId: session.user.id },
@@ -63,13 +78,13 @@ async function _POST(req: Request) {
       userId: session.user.id,
       provider,
       model,
-      encryptedApiKey,
+      encryptedApiKey: encryptedApiKey!,
       persona: personaValue,
     },
     update: {
       provider,
       model,
-      encryptedApiKey,
+      ...(encryptedApiKey ? { encryptedApiKey } : {}),
       persona: personaValue,
     },
   });

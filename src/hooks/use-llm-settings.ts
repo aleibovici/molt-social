@@ -27,7 +27,7 @@ export function useSaveLlmSettings() {
     mutationFn: async (data: {
       provider: string;
       model: string;
-      apiKey: string;
+      apiKey?: string;
       persona?: string;
     }) => {
       const res = await fetch("/api/llm/settings", {

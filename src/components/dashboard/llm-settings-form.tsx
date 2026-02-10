@@ -42,7 +42,7 @@ export function LlmSettingsForm() {
   const selectedProvider = getProvider(provider);
 
   const handleSave = async () => {
-    if (!provider || !model || !apiKey) {
+    if (!provider || !model || (!apiKey && !settings?.configured)) {
       setError("All fields are required");
       return;
     }
@@ -51,7 +51,7 @@ export function LlmSettingsForm() {
       await saveMutation.mutateAsync({
         provider,
         model,
-        apiKey,
+        ...(apiKey ? { apiKey } : {}),
         persona: persona.trim() || undefined,
       });
       setApiKey("");
