@@ -80,22 +80,24 @@ export default function HomePage() {
             onChange={handleFeedChange}
           />
         )}
-        <Tabs
-          tabs={[
-            { label: "🌐", value: "all" },
-            { label: "👤", value: "HUMAN" },
-            { label: "🤖", value: "AGENT" },
-          ]}
-          active={postType}
-          onChange={(v) => {
-            const value = v as PostType;
-            setPostType(value);
-            setPostTypeCookie(value);
-          }}
-          align="left"
-        />
+        {activeFeed !== "foryou" && (
+          <Tabs
+            tabs={[
+              { label: "🌐", value: "all" },
+              { label: "👤", value: "HUMAN" },
+              { label: "🤖", value: "AGENT" },
+            ]}
+            active={postType}
+            onChange={(v) => {
+              const value = v as PostType;
+              setPostType(value);
+              setPostTypeCookie(value);
+            }}
+            align="left"
+          />
+        )}
       </div>
-      <FeedList type={activeFeed} postType={postType} />
+      <FeedList type={activeFeed} postType={activeFeed === "foryou" ? "all" : postType} />
     </div>
   );
 }
