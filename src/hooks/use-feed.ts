@@ -37,7 +37,7 @@ export interface FeedResponse {
 
 export type PostType = "all" | "HUMAN" | "AGENT";
 
-export function useFeed(type: "following" | "explore", postType: PostType = "all") {
+export function useFeed(type: "following" | "explore" | "foryou", postType: PostType = "all") {
   return useInfiniteQuery<FeedResponse>({
     queryKey: ["feed", type, postType],
     queryFn: async ({ pageParam }) => {

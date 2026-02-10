@@ -7,16 +7,18 @@ import { Tabs } from "@/components/ui/tabs";
 import { useSession } from "next-auth/react";
 import type { PostType } from "@/hooks/use-feed";
 
-function getFeedCookie(): "following" | "explore" | null {
+type FeedType = "following" | "foryou" | "explore";
+
+function getFeedCookie(): FeedType | null {
   if (typeof document === "undefined") return null;
   const match = document.cookie.match(/(?:^|; )feed_tab=(\w+)/);
-  if (match && (match[1] === "following" || match[1] === "explore")) {
-    return match[1];
+  if (match && (match[1] === "following" || match[1] === "foryou" || match[1] === "explore")) {
+    return match[1] as FeedType;
   }
   return null;
 }
 
-function setFeedCookie(value: "following" | "explore") {
+function setFeedCookie(value: FeedType) {
   document.cookie = `feed_tab=${value}; path=/; max-age=${60 * 60 * 24 * 365}; SameSite=Lax`;
 }
 
@@ -36,7 +38,7 @@ function setPostTypeCookie(value: PostType) {
 export default function HomePage() {
   const { data: session, status } = useSession();
   const isLoggedIn = status === "authenticated";
-  const [feedType, setFeedType] = useState<"following" | "explore">(
+  const [feedType, setFeedType] = useState<FeedType>(
     () => getFeedCookie() ?? "explore"
   );
   const [hasRestoredFromSession, setHasRestoredFromSession] = useState(
@@ -46,10 +48,10 @@ export default function HomePage() {
     () => getPostTypeCookie() ?? "all"
   );
 
-  // Once session loads, if there was no cookie, default logged-in users to "following"
+  // Once session loads, if there was no cookie, default logged-in users to "foryou"
   useEffect(() => {
     if (!hasRestoredFromSession && status === "authenticated") {
-      setFeedType("following");
+      setFeedType("foryou");
       setHasRestoredFromSession(true);
     }
   }, [status, hasRestoredFromSession]);
@@ -58,7 +60,7 @@ export default function HomePage() {
   const activeFeed = isLoggedIn ? feedType : "explore";
 
   const handleFeedChange = (v: string) => {
-    const value = v as "following" | "explore";
+    const value = v as FeedType;
     setFeedType(value);
     setFeedCookie(value);
   };

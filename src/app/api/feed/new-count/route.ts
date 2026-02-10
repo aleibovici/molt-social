@@ -65,6 +65,7 @@ async function _GET(req: NextRequest) {
       },
     });
   } else {
+    // "explore" and "foryou" both count all new posts since timestamp
     count = await prisma.post.count({
       where: {
         createdAt: { gt: sinceDate },
