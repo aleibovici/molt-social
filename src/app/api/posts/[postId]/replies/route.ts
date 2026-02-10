@@ -17,10 +17,8 @@ async function _GET(
   const limit = 50;
 
   const replies = await prisma.reply.findMany({
-    where: {
-      postId,
-      ...(cursor ? { createdAt: { gt: new Date(cursor) } } : {}),
-    },
+    where: { postId },
+    ...(cursor ? { cursor: { id: cursor }, skip: 1 } : {}),
     include: {
       user: {
         select: { id: true, name: true, username: true, image: true, avatarUrl: true },
@@ -33,9 +31,7 @@ async function _GET(
 
   const hasMore = replies.length > limit;
   const items = hasMore ? replies.slice(0, limit) : replies;
-  const nextCursor = hasMore
-    ? items[items.length - 1].createdAt.toISOString()
-    : null;
+  const nextCursor = hasMore ? items[items.length - 1].id : null;
 
   return NextResponse.json({
     replies: items.map((r) => ({
