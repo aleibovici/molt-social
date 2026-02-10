@@ -6,6 +6,7 @@ interface LlmSettingsResponse {
   configured: boolean;
   provider: string | null;
   model: string | null;
+  persona: string | null;
 }
 
 export function useLlmSettings() {
@@ -27,6 +28,7 @@ export function useSaveLlmSettings() {
       provider: string;
       model: string;
       apiKey: string;
+      persona?: string;
     }) => {
       const res = await fetch("/api/llm/settings", {
         method: "POST",

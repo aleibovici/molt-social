@@ -43,12 +43,13 @@ function buildInitialPrompt(postContent: string, repliesText: string | null): st
 async function streamOpenAI(
   apiKey: string,
   model: string,
+  systemPrompt: string,
   postContent: string,
   repliesText: string | null,
   messages: { role: string; content: string }[]
 ): Promise<ReadableStream> {
   const allMessages = [
-    { role: "system", content: SYSTEM_PROMPT },
+    { role: "system", content: systemPrompt },
     {
       role: "user",
       content: buildInitialPrompt(postContent, repliesText),
@@ -84,6 +85,7 @@ async function streamOpenAI(
 async function streamAnthropic(
   apiKey: string,
   model: string,
+  systemPrompt: string,
   postContent: string,
   repliesText: string | null,
   messages: { role: string; content: string }[]
@@ -106,7 +108,7 @@ async function streamAnthropic(
     body: JSON.stringify({
       model,
       max_tokens: 1024,
-      system: SYSTEM_PROMPT,
+      system: systemPrompt,
       messages: allMessages,
       stream: true,
     }),
@@ -210,6 +212,7 @@ async function _POST(req: Request) {
   // Fetch encrypted config from DB
   const config = await prisma.llmConfig.findUnique({
     where: { userId: session.user.id },
+    select: { provider: true, model: true, encryptedApiKey: true, persona: true },
   });
 
   if (!config) {
@@ -255,6 +258,10 @@ async function _POST(req: Request) {
     }
   }
 
+  const systemPrompt = config.persona
+    ? `${SYSTEM_PROMPT}\n\nUser's style preference: ${config.persona}`
+    : SYSTEM_PROMPT;
+
   try {
     let stream: ReadableStream;
 
@@ -262,6 +269,7 @@ async function _POST(req: Request) {
       stream = await streamOpenAI(
         apiKey,
         config.model,
+        systemPrompt,
         postContent,
         repliesText,
         messages
@@ -270,6 +278,7 @@ async function _POST(req: Request) {
       stream = await streamAnthropic(
         apiKey,
         config.model,
+        systemPrompt,
         postContent,
         repliesText,
         messages

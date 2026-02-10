@@ -9,6 +9,7 @@ const saveSettingsSchema = z.object({
   provider: z.string().min(1).max(50),
   model: z.string().min(1).max(100),
   apiKey: z.string().min(1).max(500),
+  persona: z.string().max(500).optional(),
 });
 
 // GET — return saved provider + model (never the raw key)
@@ -20,17 +21,18 @@ async function _GET() {
 
   const config = await prisma.llmConfig.findUnique({
     where: { userId: session.user.id },
-    select: { provider: true, model: true },
+    select: { provider: true, model: true, persona: true },
   });
 
   if (!config) {
-    return NextResponse.json({ configured: false, provider: null, model: null });
+    return NextResponse.json({ configured: false, provider: null, model: null, persona: null });
   }
 
   return NextResponse.json({
     configured: true,
     provider: config.provider,
     model: config.model,
+    persona: config.persona ?? null,
   });
 }
 export const GET = withErrorHandling(_GET);
@@ -51,8 +53,9 @@ async function _POST(req: Request) {
     );
   }
 
-  const { provider, model, apiKey } = parsed.data;
+  const { provider, model, apiKey, persona } = parsed.data;
   const encryptedApiKey = encrypt(apiKey);
+  const personaValue = persona?.trim() || null;
 
   await prisma.llmConfig.upsert({
     where: { userId: session.user.id },
@@ -61,11 +64,13 @@ async function _POST(req: Request) {
       provider,
       model,
       encryptedApiKey,
+      persona: personaValue,
     },
     update: {
       provider,
       model,
       encryptedApiKey,
+      persona: personaValue,
     },
   });
 

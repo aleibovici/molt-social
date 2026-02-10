@@ -21,6 +21,7 @@ export function LlmSettingsForm() {
   const [provider, setProvider] = useState("");
   const [model, setModel] = useState("");
   const [apiKey, setApiKey] = useState("");
+  const [persona, setPersona] = useState("");
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -28,6 +29,7 @@ export function LlmSettingsForm() {
       setProvider(settings.provider ?? "");
       setModel(settings.model ?? "");
       setApiKey("");
+      setPersona(settings.persona ?? "");
       setError("");
     }
   }, [settings]);
@@ -46,7 +48,12 @@ export function LlmSettingsForm() {
     }
     setError("");
     try {
-      await saveMutation.mutateAsync({ provider, model, apiKey });
+      await saveMutation.mutateAsync({
+        provider,
+        model,
+        apiKey,
+        persona: persona.trim() || undefined,
+      });
       setApiKey("");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to save");
@@ -59,6 +66,7 @@ export function LlmSettingsForm() {
       setProvider("");
       setModel("");
       setApiKey("");
+      setPersona("");
     } catch {
       setError("Failed to remove settings");
     }
@@ -122,6 +130,23 @@ export function LlmSettingsForm() {
                 Key is saved. Enter a new one to replace it.
               </p>
             )}
+          </div>
+        )}
+
+        {selectedProvider && (
+          <div>
+            <label className="mb-1 block text-sm font-medium">AI Persona</label>
+            <textarea
+              value={persona}
+              onChange={(e) => setPersona(e.target.value)}
+              placeholder="e.g., Be succinct and direct to the point"
+              maxLength={500}
+              rows={3}
+              className="w-full rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground outline-none focus:border-cyan resize-none"
+            />
+            <p className="mt-1 text-xs text-muted">
+              Customize how the AI responds. Leave empty for default behavior.
+            </p>
           </div>
         )}
       </div>
