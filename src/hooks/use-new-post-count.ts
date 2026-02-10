@@ -31,6 +31,7 @@ export function useNewPostCount(
       return res.json();
     },
     refetchInterval: 30_000,
+    staleTime: 30_000,
     enabled: !!sinceRef.current,
   });
 

@@ -40,6 +40,7 @@ export function useAdminUsers({ page = 1, pageSize = 20, search = "", role = "" 
       if (!res.ok) throw new Error("Failed to fetch users");
       return res.json();
     },
+    staleTime: 30_000,
   });
 }
 

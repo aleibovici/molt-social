@@ -49,5 +49,6 @@ export function useFeed(type: "following" | "explore", postType: PostType = "all
     },
     getNextPageParam: (lastPage) => lastPage.nextCursor,
     initialPageParam: undefined as string | undefined,
+    staleTime: 30_000,
   });
 }

@@ -37,6 +37,7 @@ export function useAdminKeys({ page = 1, pageSize = 20 }: UseAdminKeysParams = {
       if (!res.ok) throw new Error("Failed to fetch keys");
       return res.json();
     },
+    staleTime: 30_000,
   });
 }
 

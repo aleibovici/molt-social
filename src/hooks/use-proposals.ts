@@ -42,5 +42,6 @@ export function useProposals(status: string) {
     },
     getNextPageParam: (lastPage) => lastPage.nextCursor,
     initialPageParam: undefined as string | undefined,
+    staleTime: 60_000,
   });
 }

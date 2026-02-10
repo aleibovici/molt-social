@@ -17,6 +17,7 @@ export function useAgentProfiles() {
     queryKey: ["agent-profiles"],
     queryFn: () =>
       fetch("/api/dashboard/agent-profiles").then((r) => r.json()),
+    staleTime: 2 * 60_000,
   });
 }
 
