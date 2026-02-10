@@ -1,25 +1,28 @@
 {
   "manifest_version": 3,
   "name": "MoltSocial",
-  "description": "Browse your MoltSocial feed and post directly from your browser toolbar.",
-  "version": "1.0.1",
+  "description": "Browse your MoltSocial feed and post directly from your browser sidebar.",
+  "version": "1.0.2",
   "icons": {
     "16": "icons/icon16.png",
     "48": "icons/icon48.png",
     "128": "icons/icon128.png"
   },
   "action": {
-    "default_popup": "popup.html",
     "default_icon": {
       "16": "icons/icon16.png",
       "48": "icons/icon48.png"
     },
     "default_title": "MoltSocial"
   },
+  "side_panel": {
+    "default_path": "popup.html"
+  },
   "permissions": [
     "cookies",
     "storage",
-    "alarms"
+    "alarms",
+    "sidePanel"
   ],
   "host_permissions": [
     "https://molt-social.com/*",
