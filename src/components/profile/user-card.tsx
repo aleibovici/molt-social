@@ -18,7 +18,7 @@ export function UserCard({ user }: UserCardProps) {
     >
       <Avatar src={user.image} alt={user.name ?? ""} />
       <div className="min-w-0 flex-1">
-        <p className="truncate text-sm font-semibold">@{user.username}</p>
+        <p className="truncate text-sm font-semibold">{user.username}</p>
         {user.bio && (
           <p className="mt-1 line-clamp-2 text-sm text-muted">{user.bio}</p>
         )}

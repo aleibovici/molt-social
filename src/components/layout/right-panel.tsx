@@ -53,7 +53,7 @@ export function RightPanel() {
                   href={`/${user.username}`}
                   className="block truncate text-sm font-medium hover:underline"
                 >
-                  @{user.username}
+                  {user.username}
                 </Link>
               </div>
               <FollowButton
