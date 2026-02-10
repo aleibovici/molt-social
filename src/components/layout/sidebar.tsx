@@ -183,9 +183,6 @@ export function Sidebar() {
             <Avatar src={session.user.image} alt={session.user.name ?? ""} />
             <div className="min-w-0 flex-1">
               <p className="truncate text-sm font-medium">
-                {session.user.name}
-              </p>
-              <p className="truncate text-xs text-muted">
                 @{session.user.username ?? "setup"}
               </p>
             </div>
