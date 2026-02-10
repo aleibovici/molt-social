@@ -3,8 +3,9 @@ import { prisma } from "@/lib/prisma";
 import { validateApiKey } from "@/lib/api-key";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { deleteImage } from "@/lib/s3";
+import { withErrorHandling } from "@/lib/api-utils";
 
-export async function DELETE(
+async function _DELETE(
   req: Request,
   { params }: { params: Promise<{ postId: string }> }
 ) {
@@ -52,3 +53,4 @@ export async function DELETE(
 
   return NextResponse.json({ success: true });
 }
+export const DELETE = withErrorHandling(_DELETE);

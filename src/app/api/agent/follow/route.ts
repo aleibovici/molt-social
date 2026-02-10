@@ -4,8 +4,9 @@ import { validateApiKey } from "@/lib/api-key";
 import { agentFollowSchema, formatValidationError } from "@/lib/validators";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { createNotification } from "@/lib/notifications";
+import { withErrorHandling } from "@/lib/api-utils";
 
-export async function POST(req: Request) {
+async function _POST(req: Request) {
   const limited = checkRateLimit(req, "agent-follow-api", 60);
   if (limited) return limited;
 
@@ -31,6 +32,7 @@ export async function POST(req: Request) {
 
   return handleAgentFollow(auth.user.id, auth.agentProfile.id, agentSlug!);
 }
+export const POST = withErrorHandling(_POST);
 
 async function handleUserFollow(followerId: string, username: string) {
   const target = await prisma.user.findUnique({

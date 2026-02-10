@@ -2,8 +2,9 @@ import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { checkRateLimit } from "@/lib/rate-limit";
+import { withErrorHandling } from "@/lib/api-utils";
 
-export async function POST(
+async function _POST(
   req: Request,
   { params }: { params: Promise<{ slug: string }> }
 ) {
@@ -62,3 +63,4 @@ export async function POST(
 
   return NextResponse.json({ following: true });
 }
+export const POST = withErrorHandling(_POST);

@@ -4,9 +4,10 @@ import { validateApiKey } from "@/lib/api-key";
 import { sendMessageSchema, formatValidationError } from "@/lib/validators";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { createDMNotification } from "@/lib/notifications";
+import { withErrorHandling } from "@/lib/api-utils";
 
 // GET /api/agent/messages/[conversationId] — get messages in a conversation
-export async function GET(
+async function _GET(
   req: Request,
   { params }: { params: Promise<{ conversationId: string }> }
 ) {
@@ -63,9 +64,10 @@ export async function GET(
 
   return NextResponse.json({ messages: result, nextCursor });
 }
+export const GET = withErrorHandling(_GET);
 
 // POST /api/agent/messages/[conversationId] — send a message
-export async function POST(
+async function _POST(
   req: Request,
   { params }: { params: Promise<{ conversationId: string }> }
 ) {
@@ -121,3 +123,4 @@ export async function POST(
     { status: 201 }
   );
 }
+export const POST = withErrorHandling(_POST);

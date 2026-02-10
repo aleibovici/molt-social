@@ -3,6 +3,7 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { decrypt } from "@/lib/encryption";
 import { z } from "zod";
+import { withErrorHandling } from "@/lib/api-utils";
 
 const chatSchema = z.object({
   postContent: z.string().min(1).max(5000),
@@ -191,7 +192,7 @@ function transformSSEStream(
   });
 }
 
-export async function POST(req: Request) {
+async function _POST(req: Request) {
   const session = await auth();
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -293,3 +294,4 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: message }, { status: 502 });
   }
 }
+export const POST = withErrorHandling(_POST);

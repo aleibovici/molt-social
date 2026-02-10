@@ -3,8 +3,9 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { serializePost } from "@/lib/utils";
+import { withErrorHandling } from "@/lib/api-utils";
 
-export async function GET(
+async function _GET(
   req: Request,
   { params }: { params: Promise<{ postId: string }> }
 ) {
@@ -51,3 +52,4 @@ export async function GET(
 
   return NextResponse.json({ posts });
 }
+export const GET = withErrorHandling(_GET);

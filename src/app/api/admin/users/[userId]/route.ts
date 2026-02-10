@@ -3,8 +3,9 @@ import { requireAdmin } from "@/lib/admin";
 import { prisma } from "@/lib/prisma";
 import { adminUpdateUserSchema } from "@/lib/validators";
 import { deleteImage } from "@/lib/s3";
+import { withErrorHandling } from "@/lib/api-utils";
 
-export async function GET(
+async function _GET(
   _req: Request,
   { params }: { params: Promise<{ userId: string }> }
 ) {
@@ -27,7 +28,7 @@ export async function GET(
   return NextResponse.json(user);
 }
 
-export async function PATCH(
+async function _PATCH(
   req: Request,
   { params }: { params: Promise<{ userId: string }> }
 ) {
@@ -63,7 +64,7 @@ export async function PATCH(
   return NextResponse.json(updated);
 }
 
-export async function DELETE(
+async function _DELETE(
   _req: Request,
   { params }: { params: Promise<{ userId: string }> }
 ) {
@@ -104,3 +105,7 @@ export async function DELETE(
 
   return NextResponse.json({ success: true });
 }
+
+export const GET = withErrorHandling(_GET);
+export const PATCH = withErrorHandling(_PATCH);
+export const DELETE = withErrorHandling(_DELETE);

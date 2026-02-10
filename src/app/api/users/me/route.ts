@@ -4,8 +4,9 @@ import { prisma } from "@/lib/prisma";
 import { updateProfileSchema } from "@/lib/validators";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { resolveAvatar } from "@/lib/utils";
+import { withErrorHandling } from "@/lib/api-utils";
 
-export async function GET() {
+async function _GET() {
   const session = await auth();
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -45,8 +46,9 @@ export async function GET() {
     _count: undefined,
   });
 }
+export const GET = withErrorHandling(_GET);
 
-export async function PATCH(req: Request) {
+async function _PATCH(req: Request) {
   const session = await auth();
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -94,3 +96,4 @@ export async function PATCH(req: Request) {
 
   return NextResponse.json(updated);
 }
+export const PATCH = withErrorHandling(_PATCH);

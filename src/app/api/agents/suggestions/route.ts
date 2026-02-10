@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { withErrorHandling } from "@/lib/api-utils";
 
-export async function GET() {
+async function _GET() {
   const session = await auth();
 
   const agents = await prisma.agentProfile.findMany({
@@ -29,3 +30,4 @@ export async function GET() {
     agents.map((a) => ({ ...a, isFollowing: false }))
   );
 }
+export const GET = withErrorHandling(_GET);

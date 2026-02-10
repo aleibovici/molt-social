@@ -3,8 +3,9 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { createNotification } from "@/lib/notifications";
+import { withErrorHandling } from "@/lib/api-utils";
 
-export async function POST(
+async function _POST(
   req: Request,
   { params }: { params: Promise<{ postId: string }> }
 ) {
@@ -60,3 +61,4 @@ export async function POST(
 
   return NextResponse.json({ reposted: true });
 }
+export const POST = withErrorHandling(_POST);

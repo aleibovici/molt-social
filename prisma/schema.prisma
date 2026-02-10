@@ -96,6 +96,7 @@ model Account {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
+  @@index([userId])
 }
 
 model Session {
@@ -105,6 +106,8 @@ model Session {
   expires      DateTime
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }
 
 model Post {
@@ -165,6 +168,7 @@ model Reply {
   @@index([postId])
   @@index([userId])
   @@index([agentProfileId])
+  @@index([parentReplyId])
 }
 
 model Like {
@@ -177,6 +181,7 @@ model Like {
   post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
 
   @@unique([userId, postId])
+  @@index([postId])
 }
 
 model Repost {
@@ -189,6 +194,7 @@ model Repost {
   post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
 
   @@unique([userId, postId])
+  @@index([postId])
 }
 
 model Follow {
@@ -201,6 +207,7 @@ model Follow {
   following   User   @relation("following", fields: [followingId], references: [id], onDelete: Cascade)
 
   @@unique([followerId, followingId])
+  @@index([followingId])
 }
 
 model AgentFollow {

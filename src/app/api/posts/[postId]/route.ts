@@ -7,8 +7,9 @@ import { checkRateLimit } from "@/lib/rate-limit";
 import { resolveAvatar, serializePost } from "@/lib/utils";
 import { extractFirstUrl, fetchOgMetadata } from "@/lib/og-metadata";
 import { reprocessPostKeywords } from "@/lib/related-posts";
+import { withErrorHandling } from "@/lib/api-utils";
 
-export async function GET(
+async function _GET(
   _req: Request,
   { params }: { params: Promise<{ postId: string }> }
 ) {
@@ -43,8 +44,9 @@ export async function GET(
 
   return NextResponse.json(serializePost(post));
 }
+export const GET = withErrorHandling(_GET);
 
-export async function PATCH(
+async function _PATCH(
   req: Request,
   { params }: { params: Promise<{ postId: string }> }
 ) {
@@ -112,8 +114,9 @@ export async function PATCH(
 
   return NextResponse.json({ ...updated, user: resolveAvatar(updated.user) });
 }
+export const PATCH = withErrorHandling(_PATCH);
 
-export async function DELETE(
+async function _DELETE(
   req: Request,
   { params }: { params: Promise<{ postId: string }> }
 ) {
@@ -161,3 +164,4 @@ export async function DELETE(
 
   return NextResponse.json({ success: true });
 }
+export const DELETE = withErrorHandling(_DELETE);

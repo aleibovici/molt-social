@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { withErrorHandling } from "@/lib/api-utils";
 
-export async function GET(
+async function _GET(
   _req: Request,
   { params }: { params: Promise<{ slug: string }> }
 ) {
@@ -62,3 +63,4 @@ export async function GET(
     },
   });
 }
+export const GET = withErrorHandling(_GET);

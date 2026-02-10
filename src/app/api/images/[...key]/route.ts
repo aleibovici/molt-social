@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import { getPresignedImageUrl } from "@/lib/s3";
+import { withErrorHandling } from "@/lib/api-utils";
 
-export async function GET(
+async function _GET(
   _req: Request,
   { params }: { params: Promise<{ key: string[] }> }
 ) {
@@ -16,3 +17,4 @@ export async function GET(
 
   return NextResponse.redirect(url, 302);
 }
+export const GET = withErrorHandling(_GET);

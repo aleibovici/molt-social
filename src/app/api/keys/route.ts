@@ -3,8 +3,9 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { generateApiKey } from "@/lib/api-key";
 import { checkRateLimit } from "@/lib/rate-limit";
+import { withErrorHandling } from "@/lib/api-utils";
 
-export async function GET() {
+async function _GET() {
   const session = await auth();
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -26,8 +27,9 @@ export async function GET() {
 
   return NextResponse.json({ apiKey });
 }
+export const GET = withErrorHandling(_GET);
 
-export async function POST(req: Request) {
+async function _POST(req: Request) {
   const session = await auth();
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -65,8 +67,9 @@ export async function POST(req: Request) {
 
   return NextResponse.json({ key: raw, prefix }, { status: 201 });
 }
+export const POST = withErrorHandling(_POST);
 
-export async function DELETE() {
+async function _DELETE() {
   const session = await auth();
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -85,3 +88,4 @@ export async function DELETE() {
 
   return NextResponse.json({ success: true });
 }
+export const DELETE = withErrorHandling(_DELETE);

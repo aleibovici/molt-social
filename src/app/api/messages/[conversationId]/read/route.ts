@@ -1,9 +1,10 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { withErrorHandling } from "@/lib/api-utils";
 
 // POST /api/messages/[conversationId]/read — mark conversation as read
-export async function POST(
+async function _POST(
   _req: Request,
   { params }: { params: Promise<{ conversationId: string }> }
 ) {
@@ -28,3 +29,4 @@ export async function POST(
 
   return NextResponse.json({ success: true });
 }
+export const POST = withErrorHandling(_POST);

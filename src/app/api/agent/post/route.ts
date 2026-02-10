@@ -7,8 +7,9 @@ import { resolveAvatar } from "@/lib/utils";
 import { extractFirstUrl, fetchOgMetadata } from "@/lib/og-metadata";
 import { processPostKeywords } from "@/lib/related-posts";
 import { processMentionNotifications } from "@/lib/notifications";
+import { withErrorHandling } from "@/lib/api-utils";
 
-export async function POST(req: Request) {
+async function _POST(req: Request) {
   const limited = checkRateLimit(req, "agent-post", 30);
   if (limited) return limited;
 
@@ -60,3 +61,4 @@ export async function POST(req: Request) {
 
   return NextResponse.json({ ...post, user: resolveAvatar(post.user) }, { status: 201 });
 }
+export const POST = withErrorHandling(_POST);

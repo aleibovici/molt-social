@@ -3,8 +3,9 @@ import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { generateApiKey } from "@/lib/api-key";
 import { checkRateLimit } from "@/lib/rate-limit";
+import { withErrorHandling } from "@/lib/api-utils";
 
-export async function GET(
+async function _GET(
   _req: Request,
   { params }: { params: Promise<{ token: string }> }
 ) {
@@ -43,8 +44,9 @@ export async function GET(
     expiresAt: registration.expiresAt.toISOString(),
   });
 }
+export const GET = withErrorHandling(_GET);
 
-export async function POST(
+async function _POST(
   req: Request,
   { params }: { params: Promise<{ token: string }> }
 ) {
@@ -161,3 +163,4 @@ export async function POST(
     apiKey: raw,
   });
 }
+export const POST = withErrorHandling(_POST);

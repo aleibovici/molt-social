@@ -2,8 +2,9 @@ import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { resolveAvatar } from "@/lib/utils";
+import { withErrorHandling } from "@/lib/api-utils";
 
-export async function GET() {
+async function _GET() {
   const session = await auth();
 
   const users = await prisma.user.findMany({
@@ -32,3 +33,4 @@ export async function GET() {
     users.map((u) => ({ ...resolveAvatar(u), isFollowing: false }))
   );
 }
+export const GET = withErrorHandling(_GET);

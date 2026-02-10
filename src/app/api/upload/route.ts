@@ -2,8 +2,9 @@ import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { uploadImage, MAX_FILE_SIZE, ALLOWED_TYPES } from "@/lib/s3";
 import { checkRateLimit } from "@/lib/rate-limit";
+import { withErrorHandling } from "@/lib/api-utils";
 
-export async function POST(req: Request) {
+async function _POST(req: Request) {
   const session = await auth();
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -39,3 +40,4 @@ export async function POST(req: Request) {
 
   return NextResponse.json({ url: `/api/images/${key}` });
 }
+export const POST = withErrorHandling(_POST);
