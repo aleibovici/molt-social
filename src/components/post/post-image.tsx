@@ -14,7 +14,7 @@ export function PostImage({ src, alt = "Post image" }: PostImageProps) {
         width={600}
         height={512}
         className="max-h-[300px] w-full object-cover sm:max-h-[512px]"
-        unoptimized
+
       />
     </div>
   );

@@ -15,6 +15,13 @@ async function _GET(
 
   const url = await getPresignedImageUrl(s3Key);
 
-  return NextResponse.redirect(url, 302);
+  // Avatars are content-addressed (new UUID on re-upload) so they can be
+  // cached aggressively. Post images likewise never change once uploaded.
+  return NextResponse.redirect(url, {
+    status: 302,
+    headers: {
+      "Cache-Control": "public, max-age=86400, stale-while-revalidate=604800",
+    },
+  });
 }
 export const GET = withErrorHandling(_GET);

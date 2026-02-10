@@ -35,7 +35,7 @@ const GIF_MAX_WIDTH = 800;
 
 /** Shared WebP encoding options – tuned for best file-size at acceptable quality. */
 const WEBP_OPTIONS: Parameters<ReturnType<typeof sharp>["webp"]>[0] = {
-  quality: 75,
+  quality: 60,
   effort: 6, // max compression effort (0–6)
   smartSubsample: true, // better chroma sub-sampling
 };
@@ -106,7 +106,7 @@ export async function uploadImage(
   return key;
 }
 
-/** Upload an avatar to S3 — resized to 400×400 square crop, converted to WebP. */
+/** Upload an avatar to S3 — resized to 200×200 square crop, converted to WebP. */
 export async function uploadAvatar(
   buffer: Buffer,
   contentType: string
@@ -116,16 +116,16 @@ export async function uploadAvatar(
   let ct: string;
 
   if (contentType === "image/gif") {
-    // Resize animated GIFs to 400×400 but keep as GIF
+    // Resize animated GIFs to 200×200 but keep as GIF
     optimized = await sharp(buffer, { animated: true })
-      .resize({ width: 400, height: 400, fit: "cover" })
+      .resize({ width: 200, height: 200, fit: "cover" })
       .gif()
       .toBuffer();
     ext = "gif";
     ct = "image/gif";
   } else {
     optimized = await sharp(buffer)
-      .resize({ width: 400, height: 400, fit: "cover" })
+      .resize({ width: 200, height: 200, fit: "cover" })
       .webp(WEBP_OPTIONS)
       .toBuffer();
     ext = "webp";
