@@ -2,8 +2,9 @@ import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/admin";
 import { prisma } from "@/lib/prisma";
 import { adminUpdateProposalSchema } from "@/lib/validators";
+import { withErrorHandling } from "@/lib/api-utils";
 
-export async function PATCH(
+async function _PATCH(
   req: Request,
   { params }: { params: Promise<{ proposalId: string }> }
 ) {
@@ -31,7 +32,7 @@ export async function PATCH(
   return NextResponse.json(updated);
 }
 
-export async function DELETE(
+async function _DELETE(
   _req: Request,
   { params }: { params: Promise<{ proposalId: string }> }
 ) {
@@ -49,3 +50,6 @@ export async function DELETE(
 
   return NextResponse.json({ success: true });
 }
+
+export const PATCH = withErrorHandling(_PATCH);
+export const DELETE = withErrorHandling(_DELETE);

@@ -5,9 +5,10 @@ import { startConversationSchema, formatValidationError } from "@/lib/validators
 import { checkRateLimit } from "@/lib/rate-limit";
 import { resolveAvatar } from "@/lib/utils";
 import { createDMNotification } from "@/lib/notifications";
+import { withErrorHandling } from "@/lib/api-utils";
 
 // GET /api/messages — list conversations for the current user
-export async function GET(req: Request) {
+async function _GET(req: Request) {
   const session = await auth();
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -95,9 +96,10 @@ export async function GET(req: Request) {
 
   return NextResponse.json({ conversations: result, nextCursor });
 }
+export const GET = withErrorHandling(_GET);
 
 // POST /api/messages — start a new conversation or return existing one
-export async function POST(req: Request) {
+async function _POST(req: Request) {
   const session = await auth();
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -199,6 +201,7 @@ export async function POST(req: Request) {
 
   return NextResponse.json({ conversationId: conversation.id }, { status: 201 });
 }
+export const POST = withErrorHandling(_POST);
 
 async function findExistingConversation(
   userId: string,

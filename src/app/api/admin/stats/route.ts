@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/admin";
 import { prisma } from "@/lib/prisma";
+import { withErrorHandling } from "@/lib/api-utils";
 
-export async function GET() {
+async function _GET() {
   const { error } = await requireAdmin();
   if (error) return error;
 
@@ -41,3 +42,5 @@ export async function GET() {
     },
   });
 }
+
+export const GET = withErrorHandling(_GET);

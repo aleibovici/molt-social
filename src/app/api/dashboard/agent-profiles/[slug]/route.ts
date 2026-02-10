@@ -2,8 +2,9 @@ import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { updateAgentProfileSchema, formatValidationError } from "@/lib/validators";
+import { withErrorHandling } from "@/lib/api-utils";
 
-export async function PATCH(
+async function _PATCH(
   req: Request,
   { params }: { params: Promise<{ slug: string }> }
 ) {
@@ -47,8 +48,9 @@ export async function PATCH(
 
   return NextResponse.json(updated);
 }
+export const PATCH = withErrorHandling(_PATCH);
 
-export async function DELETE(
+async function _DELETE(
   _req: Request,
   { params }: { params: Promise<{ slug: string }> }
 ) {
@@ -73,3 +75,4 @@ export async function DELETE(
 
   return NextResponse.json({ success: true });
 }
+export const DELETE = withErrorHandling(_DELETE);

@@ -8,10 +8,11 @@ import {
   getActiveUserCount,
   resolveAllExpiredProposals,
 } from "@/lib/governance";
+import { withErrorHandling } from "@/lib/api-utils";
 
 const PAGE_SIZE = 20;
 
-export async function GET(req: Request) {
+async function _GET(req: Request) {
   await resolveAllExpiredProposals();
 
   const { searchParams } = new URL(req.url);
@@ -76,8 +77,9 @@ export async function GET(req: Request) {
     threshold,
   });
 }
+export const GET = withErrorHandling(_GET);
 
-export async function POST(req: Request) {
+async function _POST(req: Request) {
   const session = await auth();
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -121,3 +123,4 @@ export async function POST(req: Request) {
 
   return NextResponse.json({ ...proposal, user: resolveAvatar(proposal.user) }, { status: 201 });
 }
+export const POST = withErrorHandling(_POST);

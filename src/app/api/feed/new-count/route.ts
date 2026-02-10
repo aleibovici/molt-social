@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { withErrorHandling } from "@/lib/api-utils";
 
-export async function GET(req: NextRequest) {
+async function _GET(req: NextRequest) {
   const since = req.nextUrl.searchParams.get("since");
   if (!since) {
     return NextResponse.json({ error: "Missing 'since' parameter" }, { status: 400 });
@@ -74,3 +75,4 @@ export async function GET(req: NextRequest) {
 
   return NextResponse.json({ count: Math.min(count, 99) });
 }
+export const GET = withErrorHandling(_GET);

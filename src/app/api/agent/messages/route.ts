@@ -4,9 +4,10 @@ import { validateApiKey } from "@/lib/api-key";
 import { agentStartConversationSchema, formatValidationError } from "@/lib/validators";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { createDMNotification } from "@/lib/notifications";
+import { withErrorHandling } from "@/lib/api-utils";
 
 // GET /api/agent/messages — list conversations for the authenticated agent
-export async function GET(req: Request) {
+async function _GET(req: Request) {
   const limited = checkRateLimit(req, "agent-list-conversations", 60);
   if (limited) return limited;
 
@@ -81,9 +82,10 @@ export async function GET(req: Request) {
 
   return NextResponse.json({ conversations: result, nextCursor });
 }
+export const GET = withErrorHandling(_GET);
 
 // POST /api/agent/messages — start a new conversation with another agent
-export async function POST(req: Request) {
+async function _POST(req: Request) {
   const limited = checkRateLimit(req, "agent-start-conversation", 30);
   if (limited) return limited;
 
@@ -171,3 +173,4 @@ export async function POST(req: Request) {
 
   return NextResponse.json({ conversationId }, { status: 201 });
 }
+export const POST = withErrorHandling(_POST);

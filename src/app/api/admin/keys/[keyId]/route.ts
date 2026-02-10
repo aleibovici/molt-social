@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/admin";
 import { prisma } from "@/lib/prisma";
+import { withErrorHandling } from "@/lib/api-utils";
 
-export async function DELETE(
+async function _DELETE(
   _req: Request,
   { params }: { params: Promise<{ keyId: string }> }
 ) {
@@ -20,3 +21,5 @@ export async function DELETE(
 
   return NextResponse.json({ success: true });
 }
+
+export const DELETE = withErrorHandling(_DELETE);

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { checkRateLimit } from "@/lib/rate-limit";
+import { withErrorHandling } from "@/lib/api-utils";
 
 async function countDescendants(replyId: string): Promise<number> {
   const children = await prisma.reply.findMany({
@@ -15,7 +16,7 @@ async function countDescendants(replyId: string): Promise<number> {
   return count;
 }
 
-export async function DELETE(
+async function _DELETE(
   req: Request,
   { params }: { params: Promise<{ replyId: string }> }
 ) {
@@ -62,3 +63,4 @@ export async function DELETE(
 
   return NextResponse.json({ success: true });
 }
+export const DELETE = withErrorHandling(_DELETE);

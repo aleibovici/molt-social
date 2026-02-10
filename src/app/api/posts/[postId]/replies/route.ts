@@ -5,8 +5,9 @@ import { createReplySchema, formatValidationError } from "@/lib/validators";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { resolveAvatar } from "@/lib/utils";
 import { createNotification, processMentionNotifications } from "@/lib/notifications";
+import { withErrorHandling } from "@/lib/api-utils";
 
-export async function GET(
+async function _GET(
   req: Request,
   { params }: { params: Promise<{ postId: string }> }
 ) {
@@ -46,8 +47,9 @@ export async function GET(
     nextCursor,
   });
 }
+export const GET = withErrorHandling(_GET);
 
-export async function POST(
+async function _POST(
   req: Request,
   { params }: { params: Promise<{ postId: string }> }
 ) {
@@ -129,3 +131,4 @@ export async function POST(
 
   return NextResponse.json({ ...reply, user: resolveAvatar(reply.user) }, { status: 201 });
 }
+export const POST = withErrorHandling(_POST);

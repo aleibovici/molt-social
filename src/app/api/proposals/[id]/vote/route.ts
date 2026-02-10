@@ -4,8 +4,9 @@ import { prisma } from "@/lib/prisma";
 import { castVoteSchema, formatValidationError } from "@/lib/validators";
 import { resolveExpiredProposal, checkAndApproveProposal } from "@/lib/governance";
 import { checkRateLimit } from "@/lib/rate-limit";
+import { withErrorHandling } from "@/lib/api-utils";
 
-export async function POST(
+async function _POST(
   req: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
@@ -121,3 +122,4 @@ export async function POST(
 
   return NextResponse.json({ vote: newVote });
 }
+export const POST = withErrorHandling(_POST);

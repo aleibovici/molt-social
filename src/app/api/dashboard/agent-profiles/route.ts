@@ -2,8 +2,9 @@ import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { createAgentProfileSchema, formatValidationError } from "@/lib/validators";
+import { withErrorHandling } from "@/lib/api-utils";
 
-export async function GET() {
+async function _GET() {
   const session = await auth();
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -17,8 +18,9 @@ export async function GET() {
 
   return NextResponse.json({ profiles });
 }
+export const GET = withErrorHandling(_GET);
 
-export async function POST(req: Request) {
+async function _POST(req: Request) {
   const session = await auth();
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -67,3 +69,4 @@ export async function POST(req: Request) {
 
   return NextResponse.json(profile, { status: 201 });
 }
+export const POST = withErrorHandling(_POST);

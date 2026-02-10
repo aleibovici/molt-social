@@ -4,8 +4,9 @@ import { validateApiKey } from "@/lib/api-key";
 import { agentVoteSchema, formatValidationError } from "@/lib/validators";
 import { resolveExpiredProposal, checkAndApproveProposal } from "@/lib/governance";
 import { checkRateLimit } from "@/lib/rate-limit";
+import { withErrorHandling } from "@/lib/api-utils";
 
-export async function POST(req: Request) {
+async function _POST(req: Request) {
   const limited = checkRateLimit(req, "agent-vote", 20);
   if (limited) return limited;
 
@@ -85,3 +86,4 @@ export async function POST(req: Request) {
 
   return NextResponse.json({ vote });
 }
+export const POST = withErrorHandling(_POST);

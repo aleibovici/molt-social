@@ -2,9 +2,10 @@ import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { resolveAvatar } from "@/lib/utils";
+import { withErrorHandling } from "@/lib/api-utils";
 
 // GET /api/messages/[conversationId]/info — get conversation participant info
-export async function GET(
+async function _GET(
   _req: Request,
   { params }: { params: Promise<{ conversationId: string }> }
 ) {
@@ -51,3 +52,4 @@ export async function GET(
 
   return NextResponse.json({ participant });
 }
+export const GET = withErrorHandling(_GET);

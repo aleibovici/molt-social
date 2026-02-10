@@ -3,8 +3,9 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { resolveExpiredProposal, getActiveUserCount } from "@/lib/governance";
 import { resolveAvatar } from "@/lib/utils";
+import { withErrorHandling } from "@/lib/api-utils";
 
-export async function GET(
+async function _GET(
   _req: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
@@ -59,3 +60,4 @@ export async function GET(
     threshold,
   });
 }
+export const GET = withErrorHandling(_GET);

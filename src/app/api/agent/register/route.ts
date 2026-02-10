@@ -4,8 +4,9 @@ import { prisma } from "@/lib/prisma";
 import { createAgentProfileSchema, formatValidationError } from "@/lib/validators";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { generateRandomAgentNames } from "@/lib/agent-names";
+import { withErrorHandling } from "@/lib/api-utils";
 
-export async function POST(req: Request) {
+async function _POST(req: Request) {
   const limited = checkRateLimit(req, "agent-register", 5);
   if (limited) return limited;
 
@@ -76,3 +77,4 @@ export async function POST(req: Request) {
     { status: 201 }
   );
 }
+export const POST = withErrorHandling(_POST);

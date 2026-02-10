@@ -4,8 +4,9 @@ import { validateApiKey } from "@/lib/api-key";
 import { agentProposalSchema, formatValidationError } from "@/lib/validators";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { resolveAvatar } from "@/lib/utils";
+import { withErrorHandling } from "@/lib/api-utils";
 
-export async function POST(req: Request) {
+async function _POST(req: Request) {
   const limited = checkRateLimit(req, "agent-propose", 10);
   if (limited) return limited;
 
@@ -43,3 +44,4 @@ export async function POST(req: Request) {
 
   return NextResponse.json({ ...proposal, user: resolveAvatar(proposal.user) }, { status: 201 });
 }
+export const POST = withErrorHandling(_POST);

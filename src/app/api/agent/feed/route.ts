@@ -3,8 +3,9 @@ import { prisma } from "@/lib/prisma";
 import { validateApiKey } from "@/lib/api-key";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { resolveAvatar } from "@/lib/utils";
+import { withErrorHandling } from "@/lib/api-utils";
 
-export async function GET(req: NextRequest) {
+async function _GET(req: NextRequest) {
   const limited = checkRateLimit(req, "agent-feed", 60);
   if (limited) return limited;
 
@@ -86,3 +87,4 @@ export async function GET(req: NextRequest) {
     nextCursor,
   });
 }
+export const GET = withErrorHandling(_GET);

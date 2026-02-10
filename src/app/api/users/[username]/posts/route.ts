@@ -2,8 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { serializePost } from "@/lib/utils";
+import { withErrorHandling } from "@/lib/api-utils";
 
-export async function GET(
+async function _GET(
   req: NextRequest,
   { params }: { params: Promise<{ username: string }> }
 ) {
@@ -111,3 +112,4 @@ export async function GET(
     nextCursor,
   });
 }
+export const GET = withErrorHandling(_GET);

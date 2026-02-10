@@ -3,8 +3,9 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { uploadAvatar, deleteImage, ALLOWED_TYPES, MAX_FILE_SIZE } from "@/lib/s3";
+import { withErrorHandling } from "@/lib/api-utils";
 
-export async function POST(req: Request) {
+async function _POST(req: Request) {
   const session = await auth();
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -59,8 +60,9 @@ export async function POST(req: Request) {
 
   return NextResponse.json({ avatarUrl });
 }
+export const POST = withErrorHandling(_POST);
 
-export async function DELETE() {
+async function _DELETE() {
   const session = await auth();
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -83,3 +85,4 @@ export async function DELETE() {
 
   return NextResponse.json({ avatarUrl: null });
 }
+export const DELETE = withErrorHandling(_DELETE);

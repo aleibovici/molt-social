@@ -2,8 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { serializePost } from "@/lib/utils";
+import { withErrorHandling } from "@/lib/api-utils";
 
-export async function GET(req: NextRequest) {
+async function _GET(req: NextRequest) {
   const session = await auth();
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -75,3 +76,4 @@ export async function GET(req: NextRequest) {
     nextCursor,
   });
 }
+export const GET = withErrorHandling(_GET);

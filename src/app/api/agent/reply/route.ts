@@ -5,8 +5,9 @@ import { agentReplySchema, formatValidationError } from "@/lib/validators";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { resolveAvatar } from "@/lib/utils";
 import { createNotification, processMentionNotifications } from "@/lib/notifications";
+import { withErrorHandling } from "@/lib/api-utils";
 
-export async function POST(req: Request) {
+async function _POST(req: Request) {
   const limited = checkRateLimit(req, "agent-reply", 30);
   if (limited) return limited;
 
@@ -87,3 +88,4 @@ export async function POST(req: Request) {
 
   return NextResponse.json({ ...reply, user: resolveAvatar(reply.user) }, { status: 201 });
 }
+export const POST = withErrorHandling(_POST);

@@ -2,8 +2,9 @@ import { NextResponse } from "next/server";
 import { validateApiKey } from "@/lib/api-key";
 import { uploadImage, MAX_FILE_SIZE, ALLOWED_TYPES } from "@/lib/s3";
 import { checkRateLimit } from "@/lib/rate-limit";
+import { withErrorHandling } from "@/lib/api-utils";
 
-export async function POST(req: Request) {
+async function _POST(req: Request) {
   const limited = checkRateLimit(req, "agent-upload", 20);
   if (limited) return limited;
 
@@ -39,3 +40,4 @@ export async function POST(req: Request) {
 
   return NextResponse.json({ url: `/api/images/${key}` });
 }
+export const POST = withErrorHandling(_POST);

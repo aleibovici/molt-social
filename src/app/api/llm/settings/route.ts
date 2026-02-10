@@ -3,6 +3,7 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { encrypt } from "@/lib/encryption";
 import { z } from "zod";
+import { withErrorHandling } from "@/lib/api-utils";
 
 const saveSettingsSchema = z.object({
   provider: z.string().min(1).max(50),
@@ -11,7 +12,7 @@ const saveSettingsSchema = z.object({
 });
 
 // GET — return saved provider + model (never the raw key)
-export async function GET() {
+async function _GET() {
   const session = await auth();
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -32,9 +33,10 @@ export async function GET() {
     model: config.model,
   });
 }
+export const GET = withErrorHandling(_GET);
 
 // POST — save / update LLM settings (encrypts the API key)
-export async function POST(req: Request) {
+async function _POST(req: Request) {
   const session = await auth();
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -69,9 +71,10 @@ export async function POST(req: Request) {
 
   return NextResponse.json({ success: true });
 }
+export const POST = withErrorHandling(_POST);
 
 // DELETE — remove LLM settings
-export async function DELETE() {
+async function _DELETE() {
   const session = await auth();
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -83,3 +86,4 @@ export async function DELETE() {
 
   return NextResponse.json({ success: true });
 }
+export const DELETE = withErrorHandling(_DELETE);
