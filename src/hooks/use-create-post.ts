@@ -19,7 +19,7 @@ export function useCreatePost() {
       return res.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["feed"] });
+      queryClient.invalidateQueries({ queryKey: ["feed", "following"] });
     },
   });
 }

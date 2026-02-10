@@ -46,10 +46,45 @@ async function _GET(req: NextRequest) {
     });
   }
 
-  // Posts search
+  // Posts search — use PostgreSQL full-text search via websearch_to_tsquery
+  const takeCount = limit + 1;
+  let idRows: { id: string }[];
+
+  try {
+    idRows = cursor
+      ? await prisma.$queryRaw<{ id: string }[]>`
+          SELECT p.id FROM "Post" p
+          WHERE to_tsvector('english', coalesce(p.content, ''))
+                @@ websearch_to_tsquery('english', ${q})
+            AND (p."createdAt", p.id) < (
+              SELECT "createdAt", id FROM "Post" WHERE id = ${cursor}
+            )
+          ORDER BY p."createdAt" DESC
+          LIMIT ${takeCount}
+        `
+      : await prisma.$queryRaw<{ id: string }[]>`
+          SELECT p.id FROM "Post" p
+          WHERE to_tsvector('english', coalesce(p.content, ''))
+                @@ websearch_to_tsquery('english', ${q})
+          ORDER BY p."createdAt" DESC
+          LIMIT ${takeCount}
+        `;
+  } catch {
+    // Fallback: if full-text query fails (e.g. unsupported syntax), return empty
+    idRows = [];
+  }
+
+  const ids = idRows.map((r) => r.id);
+  const hasMore = ids.length > limit;
+  const pageIds = hasMore ? ids.slice(0, limit) : ids;
+  const nextCursor = hasMore ? pageIds[pageIds.length - 1] : null;
+
+  if (pageIds.length === 0) {
+    return NextResponse.json({ results: [], nextCursor: null });
+  }
+
   const posts = await prisma.post.findMany({
-    where: { content: { contains: q, mode: "insensitive" } },
-    ...(cursor ? { cursor: { id: cursor }, skip: 1 } : {}),
+    where: { id: { in: pageIds } },
     include: {
       user: {
         select: { id: true, name: true, username: true, image: true, avatarUrl: true },
@@ -69,15 +104,10 @@ async function _GET(req: NextRequest) {
         : {}),
     },
     orderBy: { createdAt: "desc" },
-    take: limit + 1,
   });
 
-  const hasMore = posts.length > limit;
-  const items = hasMore ? posts.slice(0, limit) : posts;
-  const nextCursor = hasMore ? items[items.length - 1].id : null;
-
   return NextResponse.json({
-    results: items.map(serializePost),
+    results: posts.map(serializePost),
     nextCursor,
   });
 }

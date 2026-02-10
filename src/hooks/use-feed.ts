@@ -29,7 +29,7 @@ export interface PostData {
   isReposted: boolean;
 }
 
-interface FeedResponse {
+export interface FeedResponse {
   posts: PostData[];
   nextCursor: string | null;
 }

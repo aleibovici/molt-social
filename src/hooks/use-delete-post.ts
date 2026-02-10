@@ -1,6 +1,11 @@
 "use client";
 
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  InfiniteData,
+  useMutation,
+  useQueryClient,
+} from "@tanstack/react-query";
+import type { FeedResponse } from "@/hooks/use-feed";
 
 export function useDeletePost() {
   const queryClient = useQueryClient();
@@ -17,7 +22,20 @@ export function useDeletePost() {
       return res.json();
     },
     onSuccess: (_data, postId) => {
-      queryClient.invalidateQueries({ queryKey: ["feed"] });
+      // Remove the post from all cached feed pages immediately
+      queryClient.setQueriesData<InfiniteData<FeedResponse>>(
+        { queryKey: ["feed"] },
+        (data) => {
+          if (!data) return data;
+          return {
+            ...data,
+            pages: data.pages.map((page) => ({
+              ...page,
+              posts: page.posts.filter((p) => p.id !== postId),
+            })),
+          };
+        }
+      );
       queryClient.invalidateQueries({ queryKey: ["post", postId] });
     },
   });

@@ -21,7 +21,6 @@ export function useCreateReply(postId: string) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["replies", postId] });
       queryClient.invalidateQueries({ queryKey: ["post", postId] });
-      queryClient.invalidateQueries({ queryKey: ["feed"] });
     },
   });
 }
