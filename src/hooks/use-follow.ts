@@ -16,7 +16,7 @@ export function useFollow(username: string) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["profile", username] });
       queryClient.invalidateQueries({ queryKey: ["suggestions"] });
-      queryClient.invalidateQueries({ queryKey: ["feed"] });
+      queryClient.invalidateQueries({ queryKey: ["feed", "following"] });
     },
   });
 }

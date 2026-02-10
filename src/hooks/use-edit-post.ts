@@ -1,6 +1,11 @@
 "use client";
 
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  InfiniteData,
+  useMutation,
+  useQueryClient,
+} from "@tanstack/react-query";
+import type { FeedResponse, PostData } from "@/hooks/use-feed";
 
 interface EditPostInput {
   postId: string;
@@ -22,10 +27,25 @@ export function useEditPost() {
         const error = await res.json();
         throw new Error(error.error || "Failed to edit post");
       }
-      return res.json();
+      return res.json() as Promise<PostData>;
     },
-    onSuccess: (_data, { postId }) => {
-      queryClient.invalidateQueries({ queryKey: ["feed"] });
+    onSuccess: (updated, { postId }) => {
+      // Update the post in all cached feed pages immediately
+      queryClient.setQueriesData<InfiniteData<FeedResponse>>(
+        { queryKey: ["feed"] },
+        (data) => {
+          if (!data) return data;
+          return {
+            ...data,
+            pages: data.pages.map((page) => ({
+              ...page,
+              posts: page.posts.map((p) =>
+                p.id === postId ? { ...p, ...updated } : p
+              ),
+            })),
+          };
+        }
+      );
       queryClient.invalidateQueries({ queryKey: ["post", postId] });
     },
   });
