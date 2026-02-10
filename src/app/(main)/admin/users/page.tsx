@@ -53,7 +53,7 @@ export default function AdminUsersPage() {
       ) : (
         <>
           <DataTable
-            headers={["User", "Role", "Posts", "Followers", "Joined", "Actions"]}
+            headers={["User", "Email", "Role", "Posts", "Followers", "Joined", "Actions"]}
             isEmpty={!data?.users.length}
           >
             {data?.users.map((user) => (
@@ -63,6 +63,9 @@ export default function AdminUsersPage() {
                     <p className="font-medium">{user.name ?? "—"}</p>
                     <p className="text-xs text-muted">@{user.username ?? "no-username"}</p>
                   </div>
+                </td>
+                <td className="px-4 py-3 text-sm text-muted">
+                  {user.email ?? "—"}
                 </td>
                 <td className="px-4 py-3">
                   <span
