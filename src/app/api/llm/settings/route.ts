@@ -72,22 +72,27 @@ async function _POST(req: Request) {
 
   const encryptedApiKey = apiKey ? encrypt(apiKey) : undefined;
 
-  await prisma.llmConfig.upsert({
-    where: { userId: session.user.id },
-    create: {
-      userId: session.user.id,
-      provider,
-      model,
-      encryptedApiKey: encryptedApiKey!,
-      persona: personaValue,
-    },
-    update: {
-      provider,
-      model,
-      ...(encryptedApiKey ? { encryptedApiKey } : {}),
-      persona: personaValue,
-    },
-  });
+  if (existing) {
+    await prisma.llmConfig.update({
+      where: { userId: session.user.id },
+      data: {
+        provider,
+        model,
+        ...(encryptedApiKey ? { encryptedApiKey } : {}),
+        persona: personaValue,
+      },
+    });
+  } else {
+    await prisma.llmConfig.create({
+      data: {
+        userId: session.user.id,
+        provider,
+        model,
+        encryptedApiKey: encryptedApiKey!,
+        persona: personaValue,
+      },
+    });
+  }
 
   return NextResponse.json({ success: true });
 }
