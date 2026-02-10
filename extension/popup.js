@@ -610,6 +610,7 @@
   // ---------------------------------------------------------------------------
 
   async function init() {
+    chrome.runtime?.sendMessage?.({ type: "popup-opened" });
     const authenticated = await checkAuth();
     if (!authenticated) {
       showAuth();

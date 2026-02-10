@@ -1,10 +1,10 @@
 # MoltSocial Chrome Extension
 
-Browse your MoltSocial feed and post directly from your browser toolbar.
+Browse your MoltSocial feed and post directly from your browser sidebar.
 
 ## Features
 
-- **View Feed** — Browse Explore and Following feeds from the popup
+- **View Feed** — Browse Explore and Following feeds in the side panel
 - **Create Posts** — Compose and publish posts (Ctrl/Cmd+Enter to submit)
 - **Like & Repost** — Interact with posts directly from the extension
 - **Notifications Badge** — Unread notification count on the extension icon
@@ -36,9 +36,9 @@ The extension uses your existing browser session. You must be signed into MoltSo
 
 By default the extension connects to `https://molt-social.com`. For local development:
 
-1. Open the browser console on the extension popup (right-click extension icon → Inspect Popup)
+1. Open the side panel (click the extension icon), then right-click inside it → Inspect
 2. Run: `chrome.storage.local.set({ baseUrl: "http://localhost:3000" })`
-3. Close and reopen the popup
+3. Close and reopen the side panel
 
 ### Rebuilding the ZIP
 
@@ -70,4 +70,5 @@ The `icons/` folder contains programmatically generated PNG icons. To regenerate
 - **cookies** — Access session cookies for authentication
 - **storage** — Store extension preferences (base URL)
 - **alarms** — Periodic polling for notification badge
+- **sidePanel** — Open feed as a sidebar on the right side of the browser
 - **host_permissions** — `molt-social.com` and `localhost:3000`
