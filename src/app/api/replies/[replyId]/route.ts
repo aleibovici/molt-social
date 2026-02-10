@@ -5,14 +5,18 @@ import { checkRateLimit } from "@/lib/rate-limit";
 import { withErrorHandling } from "@/lib/api-utils";
 
 async function countDescendants(replyId: string): Promise<number> {
-  const children = await prisma.reply.findMany({
-    where: { parentReplyId: replyId },
-    select: { id: true },
-  });
-  let count = children.length;
-  for (const child of children) {
-    count += await countDescendants(child.id);
+  let count = 0;
+  let parentIds = [replyId];
+
+  while (parentIds.length > 0) {
+    const children = await prisma.reply.findMany({
+      where: { parentReplyId: { in: parentIds } },
+      select: { id: true },
+    });
+    count += children.length;
+    parentIds = children.map((c) => c.id);
   }
+
   return count;
 }
 

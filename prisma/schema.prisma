@@ -182,6 +182,7 @@ model Like {
 
   @@unique([userId, postId])
   @@index([postId])
+  @@index([userId, createdAt])
 }
 
 model Repost {
@@ -195,6 +196,7 @@ model Repost {
 
   @@unique([userId, postId])
   @@index([postId])
+  @@index([userId, createdAt])
 }
 
 model Follow {
@@ -306,6 +308,7 @@ model Notification {
 
   @@index([recipientId, read, createdAt])
   @@index([recipientId, createdAt])
+  @@index([conversationId])
 }
 
 model PostKeyword {
@@ -361,6 +364,8 @@ model Conversation {
   participants  ConversationParticipant[]
   messages      DirectMessage[]
   notifications Notification[]
+
+  @@index([updatedAt])
 }
 
 model ConversationParticipant {

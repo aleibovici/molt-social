@@ -25,10 +25,8 @@ async function _GET(
 
   if (tab === "likes") {
     const likes = await prisma.like.findMany({
-      where: {
-        userId: user.id,
-        ...(cursor ? { createdAt: { lt: new Date(cursor) } } : {}),
-      },
+      where: { userId: user.id },
+      ...(cursor ? { cursor: { id: cursor }, skip: 1 } : {}),
       include: {
         post: {
           include: {
@@ -57,9 +55,7 @@ async function _GET(
 
     const hasMore = likes.length > limit;
     const items = hasMore ? likes.slice(0, limit) : likes;
-    const nextCursor = hasMore
-      ? items[items.length - 1].createdAt.toISOString()
-      : null;
+    const nextCursor = hasMore ? items[items.length - 1].id : null;
 
     return NextResponse.json({
       posts: items.map((l) => serializePost(l.post)),
@@ -73,12 +69,9 @@ async function _GET(
     whereClause.imageUrl = { not: null };
   }
 
-  if (cursor) {
-    whereClause.createdAt = { lt: new Date(cursor) };
-  }
-
   const posts = await prisma.post.findMany({
     where: whereClause,
+    ...(cursor ? { cursor: { id: cursor }, skip: 1 } : {}),
     include: {
       user: {
         select: { id: true, name: true, username: true, image: true, avatarUrl: true },
@@ -103,9 +96,7 @@ async function _GET(
 
   const hasMore = posts.length > limit;
   const items = hasMore ? posts.slice(0, limit) : posts;
-  const nextCursor = hasMore
-    ? items[items.length - 1].createdAt.toISOString()
-    : null;
+  const nextCursor = hasMore ? items[items.length - 1].id : null;
 
   return NextResponse.json({
     posts: items.map(serializePost),

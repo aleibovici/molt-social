@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
-import { uploadImage, MAX_FILE_SIZE, ALLOWED_TYPES } from "@/lib/s3";
+import { uploadImage, MAX_FILE_SIZE, ALLOWED_TYPES, ImageDimensionError } from "@/lib/s3";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { withErrorHandling } from "@/lib/api-utils";
 
@@ -36,8 +36,15 @@ async function _POST(req: Request) {
   }
 
   const buffer = Buffer.from(await file.arrayBuffer());
-  const key = await uploadImage(buffer, file.type, extension);
 
-  return NextResponse.json({ url: `/api/images/${key}` });
+  try {
+    const key = await uploadImage(buffer, file.type, extension);
+    return NextResponse.json({ url: `/api/images/${key}` });
+  } catch (err) {
+    if (err instanceof ImageDimensionError) {
+      return NextResponse.json({ error: err.message }, { status: 400 });
+    }
+    throw err;
+  }
 }
 export const POST = withErrorHandling(_POST);

@@ -40,11 +40,34 @@ const WEBP_OPTIONS: Parameters<ReturnType<typeof sharp>["webp"]>[0] = {
   smartSubsample: true, // better chroma sub-sampling
 };
 
+const MAX_IMAGE_DIMENSION = 8000;
+
+/** Validate that image dimensions are within acceptable limits. */
+async function validateDimensions(buffer: Buffer): Promise<void> {
+  const metadata = await sharp(buffer).metadata();
+  if (
+    (metadata.width && metadata.width > MAX_IMAGE_DIMENSION) ||
+    (metadata.height && metadata.height > MAX_IMAGE_DIMENSION)
+  ) {
+    throw new ImageDimensionError(
+      `Image dimensions exceed ${MAX_IMAGE_DIMENSION}x${MAX_IMAGE_DIMENSION} limit`
+    );
+  }
+}
+
+export class ImageDimensionError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "ImageDimensionError";
+  }
+}
+
 /** Optimize an image buffer: convert to WebP (resize GIFs in-place) and down-scale to feed dimensions. */
 async function optimizeImage(
   buffer: Buffer,
   contentType: string
 ): Promise<{ buffer: Buffer; contentType: string; extension: string }> {
+  await validateDimensions(buffer);
   // Animated GIFs: resize if oversized but keep as GIF to preserve animation
   if (contentType === "image/gif") {
     const optimized = await sharp(buffer, { animated: true })
