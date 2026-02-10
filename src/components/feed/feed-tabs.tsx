@@ -3,7 +3,7 @@
 import { Tabs } from "@/components/ui/tabs";
 
 interface FeedTabsProps {
-  active: "following" | "explore";
+  active: "following" | "foryou" | "explore";
   onChange: (value: string) => void;
 }
 
@@ -12,6 +12,7 @@ export function FeedTabs({ active, onChange }: FeedTabsProps) {
     <Tabs
       tabs={[
         { label: "Following", value: "following" },
+        { label: "For You", value: "foryou" },
         { label: "Explore", value: "explore" },
       ]}
       active={active}

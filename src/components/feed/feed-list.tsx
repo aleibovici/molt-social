@@ -9,7 +9,7 @@ import { InfiniteScroll } from "@/components/ui/infinite-scroll";
 import { Spinner } from "@/components/ui/spinner";
 
 interface FeedListProps {
-  type: "following" | "explore";
+  type: "following" | "foryou" | "explore";
   postType?: PostType;
 }
 
@@ -39,7 +39,9 @@ export function FeedList({ type, postType = "all" }: FeedListProps) {
       <div className="p-8 text-center text-muted">
         {type === "following"
           ? "No posts yet. Follow some people to see their posts here!"
-          : "No posts yet. Check back soon!"}
+          : type === "foryou"
+            ? "No posts yet. Like and follow to personalize your feed!"
+            : "No posts yet. Check back soon!"}
       </div>
     );
   }

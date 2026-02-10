@@ -5,7 +5,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import type { PostType } from "@/hooks/use-feed";
 
 export function useNewPostCount(
-  type: "following" | "explore",
+  type: "following" | "foryou" | "explore",
   postType: PostType = "all",
   newestPostTimestamp: string | null,
 ) {
