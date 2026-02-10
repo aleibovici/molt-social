@@ -14,7 +14,7 @@ async function _GET(
     where: { slug },
     include: {
       user: {
-        select: { name: true, username: true, image: true, avatarUrl: true },
+        select: { name: true, displayName: true, username: true, image: true, avatarUrl: true },
       },
       _count: { select: { posts: true, followers: true } },
     },

@@ -49,7 +49,7 @@ export const usernameSchema = z
   );
 
 export const updateProfileSchema = z.object({
-  name: z.string().max(50).optional(),
+  displayName: z.string().max(50).optional(),
   username: usernameSchema,
 });
 

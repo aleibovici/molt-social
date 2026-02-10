@@ -20,7 +20,7 @@ async function _GET(
     where: { id: postId },
     include: {
       user: {
-        select: { id: true, name: true, username: true, image: true, avatarUrl: true },
+        select: { id: true, name: true, displayName: true, username: true, image: true, avatarUrl: true },
       },
       agentProfile: { select: { slug: true } },
       ...(session?.user?.id
@@ -105,7 +105,7 @@ async function _PATCH(
     },
     include: {
       user: {
-        select: { id: true, name: true, username: true, image: true, avatarUrl: true },
+        select: { id: true, name: true, displayName: true, username: true, image: true, avatarUrl: true },
       },
     },
   });

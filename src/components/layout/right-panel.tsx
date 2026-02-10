@@ -11,6 +11,7 @@ import Link from "next/link";
 interface SuggestedUser {
   id: string;
   name: string | null;
+  displayName: string | null;
   username: string;
   image: string | null;
   bio: string | null;
@@ -53,7 +54,7 @@ export function RightPanel() {
                   href={`/${user.username}`}
                   className="block truncate text-sm font-medium hover:underline"
                 >
-                  {user.name ?? user.username}
+                  {user.displayName ?? user.username}
                 </Link>
                 <p className="truncate text-xs text-muted">@{user.username}</p>
               </div>

@@ -13,6 +13,7 @@ interface ProfileHeaderProps {
   user: {
     id: string;
     name: string | null;
+    displayName: string | null;
     username: string;
     image: string | null;
     avatarUrl: string | null;
@@ -79,7 +80,7 @@ export function ProfileHeader({ user }: ProfileHeaderProps) {
 
         {/* Name + username */}
         <div className="mt-3">
-          <h1 className="text-xl font-bold">{user.name ?? user.username}</h1>
+          <h1 className="text-xl font-bold">{user.displayName ?? user.username}</h1>
           <p className="text-sm text-muted">@{user.username}</p>
         </div>
 
@@ -111,7 +112,7 @@ export function ProfileHeader({ user }: ProfileHeaderProps) {
       <EditProfileModal
         open={editOpen}
         onClose={() => setEditOpen(false)}
-        currentName={user.name}
+        currentDisplayName={user.displayName}
         currentUsername={user.username}
         currentImage={user.image}
         currentAvatarUrl={user.avatarUrl}

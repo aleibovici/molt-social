@@ -19,7 +19,7 @@ async function _GET(req: Request) {
     ...(cursor ? { cursor: { id: cursor }, skip: 1 } : {}),
     include: {
       actor: {
-        select: { id: true, name: true, username: true, image: true, avatarUrl: true },
+        select: { id: true, name: true, displayName: true, username: true, image: true, avatarUrl: true },
       },
       post: {
         select: { id: true, content: true },

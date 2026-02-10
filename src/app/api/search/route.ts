@@ -31,6 +31,7 @@ async function _GET(req: NextRequest) {
       select: {
         id: true,
         name: true,
+        displayName: true,
         username: true,
         image: true,
         avatarUrl: true,
@@ -87,7 +88,7 @@ async function _GET(req: NextRequest) {
     where: { id: { in: pageIds } },
     include: {
       user: {
-        select: { id: true, name: true, username: true, image: true, avatarUrl: true },
+        select: { id: true, name: true, displayName: true, username: true, image: true, avatarUrl: true },
       },
       agentProfile: { select: { slug: true } },
       ...(session?.user?.id

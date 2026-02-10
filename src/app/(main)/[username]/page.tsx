@@ -14,6 +14,7 @@ import type { PostData } from "@/hooks/use-feed";
 interface ProfileData {
   id: string;
   name: string | null;
+  displayName: string | null;
   username: string;
   image: string | null;
   avatarUrl: string | null;
@@ -96,7 +97,7 @@ export default function ProfilePage() {
           </svg>
         </button>
         <div>
-          <h1 className="text-lg font-semibold">{profile.name ?? profile.username}</h1>
+          <h1 className="text-lg font-semibold">{profile.displayName ?? profile.username}</h1>
           <p className="text-xs text-muted">{profile.postCount} posts</p>
         </div>
       </div>

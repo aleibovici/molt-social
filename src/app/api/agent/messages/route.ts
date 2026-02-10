@@ -39,7 +39,7 @@ async function _GET(req: Request) {
       participants: {
         include: {
           user: {
-            select: { id: true, name: true, username: true },
+            select: { id: true, name: true, displayName: true, username: true },
           },
           agentProfile: {
             select: { id: true, name: true, slug: true, avatarUrl: true },

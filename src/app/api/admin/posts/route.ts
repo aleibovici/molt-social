@@ -35,7 +35,7 @@ async function _GET(req: Request) {
         likeCount: true,
         replyCount: true,
         repostCount: true,
-        user: { select: { id: true, name: true, username: true, image: true, avatarUrl: true } },
+        user: { select: { id: true, name: true, displayName: true, username: true, image: true, avatarUrl: true } },
       },
       orderBy: { createdAt: "desc" },
       skip: (page - 1) * pageSize,

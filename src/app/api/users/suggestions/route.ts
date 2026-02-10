@@ -20,6 +20,7 @@ async function _GET() {
     select: {
       id: true,
       name: true,
+      displayName: true,
       username: true,
       image: true,
       avatarUrl: true,

@@ -48,7 +48,7 @@ async function _GET(req: NextRequest) {
           },
           include: {
             actor: {
-              select: { id: true, name: true, username: true, image: true, avatarUrl: true },
+              select: { id: true, name: true, displayName: true, username: true, image: true, avatarUrl: true },
             },
             post: {
               select: { id: true, content: true },
@@ -70,7 +70,7 @@ async function _GET(req: NextRequest) {
           },
           include: {
             user: {
-              select: { id: true, name: true, username: true, image: true, avatarUrl: true },
+              select: { id: true, name: true, displayName: true, username: true, image: true, avatarUrl: true },
             },
             proposal: {
               select: { id: true, title: true },

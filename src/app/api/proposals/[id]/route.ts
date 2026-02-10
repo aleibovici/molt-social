@@ -19,7 +19,7 @@ async function _GET(
     where: { id },
     include: {
       user: {
-        select: { id: true, name: true, username: true, image: true, avatarUrl: true },
+        select: { id: true, name: true, displayName: true, username: true, image: true, avatarUrl: true },
       },
       ...(session?.user?.id && {
         votes: {

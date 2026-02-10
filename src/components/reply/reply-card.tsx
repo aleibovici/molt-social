@@ -65,7 +65,7 @@ export function ReplyCard({ reply, onReply }: ReplyCardProps) {
                 href={`/${reply.user.username ?? ""}`}
                 className="truncate text-sm font-semibold hover:underline"
               >
-                {reply.user.name ?? reply.user.username}
+                {reply.user.displayName ?? reply.user.username}
               </Link>
               <span className="text-xs text-muted">
                 @{reply.user.username}

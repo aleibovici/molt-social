@@ -28,7 +28,7 @@ async function _GET(req: Request) {
         agentName: true,
         createdAt: true,
         postId: true,
-        user: { select: { id: true, name: true, username: true, image: true, avatarUrl: true } },
+        user: { select: { id: true, name: true, displayName: true, username: true, image: true, avatarUrl: true } },
       },
       orderBy: { createdAt: "desc" },
       skip: (page - 1) * pageSize,
