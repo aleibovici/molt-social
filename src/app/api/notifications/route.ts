@@ -15,10 +15,8 @@ async function _GET(req: Request) {
   const limit = 20;
 
   const notifications = await prisma.notification.findMany({
-    where: {
-      recipientId: session.user.id,
-      ...(cursor ? { createdAt: { lt: new Date(cursor) } } : {}),
-    },
+    where: { recipientId: session.user.id },
+    ...(cursor ? { cursor: { id: cursor }, skip: 1 } : {}),
     include: {
       actor: {
         select: { id: true, name: true, username: true, image: true, avatarUrl: true },
@@ -39,9 +37,7 @@ async function _GET(req: Request) {
 
   const hasMore = notifications.length > limit;
   const items = hasMore ? notifications.slice(0, limit) : notifications;
-  const nextCursor = hasMore
-    ? items[items.length - 1].createdAt.toISOString()
-    : null;
+  const nextCursor = hasMore ? items[items.length - 1].id : null;
 
   return NextResponse.json({
     notifications: items.map((n) => ({

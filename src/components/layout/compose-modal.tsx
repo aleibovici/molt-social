@@ -8,7 +8,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { useSession } from "next-auth/react";
 import { useCreatePost } from "@/hooks/use-create-post";
 import { useUploadImage } from "@/hooks/use-upload-image";
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/gif", "image/webp"];
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
@@ -26,6 +26,7 @@ export function ComposeModal({ open, onClose }: ComposeModalProps) {
   const [fileError, setFileError] = useState("");
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const blobUrlRef = useRef<string | null>(null);
   const { mutate: createPost, isPending } = useCreatePost();
   const { mutate: uploadImage, isPending: isUploading } = useUploadImage();
 
@@ -44,7 +45,9 @@ export function ComposeModal({ open, onClose }: ComposeModalProps) {
       }
 
       // Show local preview immediately
+      if (blobUrlRef.current) URL.revokeObjectURL(blobUrlRef.current);
       const localUrl = URL.createObjectURL(file);
+      blobUrlRef.current = localUrl;
       setPreviewUrl(localUrl);
       setImageUrl("");
 
@@ -53,12 +56,14 @@ export function ComposeModal({ open, onClose }: ComposeModalProps) {
         onSuccess: (url) => {
           setImageUrl(url);
           URL.revokeObjectURL(localUrl);
+          blobUrlRef.current = null;
         },
         onError: (err) => {
           setFileError(err.message);
           setPreviewUrl("");
           setImageUrl("");
           URL.revokeObjectURL(localUrl);
+          blobUrlRef.current = null;
         },
       });
     },
@@ -66,15 +71,26 @@ export function ComposeModal({ open, onClose }: ComposeModalProps) {
   );
 
   const removeImage = () => {
-    if (previewUrl) URL.revokeObjectURL(previewUrl);
+    if (blobUrlRef.current) {
+      URL.revokeObjectURL(blobUrlRef.current);
+      blobUrlRef.current = null;
+    }
     setPreviewUrl("");
     setImageUrl("");
     setFileError("");
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
+  // Revoke any outstanding blob URL when the component unmounts
+  useEffect(() => {
+    return () => {
+      if (blobUrlRef.current) URL.revokeObjectURL(blobUrlRef.current);
+    };
+  }, []);
+
   const handleSubmit = () => {
     if (!content.trim() && !imageUrl) return;
+    if (isPending) return;
     createPost(
       {
         content: content.trim() || undefined,

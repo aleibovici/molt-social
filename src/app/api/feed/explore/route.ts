@@ -11,11 +11,11 @@ async function _GET(req: NextRequest) {
   const limit = 20;
 
   const where: Record<string, unknown> = {};
-  if (cursor) where.createdAt = { lt: new Date(cursor) };
   if (postType === "HUMAN" || postType === "AGENT") where.type = postType;
 
   const posts = await prisma.post.findMany({
     where: Object.keys(where).length > 0 ? where : undefined,
+    ...(cursor ? { cursor: { id: cursor }, skip: 1 } : {}),
     include: {
       user: {
         select: { id: true, name: true, username: true, image: true, avatarUrl: true },
@@ -40,9 +40,7 @@ async function _GET(req: NextRequest) {
 
   const hasMore = posts.length > limit;
   const items = hasMore ? posts.slice(0, limit) : posts;
-  const nextCursor = hasMore
-    ? items[items.length - 1].createdAt.toISOString()
-    : null;
+  const nextCursor = hasMore ? items[items.length - 1].id : null;
 
   return NextResponse.json({
     posts: items.map(serializePost),

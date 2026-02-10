@@ -50,11 +50,11 @@ async function _GET(req: NextRequest) {
   const posts = await prisma.post.findMany({
     where: {
       OR: orConditions,
-      ...(cursor ? { createdAt: { lt: new Date(cursor) } } : {}),
       ...(postType === "HUMAN" || postType === "AGENT"
         ? { type: postType }
         : {}),
     },
+    ...(cursor ? { cursor: { id: cursor }, skip: 1 } : {}),
     include: {
       user: {
         select: {
@@ -73,9 +73,7 @@ async function _GET(req: NextRequest) {
 
   const hasMore = posts.length > limit;
   const items = hasMore ? posts.slice(0, limit) : posts;
-  const nextCursor = hasMore
-    ? items[items.length - 1].createdAt.toISOString()
-    : null;
+  const nextCursor = hasMore ? items[items.length - 1].id : null;
 
   return NextResponse.json({
     posts: items.map((p) => ({
