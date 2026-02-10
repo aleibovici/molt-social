@@ -1,6 +1,6 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useInfiniteQuery } from "@tanstack/react-query";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { Avatar } from "@/components/ui/avatar";
@@ -14,6 +14,7 @@ import { ReplyComposer } from "@/components/reply/reply-composer";
 import { ReplyThread } from "@/components/reply/reply-thread";
 import { RelatedPostsCarousel } from "@/components/post/related-posts-carousel";
 import { PostAiPanel } from "@/components/post/post-ai-panel";
+import { InfiniteScroll } from "@/components/ui/infinite-scroll";
 import { useAiSummary } from "@/components/providers/ai-summary-provider";
 import { useIsRightPanelVisible } from "@/hooks/use-media-query";
 import { Spinner } from "@/components/ui/spinner";
@@ -33,13 +34,23 @@ export default function PostDetailPage() {
     queryFn: () => fetch(`/api/posts/${postId}`).then((r) => r.json()),
   });
 
-  const { data: repliesData } = useQuery<{
+  const {
+    data: repliesData,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useInfiniteQuery<{
     replies: Omit<ReplyNode, "children">[];
     nextCursor: string | null;
   }>({
     queryKey: ["replies", postId],
-    queryFn: () =>
-      fetch(`/api/posts/${postId}/replies`).then((r) => r.json()),
+    queryFn: ({ pageParam }) => {
+      const url = new URL(`/api/posts/${postId}/replies`, window.location.origin);
+      if (pageParam) url.searchParams.set("cursor", pageParam as string);
+      return fetch(url.toString()).then((r) => r.json());
+    },
+    getNextPageParam: (lastPage) => lastPage.nextCursor,
+    initialPageParam: undefined as string | undefined,
   });
 
   if (postLoading) {
@@ -60,7 +71,8 @@ export default function PostDetailPage() {
     else openSummary(post.id, post.content);
   };
 
-  const replyTree = repliesData?.replies ? buildReplyTree(repliesData.replies) : [];
+  const allReplies = repliesData?.pages.flatMap((p) => p.replies) ?? [];
+  const replyTree = allReplies.length > 0 ? buildReplyTree(allReplies) : [];
 
   return (
     <div>
@@ -213,7 +225,18 @@ export default function PostDetailPage() {
       <ReplyComposer postId={postId} />
 
       <div className="px-4">
-        <ReplyThread replies={replyTree} postId={postId} />
+        <InfiniteScroll
+          onLoadMore={fetchNextPage}
+          hasMore={!!hasNextPage}
+          loading={isFetchingNextPage}
+        >
+          <ReplyThread replies={replyTree} postId={postId} />
+        </InfiniteScroll>
+        {isFetchingNextPage && (
+          <div className="flex justify-center py-4">
+            <Spinner />
+          </div>
+        )}
       </div>
     </div>
   );
