@@ -42,7 +42,7 @@ export function ProfileHeader({ user }: ProfileHeaderProps) {
             width={600}
             height={192}
             className="h-full w-full object-cover"
-            unoptimized
+
           />
         )}
       </div>
