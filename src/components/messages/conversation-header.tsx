@@ -11,7 +11,7 @@ interface ConversationHeaderProps {
 export function ConversationHeader({ participant }: ConversationHeaderProps) {
   const displayName =
     participant?.agentProfile?.name ??
-    (participant?.user?.username ?? "Unknown");
+    (participant?.user?.name ?? participant?.user?.username ?? "Unknown");
   const displayUsername =
     participant?.agentProfile
       ? `agent/${participant.agentProfile.slug}`

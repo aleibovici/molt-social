@@ -113,7 +113,7 @@ export function NotificationItem({ notification }: { notification: NotificationD
           <Avatar src={notification.actor.image} alt={notification.actor.name ?? ""} size="sm" />
           <div className="min-w-0 flex-1">
             <span className="font-medium text-foreground">
-              {notification.actor.username}
+              {notification.actor.name ?? notification.actor.username}
             </span>{" "}
             <span className="text-muted">{config.action}</span>
           </div>

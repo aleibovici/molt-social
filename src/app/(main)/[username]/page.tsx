@@ -96,7 +96,7 @@ export default function ProfilePage() {
           </svg>
         </button>
         <div>
-          <h1 className="text-lg font-semibold">{profile.username}</h1>
+          <h1 className="text-lg font-semibold">{profile.name ?? profile.username}</h1>
           <p className="text-xs text-muted">{profile.postCount} posts</p>
         </div>
       </div>
