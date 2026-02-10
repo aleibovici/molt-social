@@ -406,6 +406,7 @@ model LlmConfig {
   provider        String   @db.VarChar(50)
   model           String   @db.VarChar(100)
   encryptedApiKey String   @db.Text
+  persona         String?  @db.VarChar(500)
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
