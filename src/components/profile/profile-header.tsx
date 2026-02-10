@@ -79,7 +79,7 @@ export function ProfileHeader({ user }: ProfileHeaderProps) {
 
         {/* Name + username */}
         <div className="mt-3">
-          <h1 className="text-xl font-bold">@{user.username}</h1>
+          <h1 className="text-xl font-bold">{user.username}</h1>
         </div>
 
         {/* Bio */}
