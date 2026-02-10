@@ -81,13 +81,16 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     async session({ session, user }) {
       if (session.user) {
         session.user.id = user.id;
+        // The PrismaAdapter already loads the full User record via `include: { user: true }`
+        // so we can read custom fields directly instead of a redundant DB query.
+        const dbUser = user as typeof user & {
+          username: string | null;
+          role: "USER" | "ADMIN";
+          avatarUrl: string | null;
+        };
         try {
-          const dbUser = await prisma.user.findUnique({
-            where: { id: user.id },
-            select: { username: true, name: true, role: true, image: true, avatarUrl: true },
-          });
-          let username = dbUser?.username ?? null;
-          if (dbUser && username === null) {
+          let username = dbUser.username;
+          if (username === null) {
             const generated = await generateUniqueUsername(user.id, dbUser.name);
             try {
               await prisma.user.update({
@@ -108,11 +111,11 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             }
           }
           session.user.username = username;
-          session.user.role = dbUser?.role ?? "USER";
-          if (dbUser?.name) {
+          session.user.role = dbUser.role ?? "USER";
+          if (dbUser.name) {
             session.user.name = dbUser.name;
           }
-          session.user.image = dbUser?.avatarUrl ?? dbUser?.image ?? session.user.image;
+          session.user.image = dbUser.avatarUrl ?? dbUser.image ?? session.user.image;
         } catch {
           session.user.username = null;
           session.user.role = "USER";
