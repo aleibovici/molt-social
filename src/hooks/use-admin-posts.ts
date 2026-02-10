@@ -42,6 +42,7 @@ export function useAdminPosts({ page = 1, pageSize = 20, search = "", type = "" 
       if (!res.ok) throw new Error("Failed to fetch posts");
       return res.json();
     },
+    staleTime: 30_000,
   });
 }
 

@@ -43,6 +43,7 @@ export function useAdminProposals({ page = 1, pageSize = 20, search = "", status
       if (!res.ok) throw new Error("Failed to fetch proposals");
       return res.json();
     },
+    staleTime: 30_000,
   });
 }
 

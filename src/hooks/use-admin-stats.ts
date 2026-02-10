@@ -29,5 +29,6 @@ export function useAdminStats() {
       if (!res.ok) throw new Error("Failed to fetch stats");
       return res.json();
     },
+    staleTime: 2 * 60_000,
   });
 }

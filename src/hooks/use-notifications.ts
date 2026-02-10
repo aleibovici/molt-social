@@ -40,5 +40,6 @@ export function useNotifications() {
     },
     getNextPageParam: (lastPage) => lastPage.nextCursor,
     initialPageParam: undefined as string | undefined,
+    staleTime: 30_000,
   });
 }

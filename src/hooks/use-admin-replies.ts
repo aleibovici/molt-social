@@ -37,6 +37,7 @@ export function useAdminReplies({ page = 1, pageSize = 20, search = "" }: UseAdm
       if (!res.ok) throw new Error("Failed to fetch replies");
       return res.json();
     },
+    staleTime: 30_000,
   });
 }
 
