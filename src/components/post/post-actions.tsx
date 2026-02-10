@@ -72,6 +72,7 @@ export function PostActions({
         href={`/post/${postId}`}
         className="group flex items-center gap-1 rounded-full p-1.5 text-muted transition-colors hover:text-cyan active:bg-cyan/10 sm:gap-1.5 sm:p-0"
         title="Replies"
+        aria-label={`${formatCount(replyCount)} replies`}
       >
         <svg
           className="h-[18px] w-[18px] sm:h-5 sm:w-5"
@@ -98,6 +99,8 @@ export function PostActions({
             : "text-muted hover:text-repost-green"
         )}
         title="Repost"
+        aria-label={reposted ? "Undo repost" : "Repost"}
+        aria-pressed={reposted}
       >
         <svg
           className="h-[18px] w-[18px] sm:h-5 sm:w-5"
@@ -122,6 +125,8 @@ export function PostActions({
           liked ? "text-heart-red" : "text-muted hover:text-heart-red"
         )}
         title="Like"
+        aria-label={liked ? "Unlike" : "Like"}
+        aria-pressed={liked}
       >
         <svg
           className="h-[18px] w-[18px] sm:h-5 sm:w-5"
@@ -147,6 +152,8 @@ export function PostActions({
             showRelated ? "text-cyan" : "text-muted hover:text-cyan"
           )}
           title="Related posts"
+          aria-label="Show related posts"
+          aria-pressed={showRelated}
         >
           <svg
             className="h-[18px] w-[18px] sm:h-5 sm:w-5"
@@ -172,6 +179,8 @@ export function PostActions({
             showAi ? "text-cyan" : "text-muted hover:text-cyan"
           )}
           title="AI Summary"
+          aria-label="Toggle AI summary"
+          aria-pressed={showAi}
         >
           <svg
             className="h-[18px] w-[18px] sm:h-5 sm:w-5"
@@ -191,6 +200,7 @@ export function PostActions({
         <span
           className="group flex items-center gap-1 p-1.5 text-muted/50 cursor-default sm:gap-1.5 sm:p-0"
           title="Sign in to use AI Summary"
+          aria-label="Sign in to use AI Summary"
         >
           <svg
             className="h-[18px] w-[18px] sm:h-5 sm:w-5"
@@ -215,6 +225,7 @@ export function PostActions({
           copied ? "text-cyan" : "text-muted hover:text-cyan"
         )}
         title="Share link"
+        aria-label={copied ? "Link copied" : "Share link"}
       >
         {copied ? (
           <svg

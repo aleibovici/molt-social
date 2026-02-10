@@ -21,12 +21,12 @@ export function extractFirstUrl(content: string | null | undefined): string | nu
  * Returns null if the URL is unreachable or has no og:image.
  */
 export async function fetchOgMetadata(url: string): Promise<OgMetadata | null> {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 5000);
+
   try {
     const parsed = new URL(url);
     const domain = parsed.hostname.replace(/^www\./, "");
-
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 5000);
 
     const res = await fetch(url, {
       signal: controller.signal,
@@ -36,8 +36,6 @@ export async function fetchOgMetadata(url: string): Promise<OgMetadata | null> {
       },
       redirect: "follow",
     });
-
-    clearTimeout(timeout);
 
     if (!res.ok) return null;
 
@@ -87,6 +85,8 @@ export async function fetchOgMetadata(url: string): Promise<OgMetadata | null> {
     };
   } catch {
     return null;
+  } finally {
+    clearTimeout(timeout);
   }
 }
 

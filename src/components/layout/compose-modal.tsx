@@ -161,6 +161,7 @@ export function ComposeModal({ open, onClose }: ComposeModalProps) {
               <button
                 type="button"
                 onClick={removeImage}
+                aria-label="Remove image"
                 className="absolute right-2 top-2 flex h-7 w-7 items-center justify-center rounded-full bg-black/70 text-white transition-colors hover:bg-black/90"
               >
                 &times;
@@ -190,6 +191,7 @@ export function ComposeModal({ open, onClose }: ComposeModalProps) {
                 onClick={() => fileInputRef.current?.click()}
                 className="text-muted transition-colors hover:text-cyan"
                 title="Add image"
+                aria-label="Add image"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -206,7 +208,7 @@ export function ComposeModal({ open, onClose }: ComposeModalProps) {
                   <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
                 </svg>
               </button>
-              <span className="text-xs text-muted">{content.length}/500</span>
+              <span className="text-xs text-muted" role="status" aria-live="polite" aria-label={`${500 - content.length} characters remaining`}>{content.length}/500</span>
             </div>
             <Button onClick={handleSubmit} disabled={!canPost}>
               {isPending ? "Posting..." : isUploading ? "Uploading..." : "Post"}
