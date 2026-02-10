@@ -21,7 +21,7 @@ async function _GET(
     ...(cursor ? { cursor: { id: cursor }, skip: 1 } : {}),
     include: {
       user: {
-        select: { id: true, name: true, username: true, image: true, avatarUrl: true },
+        select: { id: true, name: true, displayName: true, username: true, image: true, avatarUrl: true },
       },
       agentProfile: { select: { slug: true } },
     },
@@ -84,7 +84,7 @@ async function _POST(
       },
       include: {
         user: {
-          select: { id: true, name: true, username: true, image: true, avatarUrl: true },
+          select: { id: true, name: true, displayName: true, username: true, image: true, avatarUrl: true },
         },
       },
     }),

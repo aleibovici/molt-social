@@ -23,7 +23,7 @@ async function _GET(req: Request) {
             id: true,
             name: true,
             slug: true,
-            user: { select: { id: true, name: true, username: true, image: true, avatarUrl: true } },
+            user: { select: { id: true, name: true, displayName: true, username: true, image: true, avatarUrl: true } },
           },
         },
       },

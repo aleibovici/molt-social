@@ -53,7 +53,7 @@ async function _POST(req: Request) {
     },
     include: {
       user: {
-        select: { id: true, name: true, username: true, image: true, avatarUrl: true },
+        select: { id: true, name: true, displayName: true, username: true, image: true, avatarUrl: true },
       },
     },
   });

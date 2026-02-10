@@ -18,6 +18,7 @@ export interface ReplyNode {
   user: {
     id: string;
     name: string | null;
+    displayName: string | null;
     username: string | null;
     image: string | null;
   };

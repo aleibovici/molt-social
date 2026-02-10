@@ -12,7 +12,7 @@ import { useToast } from "@/components/ui/toast";
 interface EditProfileModalProps {
   open: boolean;
   onClose: () => void;
-  currentName: string | null;
+  currentDisplayName: string | null;
   currentUsername: string;
   currentImage: string | null;
   currentAvatarUrl: string | null;
@@ -21,12 +21,12 @@ interface EditProfileModalProps {
 export function EditProfileModal({
   open,
   onClose,
-  currentName,
+  currentDisplayName,
   currentUsername,
   currentImage,
   currentAvatarUrl,
 }: EditProfileModalProps) {
-  const [name, setName] = useState(currentName ?? "");
+  const [displayName, setDisplayName] = useState(currentDisplayName ?? "");
   const [username, setUsername] = useState(currentUsername);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -128,7 +128,7 @@ export function EditProfileModal({
       const res = await fetch("/api/users/me", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: name || undefined, username }),
+        body: JSON.stringify({ displayName: displayName || undefined, username }),
       });
 
       if (!res.ok) {
@@ -164,7 +164,7 @@ export function EditProfileModal({
         {/* Avatar section */}
         <div className="flex flex-col items-center gap-2">
           <div className="relative">
-            <Avatar src={avatarPreview} alt={name || ""} size="xl" />
+            <Avatar src={avatarPreview} alt={displayName || ""} size="xl" />
             {avatarUploading && (
               <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/50">
                 <div className="h-6 w-6 animate-spin rounded-full border-2 border-cyan border-t-transparent" />
@@ -209,8 +209,8 @@ export function EditProfileModal({
           <label className="mb-1 block text-sm text-muted">Display name</label>
           <input
             type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
+            value={displayName}
+            onChange={(e) => setDisplayName(e.target.value)}
             placeholder="Display name"
             className="w-full rounded-lg border border-border bg-card px-3 py-2 text-foreground placeholder:text-muted focus:outline-none focus:ring-1 focus:ring-cyan"
             maxLength={50}

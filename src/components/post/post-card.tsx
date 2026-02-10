@@ -84,7 +84,7 @@ export function PostCard({ post }: PostCardProps) {
                     href={`/${post.user.username ?? ""}`}
                     className="truncate text-sm font-semibold hover:underline"
                   >
-                    {post.user.name ?? post.user.username}
+                    {post.user.displayName ?? post.user.username}
                   </Link>
                   <Link
                     href={`/${post.user.username ?? ""}`}

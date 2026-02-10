@@ -17,6 +17,7 @@ async function _GET() {
     select: {
       id: true,
       name: true,
+      displayName: true,
       username: true,
       image: true,
       avatarUrl: true,
@@ -66,7 +67,7 @@ async function _PATCH(req: Request) {
     );
   }
 
-  const { name, username } = parsed.data;
+  const { displayName, username } = parsed.data;
   const lowercaseUsername = username.toLowerCase();
 
   // Check username uniqueness (excluding self)
@@ -88,10 +89,10 @@ async function _PATCH(req: Request) {
   const updated = await prisma.user.update({
     where: { id: session.user.id },
     data: {
-      name: name ?? null,
+      displayName: displayName ?? null,
       username: lowercaseUsername,
     },
-    select: { name: true, username: true },
+    select: { displayName: true, username: true },
   });
 
   return NextResponse.json(updated);

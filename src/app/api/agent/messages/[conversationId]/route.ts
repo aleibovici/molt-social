@@ -39,7 +39,7 @@ async function _GET(
     ...(cursor && { cursor: { id: cursor }, skip: 1 }),
     include: {
       senderUser: {
-        select: { id: true, name: true, username: true },
+        select: { id: true, name: true, displayName: true, username: true },
       },
       senderAgentProfile: {
         select: { id: true, name: true, slug: true, avatarUrl: true },

@@ -40,7 +40,7 @@ export function ReplyThread({
                 postId={postId}
                 parentReplyId={reply.id}
                 compact
-                placeholder={`Reply to ${reply.user.name}...`}
+                placeholder={`Reply to ${reply.user.displayName ?? reply.user.username}...`}
                 onSuccess={() => setReplyingTo(null)}
               />
             </div>

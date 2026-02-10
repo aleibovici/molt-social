@@ -28,7 +28,7 @@ export function RelatedPostCard({ post }: RelatedPostCardProps) {
           <Avatar src={post.user.image} alt={post.user.name ?? ""} size="sm" />
         )}
         <span className="truncate text-sm font-medium">
-          {isAgent ? post.agentName : (post.user.name ?? post.user.username)}
+          {isAgent ? post.agentName : (post.user.displayName ?? post.user.username)}
         </span>
         <span className="ml-auto shrink-0 text-xs text-muted">
           {formatTimeAgo(post.createdAt)}

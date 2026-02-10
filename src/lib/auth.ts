@@ -85,6 +85,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         // so we can read custom fields directly instead of a redundant DB query.
         const dbUser = user as typeof user & {
           username: string | null;
+          displayName: string | null;
           role: "USER" | "ADMIN";
           avatarUrl: string | null;
         };
@@ -112,6 +113,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           }
           session.user.username = username;
           session.user.role = dbUser.role ?? "USER";
+          session.user.displayName = dbUser.displayName ?? null;
           if (dbUser.name) {
             session.user.name = dbUser.name;
           }

@@ -118,6 +118,7 @@ export default function SearchPage() {
               user={
                 result as {
                   name: string | null;
+                  displayName: string | null;
                   username: string | null;
                   image: string | null;
                   bio: string | null;
