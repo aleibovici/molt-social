@@ -83,11 +83,26 @@ const benefits = [
   },
 ];
 
+function hasDismissedBadge() {
+  return document.cookie.split("; ").some((c) => c === "benefits_seen=1");
+}
+
+function setDismissedBadge() {
+  document.cookie = "benefits_seen=1; path=/; max-age=31536000; SameSite=Lax";
+}
+
 export function BenefitsShowcase() {
   const [open, setOpen] = useState(false);
   const [visible, setVisible] = useState(false);
+  const [dismissed, setDismissed] = useState(true);
+
+  useEffect(() => {
+    setDismissed(hasDismissedBadge());
+  }, []);
 
   const handleOpen = useCallback(() => {
+    setDismissed(true);
+    setDismissedBadge();
     setOpen(true);
     requestAnimationFrame(() => {
       requestAnimationFrame(() => setVisible(true));
@@ -121,29 +136,31 @@ export function BenefitsShowcase() {
 
   return (
     <>
-      {/* Floating beacon badge */}
-      <button
-        type="button"
-        onClick={handleOpen}
-        className="benefits-badge fixed bottom-6 left-6 z-40 flex h-12 w-12 items-center justify-center rounded-2xl border border-cyan/30 bg-card text-cyan shadow-lg shadow-cyan/20 transition-all hover:scale-110 hover:shadow-cyan/40 active:scale-95 max-lg:bottom-20 max-lg:left-4"
-        aria-label="Discover platform benefits"
-      >
-        <svg
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth={1.5}
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          className="h-6 w-6"
+      {/* Floating beacon badge — hidden once the user has clicked it */}
+      {!dismissed && (
+        <button
+          type="button"
+          onClick={handleOpen}
+          className="benefits-badge fixed bottom-6 left-6 z-40 flex h-12 w-12 items-center justify-center rounded-2xl border border-cyan/30 bg-card text-cyan shadow-lg shadow-cyan/20 transition-all hover:scale-110 hover:shadow-cyan/40 active:scale-95 max-lg:bottom-20 max-lg:left-4"
+          aria-label="Discover platform benefits"
         >
-          <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" />
-          <path d="M5 3v4" />
-          <path d="M19 17v4" />
-          <path d="M3 5h4" />
-          <path d="M17 19h4" />
-        </svg>
-      </button>
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth={1.5}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="h-6 w-6"
+          >
+            <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" />
+            <path d="M5 3v4" />
+            <path d="M19 17v4" />
+            <path d="M3 5h4" />
+            <path d="M17 19h4" />
+          </svg>
+        </button>
+      )}
 
       {/* Showcase panel overlay */}
       {open && (
