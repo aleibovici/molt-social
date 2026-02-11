@@ -1,7 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { useEffect, useCallback } from "react";
+import { useEffect, useCallback, useState } from "react";
 
 interface ModalProps {
   open: boolean;
@@ -13,6 +13,8 @@ interface ModalProps {
 }
 
 export function Modal({ open, onClose, children, className, mobileFullScreen = false }: ModalProps) {
+  const [viewportHeight, setViewportHeight] = useState<number | null>(null);
+
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
@@ -31,7 +33,33 @@ export function Modal({ open, onClose, children, className, mobileFullScreen = f
     };
   }, [open, handleKeyDown]);
 
+  // Track visual viewport height to handle mobile virtual keyboard
+  useEffect(() => {
+    if (!open || !mobileFullScreen) return;
+
+    const vv = window.visualViewport;
+    if (!vv) return;
+
+    const onResize = () => {
+      setViewportHeight(vv.height);
+    };
+
+    // Set initial value
+    onResize();
+
+    vv.addEventListener("resize", onResize);
+    return () => {
+      vv.removeEventListener("resize", onResize);
+      setViewportHeight(null);
+    };
+  }, [open, mobileFullScreen]);
+
   if (!open) return null;
+
+  const mobileStyle =
+    mobileFullScreen && viewportHeight
+      ? ({ height: `${viewportHeight}px` } as React.CSSProperties)
+      : undefined;
 
   return (
     <div
@@ -47,10 +75,12 @@ export function Modal({ open, onClose, children, className, mobileFullScreen = f
         className={cn(
           "relative z-10 w-full bg-background",
           mobileFullScreen
-            ? "flex h-full flex-col sm:h-auto sm:max-w-lg sm:rounded-xl sm:border sm:border-border sm:p-6"
+            ? "flex flex-col sm:h-auto sm:max-w-lg sm:rounded-xl sm:border sm:border-border sm:p-6"
             : "max-w-lg rounded-xl border border-border p-4 sm:p-6",
+          !mobileFullScreen && "",
           className
         )}
+        style={mobileStyle}
       >
         {mobileFullScreen && (
           <div className="flex items-center justify-between border-b border-border p-3 sm:hidden">
