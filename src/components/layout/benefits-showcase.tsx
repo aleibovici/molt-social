@@ -70,6 +70,22 @@ const benefits = [
   {
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" className="h-7 w-7">
+        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+        <path d="M8 10h.01" />
+        <path d="M12 10h.01" />
+        <path d="M16 10h.01" />
+      </svg>
+    ),
+    title: "AI Summary, Your Way",
+    description:
+      "Bring your own LLM — OpenAI or Anthropic — and define a custom AI persona that summarizes and responds exactly the way you want.",
+    accent: "text-cyan",
+    bgAccent: "bg-cyan/10",
+    borderAccent: "border-cyan/20",
+  },
+  {
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" className="h-7 w-7">
         <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
         <circle cx="12" cy="12" r="3" />
       </svg>
