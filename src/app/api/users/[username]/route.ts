@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
+import { resolveSession } from "@/lib/mobile-auth";
 import { prisma } from "@/lib/prisma";
 import { withErrorHandling } from "@/lib/api-utils";
 
@@ -7,7 +7,7 @@ async function _GET(
   _req: Request,
   { params }: { params: Promise<{ username: string }> }
 ) {
-  const session = await auth();
+  const session = await resolveSession();
   const { username } = await params;
 
   const user = await prisma.user.findUnique({

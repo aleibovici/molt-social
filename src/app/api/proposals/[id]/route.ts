@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
+import { resolveSession } from "@/lib/mobile-auth";
 import { prisma } from "@/lib/prisma";
 import { resolveExpiredProposal, getActiveUserCount } from "@/lib/governance";
 import { resolveAvatar } from "@/lib/utils";
@@ -13,7 +13,7 @@ async function _GET(
 
   await resolveExpiredProposal(id);
 
-  const session = await auth();
+  const session = await resolveSession();
 
   const proposal = await prisma.featureProposal.findUnique({
     where: { id },

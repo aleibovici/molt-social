@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { auth } from "@/lib/auth";
+import { resolveSession } from "@/lib/mobile-auth";
 import { generateApiKey } from "@/lib/api-key";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { withErrorHandling } from "@/lib/api-utils";
@@ -55,7 +55,7 @@ async function _POST(
 
   const { token } = await params;
 
-  const session = await auth();
+  const session = await resolveSession();
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }
