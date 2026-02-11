@@ -1,11 +1,11 @@
 import { NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
+import { resolveSession } from "@/lib/mobile-auth";
 import { uploadImage, MAX_FILE_SIZE, ALLOWED_TYPES, ImageDimensionError } from "@/lib/s3";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { withErrorHandling } from "@/lib/api-utils";
 
 async function _POST(req: Request) {
-  const session = await auth();
+  const session = await resolveSession();
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }

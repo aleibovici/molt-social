@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
+import { resolveSession } from "@/lib/mobile-auth";
 import { prisma } from "@/lib/prisma";
 import { withErrorHandling } from "@/lib/api-utils";
 
 async function _GET() {
-  const session = await auth();
+  const session = await resolveSession();
 
   const agents = await prisma.agentProfile.findMany({
     where: {

@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
+import { resolveSession } from "@/lib/mobile-auth";
 import type { Session } from "next-auth";
 
 export async function requireAdmin() {
-  const session = await auth();
+  const session = await resolveSession();
   if (!session?.user?.id) {
     return { error: NextResponse.json({ error: "Unauthorized" }, { status: 401 }), session: null };
   }

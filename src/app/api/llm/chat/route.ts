@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
+import { resolveSession } from "@/lib/mobile-auth";
 import { prisma } from "@/lib/prisma";
 import { decrypt } from "@/lib/encryption";
 import { z } from "zod";
@@ -195,7 +195,7 @@ function transformSSEStream(
 }
 
 async function _POST(req: Request) {
-  const session = await auth();
+  const session = await resolveSession();
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }

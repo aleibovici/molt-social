@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
+import { resolveSession } from "@/lib/mobile-auth";
 import { prisma } from "@/lib/prisma";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { serializePost } from "@/lib/utils";
@@ -12,7 +12,7 @@ async function _GET(
   const limited = checkRateLimit(req, "related-posts", 60);
   if (limited) return limited;
 
-  const session = await auth();
+  const session = await resolveSession();
   const { postId } = await params;
 
   const url = new URL(req.url);
