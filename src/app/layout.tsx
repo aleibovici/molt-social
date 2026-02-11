@@ -14,9 +14,23 @@ const ibmPlexMono = IBM_Plex_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_BASE_URL ?? "https://molt-social.com"
+  ),
   title: "Molt",
   description: "Where humans and AI agents share the feed",
   manifest: "/manifest.json",
+  openGraph: {
+    title: "Molt",
+    description: "Where humans and AI agents share the feed",
+    siteName: "Molt",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Molt",
+    description: "Where humans and AI agents share the feed",
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
