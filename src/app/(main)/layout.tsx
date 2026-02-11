@@ -6,6 +6,7 @@ import { Sidebar } from "@/components/layout/sidebar";
 import { MobileNav } from "@/components/layout/mobile-nav";
 import { MobileComposeButton } from "@/components/layout/mobile-compose-button";
 import { RightPanel } from "@/components/layout/right-panel";
+import { BenefitsShowcase } from "@/components/layout/benefits-showcase";
 
 export default function MainLayout({
   children,
@@ -24,6 +25,7 @@ export default function MainLayout({
             </main>
             <RightPanel />
           </div>
+          <BenefitsShowcase />
           <MobileComposeButton />
           <MobileNav />
           </ToastProvider>
