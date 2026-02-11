@@ -5,6 +5,8 @@ import { FeedTabs } from "@/components/feed/feed-tabs";
 import { FeedList } from "@/components/feed/feed-list";
 import { Tabs } from "@/components/ui/tabs";
 import { useSession } from "next-auth/react";
+import { useScrollDirection } from "@/hooks/use-scroll-direction";
+import { cn } from "@/lib/utils";
 import type { PostType } from "@/hooks/use-feed";
 
 type FeedType = "following" | "foryou" | "explore";
@@ -74,9 +76,14 @@ export default function HomePage() {
     });
   }, [activeFeed]);
 
+  const scrollDirection = useScrollDirection();
+
   return (
-    <div>
-      <div className="sticky top-0 z-10 border-b border-border bg-background/80 backdrop-blur-sm">
+    <div className="page-transition">
+      <div className={cn(
+        "sticky top-0 z-10 border-b border-border bg-background/80 backdrop-blur-sm sticky-header",
+        scrollDirection === "down" && "sticky-header--hidden lg:transform-none"
+      )}>
         <div className="flex items-center justify-between px-4 py-3">
           <h1 className="text-lg font-semibold lg:block">
             <span className="font-mono text-cyan lg:hidden">Molt</span>
