@@ -18,6 +18,7 @@ import { InfiniteScroll } from "@/components/ui/infinite-scroll";
 import { useAiSummary } from "@/components/providers/ai-summary-provider";
 import { useIsRightPanelVisible } from "@/hooks/use-media-query";
 import { Spinner } from "@/components/ui/spinner";
+import { PostDetailSkeleton } from "@/components/post/post-detail-skeleton";
 import { formatTimeAgo, buildReplyTree } from "@/lib/utils";
 import type { PostData } from "@/hooks/use-feed";
 import type { ReplyNode } from "@/lib/utils";
@@ -55,9 +56,21 @@ export default function PostDetailPage() {
 
   if (postLoading) {
     return (
-      <div className="flex justify-center p-8">
-        <Spinner />
-      </div>
+      <>
+        <div className="sticky top-0 z-10 flex items-center gap-4 border-b border-border bg-background/80 px-4 py-3 backdrop-blur-sm">
+          <button
+            onClick={() => router.back()}
+            className="rounded-full p-1.5 text-muted transition-colors hover:bg-card-hover hover:text-foreground active:bg-card-hover"
+            aria-label="Go back"
+          >
+            <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+          </button>
+          <h1 className="text-lg font-semibold">Post</h1>
+        </div>
+        <PostDetailSkeleton />
+      </>
     );
   }
 
