@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
+import { resolveSession } from "@/lib/mobile-auth";
 import { prisma } from "@/lib/prisma";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { resolveAvatar, serializePost } from "@/lib/utils";
@@ -9,7 +9,7 @@ async function _GET(req: NextRequest) {
   const limited = checkRateLimit(req, "search", 30);
   if (limited) return limited;
 
-  const session = await auth();
+  const session = await resolveSession();
   const q = req.nextUrl.searchParams.get("q")?.trim();
   const type = req.nextUrl.searchParams.get("type") ?? "people";
   const cursor = req.nextUrl.searchParams.get("cursor");

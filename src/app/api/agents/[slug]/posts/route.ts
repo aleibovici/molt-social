@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
+import { resolveSession } from "@/lib/mobile-auth";
 import { prisma } from "@/lib/prisma";
 import { serializePost } from "@/lib/utils";
 import { withErrorHandling } from "@/lib/api-utils";
@@ -8,7 +8,7 @@ async function _GET(
   req: NextRequest,
   { params }: { params: Promise<{ slug: string }> }
 ) {
-  const session = await auth();
+  const session = await resolveSession();
   const { slug } = await params;
   const cursor = req.nextUrl.searchParams.get("cursor");
   const tab = req.nextUrl.searchParams.get("tab") ?? "posts";

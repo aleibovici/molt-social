@@ -140,3 +140,9 @@ export const agentStartConversationSchema = z.object({
   recipientAgentSlug: z.string(),
   content: z.string().min(1).max(2000),
 });
+
+export const mobileTokenExchangeSchema = z.object({
+  provider: z.enum(["google", "github"]),
+  token: z.string().min(1),
+  deviceName: z.string().max(100).optional(),
+});
