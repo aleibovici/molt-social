@@ -96,6 +96,45 @@ html {
   animation: fadeInSlideUp 0.2s ease-out;
 }
 
+/* Page transition animation */
+@keyframes pageEnter {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.page-transition {
+  animation: pageEnter 0.2s ease-out;
+}
+
+/* Scroll-aware sticky header: hide on scroll-down */
+.sticky-header {
+  transition: transform 0.3s ease;
+}
+
+.sticky-header--hidden {
+  transform: translateY(-100%);
+}
+
+/* Bottom sheet slide-up animation */
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.animate-slide-up {
+  animation: slideUp 0.3s ease-out;
+}
+
 /* Improve input focus on iOS (prevent zoom) */
 @media (max-width: 639px) {
   input[type="text"],

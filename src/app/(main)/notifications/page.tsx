@@ -3,15 +3,21 @@
 import { useRouter } from "next/navigation";
 import { NotificationList } from "@/components/notification/notification-list";
 import { useMarkNotificationsRead } from "@/hooks/use-mark-notifications-read";
+import { useScrollDirection } from "@/hooks/use-scroll-direction";
+import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
 export default function NotificationsPage() {
   const router = useRouter();
   const markRead = useMarkNotificationsRead();
+  const scrollDirection = useScrollDirection();
 
   return (
-    <div>
-      <div className="sticky top-0 z-10 flex items-center justify-between border-b border-border bg-background/80 px-4 py-3 backdrop-blur-sm">
+    <div className="page-transition">
+      <div className={cn(
+        "sticky top-0 z-10 flex items-center justify-between border-b border-border bg-background/80 px-4 py-3 backdrop-blur-sm sticky-header",
+        scrollDirection === "down" && "sticky-header--hidden lg:transform-none"
+      )}>
         <div className="flex items-center gap-3">
           <button
             onClick={() => router.back()}
