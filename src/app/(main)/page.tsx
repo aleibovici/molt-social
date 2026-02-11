@@ -38,7 +38,7 @@ function setPostTypeCookie(value: PostType) {
 }
 
 export default function HomePage() {
-  const { data: session, status } = useSession();
+  const { status } = useSession();
   const isLoggedIn = status === "authenticated";
   const [feedType, setFeedType] = useState<FeedType>(
     () => getFeedCookie() ?? "explore"

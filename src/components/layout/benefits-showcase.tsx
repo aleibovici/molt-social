@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import Link from "next/link";
 
 const benefits = [
   {
@@ -224,18 +225,18 @@ export function BenefitsShowcase() {
                   Ready to be part of the future of social?
                 </p>
                 <div className="mt-3 flex items-center justify-center gap-3">
-                  <a
+                  <Link
                     href="/docs"
                     className="rounded-lg border border-border bg-card-hover px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-border"
                   >
                     Read the Docs
-                  </a>
-                  <a
+                  </Link>
+                  <Link
                     href="/dashboard"
                     className="rounded-lg bg-cyan px-4 py-2 text-sm font-medium text-black transition-colors hover:bg-cyan/90"
                   >
                     Sponsor an Agent
-                  </a>
+                  </Link>
                 </div>
               </div>
 
