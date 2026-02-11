@@ -1,17 +1,20 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
 import { useState, useRef, useEffect } from "react";
 import { useUnreadCount } from "@/hooks/use-unread-count";
 import { useUnreadMessages } from "@/hooks/use-unread-messages";
+import { MobileDiscoverSheet } from "@/components/layout/mobile-discover-sheet";
 import { cn } from "@/lib/utils";
 
 export function MobileNav() {
   const pathname = usePathname();
   const { data: session } = useSession();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [discoverOpen, setDiscoverOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const { data: unreadData } = useUnreadCount(!!session);
   const { data: unreadMsgData } = useUnreadMessages(!!session);
@@ -27,13 +30,8 @@ export function MobileNav() {
   const isSearch = pathname === "/search";
   const isNotifications = pathname === "/notifications";
   const isMessages = pathname.startsWith("/messages");
-  const isMore =
-    pathname === "/dashboard" ||
-    pathname === "/governance" ||
-    pathname === "/docs" ||
-    pathname === "/extension" ||
-    pathname === "/admin" ||
-    pathname.startsWith("/admin/");
+  const isProfile =
+    !!session?.user?.username && pathname === `/${session.user.username}`;
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -54,6 +52,7 @@ export function MobileNav() {
     );
 
   return (
+    <>
     <nav className="fixed bottom-0 left-0 right-0 z-40 border-t border-border bg-background/95 backdrop-blur-md lg:hidden safe-area-bottom">
       <div className="flex">
         {/* Home */}
@@ -102,33 +101,62 @@ export function MobileNav() {
           </Link>
         )}
 
-        {/* More menu - contains profile, dashboard, governance, admin */}
+        {/* Profile tab with avatar (auth) / Sign in (non-auth) */}
         {session?.user ? (
           <div ref={menuRef} className="relative flex flex-1 items-center justify-center">
             <button
               onClick={() => setMenuOpen((prev) => !prev)}
               className={cn(
                 "flex flex-col items-center justify-center gap-0.5 py-3 transition-colors",
-                menuOpen || isMore ? "text-cyan" : "text-muted active:text-foreground"
+                isProfile || menuOpen ? "text-cyan" : "text-muted active:text-foreground"
               )}
             >
-              <svg className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth={menuOpen || isMore ? 2.5 : 2} viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
-              </svg>
-              <span className="text-[10px] font-medium">More</span>
+              {session.user.image ? (
+                <div className={cn(
+                  "h-6 w-6 overflow-hidden rounded-full ring-2",
+                  isProfile || menuOpen ? "ring-cyan" : "ring-transparent"
+                )}>
+                  <Image
+                    src={session.user.image}
+                    alt={session.user.name ?? "Profile"}
+                    width={24}
+                    height={24}
+                    className="h-full w-full object-cover"
+                    unoptimized={session.user.image.startsWith("/api/")}
+                  />
+                </div>
+              ) : (
+                <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+              )}
+              <span className="text-[10px] font-medium">Profile</span>
             </button>
             {menuOpen && (
               <div className="absolute bottom-full mb-2 right-0 min-w-[200px] rounded-2xl border border-border bg-background py-2 shadow-xl animate-in fade-in slide-in-from-bottom-2 duration-200">
                 <Link
                   href={profileHref}
                   onClick={() => setMenuOpen(false)}
-                  className="flex items-center gap-3 px-4 py-3 text-sm text-foreground transition-colors hover:bg-card-hover active:bg-card-hover"
+                  className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-foreground transition-colors hover:bg-card-hover active:bg-card-hover"
                 >
                   <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                   </svg>
-                  Profile
+                  My Profile
                 </Link>
+                <button
+                  onClick={() => {
+                    setMenuOpen(false);
+                    setDiscoverOpen(true);
+                  }}
+                  className="flex w-full items-center gap-3 px-4 py-3 text-sm text-foreground transition-colors hover:bg-card-hover active:bg-card-hover"
+                >
+                  <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                  Discover
+                </button>
+                <div className="mx-3 my-1 border-t border-border" />
                 <Link
                   href="/governance"
                   onClick={() => setMenuOpen(false)}
@@ -198,5 +226,8 @@ export function MobileNav() {
         )}
       </div>
     </nav>
+
+    <MobileDiscoverSheet open={discoverOpen} onClose={() => setDiscoverOpen(false)} />
+    </>
   );
 }

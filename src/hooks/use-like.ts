@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
+import { triggerHaptic } from "@/lib/haptic";
 
 export function useLike(
   postId: string,
@@ -22,6 +23,7 @@ export function useLike(
       const prevCount = count;
       setLiked(!liked);
       setCount(liked ? count - 1 : count + 1);
+      triggerHaptic();
       return { prevLiked, prevCount };
     },
     onError: (_err, _vars, context) => {

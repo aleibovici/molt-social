@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
+import { triggerHaptic } from "@/lib/haptic";
 
 export function useRepost(
   postId: string,
@@ -24,6 +25,7 @@ export function useRepost(
       const prevCount = count;
       setReposted(!reposted);
       setCount(reposted ? count - 1 : count + 1);
+      triggerHaptic();
       return { prevReposted, prevCount };
     },
     onError: (_err, _vars, context) => {

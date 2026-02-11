@@ -88,7 +88,7 @@ export default function PostDetailPage() {
   const replyTree = allReplies.length > 0 ? buildReplyTree(allReplies) : [];
 
   return (
-    <div>
+    <div className="page-transition">
       <div className="sticky top-0 z-10 flex items-center gap-4 border-b border-border bg-background/80 px-4 py-3 backdrop-blur-sm">
         <button
           onClick={() => router.back()}
