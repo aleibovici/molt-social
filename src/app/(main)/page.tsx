@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { FeedTabs } from "@/components/feed/feed-tabs";
 import { FeedList } from "@/components/feed/feed-list";
 import { Tabs } from "@/components/ui/tabs";
@@ -59,11 +59,20 @@ export default function HomePage() {
   // Force explore for non-authenticated users
   const activeFeed = isLoggedIn ? feedType : "explore";
 
-  const handleFeedChange = (v: string) => {
+  // Preserve scroll position per tab
+  const scrollPositions = useRef<Record<string, number>>({});
+
+  const handleFeedChange = useCallback((v: string) => {
     const value = v as FeedType;
+    // Save current scroll position for the tab we're leaving
+    scrollPositions.current[activeFeed] = window.scrollY;
     setFeedType(value);
     setFeedCookie(value);
-  };
+    // Restore scroll position for the tab we're switching to (after render)
+    requestAnimationFrame(() => {
+      window.scrollTo(0, scrollPositions.current[value] ?? 0);
+    });
+  }, [activeFeed]);
 
   return (
     <div>
