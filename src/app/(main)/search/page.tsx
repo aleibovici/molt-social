@@ -27,7 +27,7 @@ export default function SearchPage() {
   });
 
   return (
-    <div>
+    <div className="page-transition">
       <div className="sticky top-0 z-10 border-b border-border bg-background/80 backdrop-blur-sm">
         <div className="flex items-center gap-2 p-3 sm:p-4">
           <button
