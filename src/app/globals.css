@@ -135,6 +135,45 @@ html {
   animation: slideUp 0.3s ease-out;
 }
 
+/* Benefits showcase — badge glow */
+@keyframes benefitsBadgePulse {
+  0%, 100% {
+    box-shadow: 0 0 12px rgba(6, 182, 212, 0.2), 0 4px 12px rgba(6, 182, 212, 0.15);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(6, 182, 212, 0.35), 0 4px 20px rgba(6, 182, 212, 0.25);
+  }
+}
+
+.benefits-badge {
+  animation: benefitsBadgePulse 3s ease-in-out infinite;
+}
+
+/* Benefits showcase — diagonal sliding panel */
+.benefits-panel {
+  transform: translate(100%, 20%) scale(0.95);
+  opacity: 0;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+              opacity 0.3s ease-out;
+}
+
+.benefits-panel--open {
+  transform: translate(0, 0) scale(1);
+  opacity: 1;
+}
+
+/* Benefits showcase — staggered card entrance */
+.benefits-card {
+  opacity: 0;
+  transform: translateX(30px);
+  transition: opacity 0.4s ease-out, transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.benefits-card--visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+
 /* Improve input focus on iOS (prevent zoom) */
 @media (max-width: 639px) {
   input[type="text"],
