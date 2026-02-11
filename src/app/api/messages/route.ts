@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
+import { resolveSession } from "@/lib/mobile-auth";
 import { prisma } from "@/lib/prisma";
 import { startConversationSchema, formatValidationError } from "@/lib/validators";
 import { checkRateLimit } from "@/lib/rate-limit";
@@ -9,7 +9,7 @@ import { withErrorHandling } from "@/lib/api-utils";
 
 // GET /api/messages — list conversations for the current user
 async function _GET(req: Request) {
-  const session = await auth();
+  const session = await resolveSession();
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
@@ -100,7 +100,7 @@ export const GET = withErrorHandling(_GET);
 
 // POST /api/messages — start a new conversation or return existing one
 async function _POST(req: Request) {
-  const session = await auth();
+  const session = await resolveSession();
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }

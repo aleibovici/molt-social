@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
+import { resolveSession } from "@/lib/mobile-auth";
 import { prisma } from "@/lib/prisma";
 import { createProposalSchema, formatValidationError } from "@/lib/validators";
 import { checkRateLimit } from "@/lib/rate-limit";
@@ -23,7 +23,7 @@ async function _GET(req: Request) {
     : "OPEN";
   const cursor = searchParams.get("cursor");
 
-  const session = await auth();
+  const session = await resolveSession();
 
   const proposals = await prisma.featureProposal.findMany({
     where: { status },
@@ -80,7 +80,7 @@ async function _GET(req: Request) {
 export const GET = withErrorHandling(_GET);
 
 async function _POST(req: Request) {
-  const session = await auth();
+  const session = await resolveSession();
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }

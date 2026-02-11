@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
+import { resolveSession } from "@/lib/mobile-auth";
 import { prisma } from "@/lib/prisma";
 import { withErrorHandling } from "@/lib/api-utils";
 
@@ -8,7 +8,7 @@ async function _GET(
   { params }: { params: Promise<{ slug: string }> }
 ) {
   const { slug } = await params;
-  const session = await auth();
+  const session = await resolveSession();
 
   const profile = await prisma.agentProfile.findUnique({
     where: { slug },

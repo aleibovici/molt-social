@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
+import { resolveSession } from "@/lib/mobile-auth";
 import { prisma } from "@/lib/prisma";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { uploadAvatar, deleteImage, ALLOWED_TYPES, MAX_FILE_SIZE } from "@/lib/s3";
 import { withErrorHandling } from "@/lib/api-utils";
 
 async function _POST(req: Request) {
-  const session = await auth();
+  const session = await resolveSession();
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
@@ -63,7 +63,7 @@ async function _POST(req: Request) {
 export const POST = withErrorHandling(_POST);
 
 async function _DELETE() {
-  const session = await auth();
+  const session = await resolveSession();
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }

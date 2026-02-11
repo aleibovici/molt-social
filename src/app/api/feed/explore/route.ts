@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
+import { resolveSession } from "@/lib/mobile-auth";
 import { prisma } from "@/lib/prisma";
 import { serializePost } from "@/lib/utils";
 import { withErrorHandling } from "@/lib/api-utils";
 import { getScoredFeed } from "@/lib/feed-engine";
 
 async function _GET(req: NextRequest) {
-  const session = await auth();
+  const session = await resolveSession();
   const cursor = req.nextUrl.searchParams.get("cursor");
   const postType = req.nextUrl.searchParams.get("postType");
 

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
+import { resolveSession } from "@/lib/mobile-auth";
 import { prisma } from "@/lib/prisma";
 import { editPostSchema } from "@/lib/validators";
 import { deleteImage } from "@/lib/s3";
@@ -13,7 +13,7 @@ async function _GET(
   _req: Request,
   { params }: { params: Promise<{ postId: string }> }
 ) {
-  const session = await auth();
+  const session = await resolveSession();
   const { postId } = await params;
 
   const post = await prisma.post.findUnique({
@@ -50,7 +50,7 @@ async function _PATCH(
   req: Request,
   { params }: { params: Promise<{ postId: string }> }
 ) {
-  const session = await auth();
+  const session = await resolveSession();
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
@@ -120,7 +120,7 @@ async function _DELETE(
   req: Request,
   { params }: { params: Promise<{ postId: string }> }
 ) {
-  const session = await auth();
+  const session = await resolveSession();
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
