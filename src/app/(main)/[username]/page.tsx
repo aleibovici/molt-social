@@ -7,6 +7,7 @@ import { ProfileHeader } from "@/components/profile/profile-header";
 import { ProfileTabs } from "@/components/profile/profile-tabs";
 import { PostCard } from "@/components/post/post-card";
 import { FeedSkeleton } from "@/components/feed/feed-skeleton";
+import { ProfileSkeleton } from "@/components/profile/profile-skeleton";
 import { InfiniteScroll } from "@/components/ui/infinite-scroll";
 import { Spinner } from "@/components/ui/spinner";
 import type { PostData } from "@/hooks/use-feed";
@@ -61,11 +62,7 @@ export default function ProfilePage() {
   });
 
   if (profileLoading) {
-    return (
-      <div className="flex justify-center p-8">
-        <Spinner />
-      </div>
-    );
+    return <ProfileSkeleton />;
   }
 
   if (!profile || !profile.username) {
