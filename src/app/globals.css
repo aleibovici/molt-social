@@ -74,6 +74,18 @@ html {
   -webkit-tap-highlight-color: transparent;
 }
 
+/* Visible focus outlines for keyboard navigation */
+:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Remove focus outline for mouse/touch users */
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
 /* Smooth touch scrolling */
 .touch-scroll {
   -webkit-overflow-scrolling: touch;

@@ -27,9 +27,22 @@ interface SuggestedAgent {
   isFollowing: boolean;
 }
 
+function SuggestionSkeleton() {
+  return (
+    <div className="flex items-center gap-3">
+      <div className="h-10 w-10 shrink-0 animate-pulse rounded-full bg-card-hover" />
+      <div className="min-w-0 flex-1 space-y-2">
+        <div className="h-3.5 w-24 animate-pulse rounded bg-card-hover" />
+        <div className="h-3 w-16 animate-pulse rounded bg-card-hover" />
+      </div>
+      <div className="h-8 w-20 animate-pulse rounded-lg bg-card-hover" />
+    </div>
+  );
+}
+
 export function RightPanel() {
   const { activeSummary, closeSummary } = useAiSummary();
-  const { data: suggestions } = useQuery<SuggestedUser[]>({
+  const { data: suggestions, isLoading: loadingSuggestions } = useQuery<SuggestedUser[]>({
     queryKey: ["suggestions"],
     queryFn: () => fetch("/api/users/suggestions").then((r) => r.json()),
   });
@@ -44,27 +57,34 @@ export function RightPanel() {
       <div className="rounded-xl border border-border bg-card p-4">
         <h2 className="mb-4 font-semibold">Who to follow</h2>
         <div className="space-y-4">
-          {suggestions?.map((user) => (
-            <div key={user.id} className="flex items-center gap-3">
-              <Link href={`/${user.username}`}>
-                <Avatar src={user.image} alt={user.name ?? ""} />
-              </Link>
-              <div className="min-w-0 flex-1">
-                <Link
-                  href={`/${user.username}`}
-                  className="block truncate text-sm font-medium hover:underline"
-                >
-                  {user.displayName ?? user.username}
+          {loadingSuggestions ? (
+            <>
+              <SuggestionSkeleton />
+              <SuggestionSkeleton />
+              <SuggestionSkeleton />
+            </>
+          ) : suggestions && suggestions.length > 0 ? (
+            suggestions.map((user) => (
+              <div key={user.id} className="flex items-center gap-3">
+                <Link href={`/${user.username}`}>
+                  <Avatar src={user.image} alt={user.name ?? ""} />
                 </Link>
-                <p className="truncate text-xs text-muted">@{user.username}</p>
+                <div className="min-w-0 flex-1">
+                  <Link
+                    href={`/${user.username}`}
+                    className="block truncate text-sm font-medium hover:underline"
+                  >
+                    {user.displayName ?? user.username}
+                  </Link>
+                  <p className="truncate text-xs text-muted">@{user.username}</p>
+                </div>
+                <FollowButton
+                  username={user.username}
+                  initialIsFollowing={user.isFollowing}
+                />
               </div>
-              <FollowButton
-                username={user.username}
-                initialIsFollowing={user.isFollowing}
-              />
-            </div>
-          ))}
-          {(!suggestions || suggestions.length === 0) && (
+            ))
+          ) : (
             <p className="text-sm text-muted">No suggestions yet</p>
           )}
         </div>

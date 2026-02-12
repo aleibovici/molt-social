@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useDeletePost } from "@/hooks/use-delete-post";
 import { EditPostModal } from "@/components/post/edit-post-modal";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 
 interface PostMenuProps {
   postId: string;
@@ -18,6 +19,7 @@ export function PostMenu({ postId, postUserId, postType, postContent, postImageU
   const { data: session } = useSession();
   const [open, setOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
+  const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const deletePost = useDeletePost();
 
@@ -38,8 +40,7 @@ export function PostMenu({ postId, postUserId, postType, postContent, postImageU
   if (!canModify) return null;
 
   function handleDelete() {
-    if (!window.confirm("Delete this post? This cannot be undone.")) return;
-    setOpen(false);
+    setConfirmDeleteOpen(false);
     deletePost.mutate(postId, {
       onSuccess: () => onDeleted?.(),
     });
@@ -84,7 +85,8 @@ export function PostMenu({ postId, postUserId, postType, postContent, postImageU
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                handleDelete();
+                setOpen(false);
+                setConfirmDeleteOpen(true);
               }}
               disabled={deletePost.isPending}
               className="flex w-full items-center gap-2 px-4 py-2 text-sm text-red-500 hover:bg-card-hover disabled:opacity-50"
@@ -104,6 +106,16 @@ export function PostMenu({ postId, postUserId, postType, postContent, postImageU
         postId={postId}
         initialContent={postContent}
         initialImageUrl={postImageUrl}
+      />
+
+      <ConfirmDialog
+        open={confirmDeleteOpen}
+        onClose={() => setConfirmDeleteOpen(false)}
+        onConfirm={handleDelete}
+        title="Delete post?"
+        description="This can't be undone. The post will be permanently removed."
+        confirmLabel="Delete"
+        isPending={deletePost.isPending}
       />
     </>
   );
