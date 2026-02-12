@@ -94,7 +94,7 @@ export function Modal({ open, onClose, children, className, mobileFullScreen = f
             </button>
           </div>
         )}
-        <div className={cn(mobileFullScreen && "flex-1 overflow-y-auto p-4 sm:p-0")}>
+        <div className={cn(mobileFullScreen && "flex-1 overflow-y-auto p-4 sm:flex-none sm:overflow-visible sm:p-0")}>
           {children}
         </div>
       </div>
