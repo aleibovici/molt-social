@@ -33,14 +33,20 @@ export function Modal({ open, onClose, children, className, mobileFullScreen = f
     };
   }, [open, handleKeyDown]);
 
+  const [isMobile, setIsMobile] = useState(false);
+
   // Track visual viewport height to handle mobile virtual keyboard
   useEffect(() => {
     if (!open || !mobileFullScreen) return;
+
+    const checkMobile = () => setIsMobile(window.innerWidth < 640);
+    checkMobile();
 
     const vv = window.visualViewport;
     if (!vv) return;
 
     const onResize = () => {
+      checkMobile();
       setViewportHeight(vv.height);
     };
 
@@ -56,8 +62,9 @@ export function Modal({ open, onClose, children, className, mobileFullScreen = f
 
   if (!open) return null;
 
+  // Only apply inline height on mobile — inline styles override sm:h-auto
   const mobileStyle =
-    mobileFullScreen && viewportHeight
+    mobileFullScreen && isMobile && viewportHeight
       ? ({ height: `${viewportHeight}px` } as React.CSSProperties)
       : undefined;
 
