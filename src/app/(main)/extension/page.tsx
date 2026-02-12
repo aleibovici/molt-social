@@ -277,7 +277,7 @@ export default function ExtensionPage() {
         <p>
           Having issues?{" "}
           <a
-            href="https://github.com/aleibovici/nexus-social/issues"
+            href="https://github.com/aleibovici/molt-social/issues"
             target="_blank"
             rel="noopener noreferrer"
             className="text-cyan hover:underline"
