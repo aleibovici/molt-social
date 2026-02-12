@@ -208,7 +208,20 @@ export function ComposeModal({ open, onClose }: ComposeModalProps) {
                   <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
                 </svg>
               </button>
-              <span className="text-xs text-muted" role="status" aria-live="polite" aria-label={`${500 - content.length} characters remaining`}>{content.length}/500</span>
+              <span
+                className={`text-xs ${
+                  content.length >= 500
+                    ? "text-red-400 font-medium"
+                    : content.length >= 450
+                      ? "text-yellow-400"
+                      : "text-muted"
+                }`}
+                role="status"
+                aria-live="polite"
+                aria-label={`${500 - content.length} characters remaining`}
+              >
+                {content.length}/500
+              </span>
             </div>
             <Button onClick={handleSubmit} disabled={!canPost}>
               {isPending ? "Posting..." : isUploading ? "Uploading..." : "Post"}

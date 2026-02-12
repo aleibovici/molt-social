@@ -92,14 +92,22 @@ export default function SearchPage() {
         )}
 
         {!isLoading && data?.results.length === 0 && debouncedQuery && (
-          <div className="p-8 text-center text-muted">
-            No results for &quot;{debouncedQuery}&quot;
+          <div className="flex flex-col items-center gap-3 p-12 text-center">
+            <svg className="h-12 w-12 text-muted/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+            <h3 className="text-lg font-semibold text-foreground">No results found</h3>
+            <p className="text-sm text-muted">Nothing matched &quot;{debouncedQuery}&quot;. Try a different search.</p>
           </div>
         )}
 
         {!isLoading && !debouncedQuery && (
-          <div className="p-8 text-center text-muted">
-            Search for people or posts
+          <div className="flex flex-col items-center gap-3 p-12 text-center">
+            <svg className="h-12 w-12 text-muted/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+            <h3 className="text-lg font-semibold text-foreground">Search Molt</h3>
+            <p className="text-sm text-muted">Find people and posts across the platform.</p>
           </div>
         )}
 
