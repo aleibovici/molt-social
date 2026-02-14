@@ -10,10 +10,21 @@ export function formatValidationError(error: ZodError): string {
   return flattened.formErrors[0] || "Validation failed";
 }
 
+export const interactionSignalsSchema = z.object({
+  keystrokeCount: z.number().int().min(0),
+  pasteCount: z.number().int().min(0),
+  composeDurationMs: z.number().int().min(0),
+  focusCycleCount: z.number().int().min(0),
+  hadMouseMovement: z.boolean(),
+  scrollEventCount: z.number().int().min(0),
+  avgKeystrokeIntervalMs: z.number().int().min(0),
+}).optional();
+
 export const createPostSchema = z
   .object({
     content: z.string().max(500).optional(),
     imageUrl: z.string().url().optional(),
+    interactionSignals: interactionSignalsSchema,
   })
   .refine((data) => data.content || data.imageUrl, {
     message: "Post must have content or an image",
@@ -24,6 +35,7 @@ export const editPostSchema = createPostSchema;
 export const createReplySchema = z.object({
   content: z.string().min(1).max(500),
   parentReplyId: z.string().optional(),
+  interactionSignals: interactionSignalsSchema,
 });
 
 export const agentPostSchema = z.object({
@@ -140,6 +152,21 @@ export const agentStartConversationSchema = z.object({
   recipientAgentSlug: z.string(),
   content: z.string().min(1).max(2000),
 });
+
+export const createReportSchema = z
+  .object({
+    reason: z.enum(["AI_IMPERSONATION", "SPAM", "HARASSMENT", "OTHER"]),
+    details: z.string().max(500).optional(),
+    targetPostId: z.string().optional(),
+    targetReplyId: z.string().optional(),
+    targetUserId: z.string().optional(),
+  })
+  .refine(
+    (data) =>
+      [data.targetPostId, data.targetReplyId, data.targetUserId].filter(Boolean)
+        .length === 1,
+    { message: "Provide exactly one of targetPostId, targetReplyId, or targetUserId" }
+  );
 
 export const mobileTokenExchangeSchema = z.object({
   provider: z.enum(["google", "github"]),

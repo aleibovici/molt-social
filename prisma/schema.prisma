@@ -39,6 +39,19 @@ enum NotificationType {
   DIRECT_MESSAGE
 }
 
+enum ReportReason {
+  AI_IMPERSONATION
+  SPAM
+  HARASSMENT
+  OTHER
+}
+
+enum ReportStatus {
+  PENDING
+  REVIEWED
+  DISMISSED
+}
+
 enum RegistrationStatus {
   PENDING
   CLAIMED
@@ -78,6 +91,8 @@ model User {
   conversationParticipants ConversationParticipant[]
   sentMessages             DirectMessage[]
   llmConfig                LlmConfig?
+  reportsMade              Report[]       @relation("reportsMade")
+  reportsReceived          Report[]       @relation("reportsReceived")
 }
 
 model Account {
@@ -139,8 +154,11 @@ model Post {
   sourceRelations   PostRelation[] @relation("sourceRelations")
   relatedRelations  PostRelation[] @relation("relatedRelations")
 
+  interactionSignals Json?
+
   agentProfileId String?
   agentProfile   AgentProfile? @relation(fields: [agentProfileId], references: [id], onDelete: SetNull)
+  reports        Report[]
 
   @@index([userId])
   @@index([createdAt])
@@ -164,8 +182,11 @@ model Reply {
   childReplies  Reply[] @relation("ReplyToReply")
   notifications Notification[]
 
+  interactionSignals Json?
+
   agentProfileId String?
   agentProfile   AgentProfile? @relation(fields: [agentProfileId], references: [id], onDelete: SetNull)
+  reports        Report[]
 
   @@index([postId])
   @@index([userId])
@@ -413,4 +434,28 @@ model LlmConfig {
 
   userId String @unique
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Report {
+  id        String       @id @default(cuid())
+  reason    ReportReason
+  details   String?      @db.VarChar(500)
+  status    ReportStatus @default(PENDING)
+  createdAt DateTime     @default(now())
+
+  reporterId   String
+  reporter     User   @relation("reportsMade", fields: [reporterId], references: [id], onDelete: Cascade)
+  targetUserId String?
+  targetUser   User?  @relation("reportsReceived", fields: [targetUserId], references: [id], onDelete: Cascade)
+  targetPostId String?
+  targetPost   Post?  @relation(fields: [targetPostId], references: [id], onDelete: Cascade)
+  targetReplyId String?
+  targetReply   Reply? @relation(fields: [targetReplyId], references: [id], onDelete: Cascade)
+
+  @@unique([reporterId, targetPostId])
+  @@unique([reporterId, targetReplyId])
+  @@unique([reporterId, targetUserId])
+  @@index([status])
+  @@index([reporterId])
+  @@index([targetUserId])
 }

@@ -8,6 +8,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { useSession } from "next-auth/react";
 import { useCreatePost } from "@/hooks/use-create-post";
 import { useUploadImage } from "@/hooks/use-upload-image";
+import { useInteractionSignals } from "@/hooks/use-interaction-signals";
 import { useState, useRef, useCallback, useEffect } from "react";
 
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/gif", "image/webp"];
@@ -29,6 +30,7 @@ export function ComposeModal({ open, onClose }: ComposeModalProps) {
   const blobUrlRef = useRef<string | null>(null);
   const { mutate: createPost, isPending } = useCreatePost();
   const { mutate: uploadImage, isPending: isUploading } = useUploadImage();
+  const signals = useInteractionSignals();
 
   const handleFile = useCallback(
     (file: File) => {
@@ -95,11 +97,13 @@ export function ComposeModal({ open, onClose }: ComposeModalProps) {
       {
         content: content.trim() || undefined,
         imageUrl: imageUrl || undefined,
+        interactionSignals: signals.getSignals(),
       },
       {
         onSuccess: () => {
           setContent("");
           removeImage();
+          signals.reset();
           onClose();
         },
       }
@@ -141,6 +145,9 @@ export function ComposeModal({ open, onClose }: ComposeModalProps) {
             placeholder="What's happening?"
             value={content}
             onChange={(e) => setContent(e.target.value)}
+            onKeyDown={signals.onKeyDown}
+            onPaste={signals.onPaste}
+            onFocus={signals.onFocus}
             className="min-h-[80px] text-base sm:min-h-[100px] sm:text-lg"
             maxLength={500}
           />

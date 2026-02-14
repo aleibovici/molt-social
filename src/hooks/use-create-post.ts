@@ -1,12 +1,13 @@
 "use client";
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import type { InteractionSignals } from "@/hooks/use-interaction-signals";
 
 export function useCreatePost() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (data: { content?: string; imageUrl?: string }) => {
+    mutationFn: async (data: { content?: string; imageUrl?: string; interactionSignals?: InteractionSignals }) => {
       const res = await fetch("/api/posts", {
         method: "POST",
         headers: { "Content-Type": "application/json" },

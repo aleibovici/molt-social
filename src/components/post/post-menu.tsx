@@ -5,6 +5,7 @@ import { useSession } from "next-auth/react";
 import { useDeletePost } from "@/hooks/use-delete-post";
 import { EditPostModal } from "@/components/post/edit-post-modal";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
+import { ReportDialog } from "@/components/ui/report-dialog";
 
 interface PostMenuProps {
   postId: string;
@@ -20,11 +21,13 @@ export function PostMenu({ postId, postUserId, postType, postContent, postImageU
   const [open, setOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
   const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
+  const [reportOpen, setReportOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const deletePost = useDeletePost();
 
   const isOwner = session?.user?.id === postUserId;
   const canModify = isOwner && postType === "HUMAN";
+  const canReport = !!session?.user?.id && !isOwner;
 
   useEffect(() => {
     if (!open) return;
@@ -37,7 +40,7 @@ export function PostMenu({ postId, postUserId, postType, postContent, postImageU
     return () => document.removeEventListener("mousedown", handleClick);
   }, [open]);
 
-  if (!canModify) return null;
+  if (!canModify && !canReport) return null;
 
   function handleDelete() {
     setConfirmDeleteOpen(false);
@@ -67,56 +70,88 @@ export function PostMenu({ postId, postUserId, postType, postContent, postImageU
 
         {open && (
           <div className="absolute right-0 top-full z-20 mt-1 w-40 rounded-lg border border-border bg-background py-1 shadow-lg sm:w-48">
-            <button
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                setOpen(false);
-                setEditOpen(true);
-              }}
-              className="flex w-full items-center gap-2 px-4 py-2 text-sm text-foreground hover:bg-card-hover"
-            >
-              <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-              </svg>
-              Edit post
-            </button>
-            <button
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                setOpen(false);
-                setConfirmDeleteOpen(true);
-              }}
-              disabled={deletePost.isPending}
-              className="flex w-full items-center gap-2 px-4 py-2 text-sm text-red-500 hover:bg-card-hover disabled:opacity-50"
-            >
-              <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-              </svg>
-              {deletePost.isPending ? "Deleting..." : "Delete post"}
-            </button>
+            {canModify && (
+              <>
+                <button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setOpen(false);
+                    setEditOpen(true);
+                  }}
+                  className="flex w-full items-center gap-2 px-4 py-2 text-sm text-foreground hover:bg-card-hover"
+                >
+                  <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                  </svg>
+                  Edit post
+                </button>
+                <button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setOpen(false);
+                    setConfirmDeleteOpen(true);
+                  }}
+                  disabled={deletePost.isPending}
+                  className="flex w-full items-center gap-2 px-4 py-2 text-sm text-red-500 hover:bg-card-hover disabled:opacity-50"
+                >
+                  <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  </svg>
+                  {deletePost.isPending ? "Deleting..." : "Delete post"}
+                </button>
+              </>
+            )}
+            {canReport && (
+              <button
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setOpen(false);
+                  setReportOpen(true);
+                }}
+                className="flex w-full items-center gap-2 px-4 py-2 text-sm text-foreground hover:bg-card-hover"
+              >
+                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01M5.07 19h13.86c1.54 0 2.5-1.67 1.73-3L13.73 4c-.77-1.33-2.69-1.33-3.46 0L3.34 16c-.77 1.33.19 3 1.73 3z" />
+                </svg>
+                Report
+              </button>
+            )}
           </div>
         )}
       </div>
 
-      <EditPostModal
-        open={editOpen}
-        onClose={() => setEditOpen(false)}
-        postId={postId}
-        initialContent={postContent}
-        initialImageUrl={postImageUrl}
-      />
+      {canModify && (
+        <>
+          <EditPostModal
+            open={editOpen}
+            onClose={() => setEditOpen(false)}
+            postId={postId}
+            initialContent={postContent}
+            initialImageUrl={postImageUrl}
+          />
 
-      <ConfirmDialog
-        open={confirmDeleteOpen}
-        onClose={() => setConfirmDeleteOpen(false)}
-        onConfirm={handleDelete}
-        title="Delete post?"
-        description="This can't be undone. The post will be permanently removed."
-        confirmLabel="Delete"
-        isPending={deletePost.isPending}
-      />
+          <ConfirmDialog
+            open={confirmDeleteOpen}
+            onClose={() => setConfirmDeleteOpen(false)}
+            onConfirm={handleDelete}
+            title="Delete post?"
+            description="This can't be undone. The post will be permanently removed."
+            confirmLabel="Delete"
+            isPending={deletePost.isPending}
+          />
+        </>
+      )}
+
+      {canReport && (
+        <ReportDialog
+          open={reportOpen}
+          onClose={() => setReportOpen(false)}
+          targetPostId={postId}
+        />
+      )}
     </>
   );
 }

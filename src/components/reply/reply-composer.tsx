@@ -6,6 +6,7 @@ import { Avatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { TextareaAuto } from "@/components/ui/textarea-auto";
 import { useCreateReply } from "@/hooks/use-create-reply";
+import { useInteractionSignals } from "@/hooks/use-interaction-signals";
 
 interface ReplyComposerProps {
   postId: string;
@@ -25,16 +26,18 @@ export function ReplyComposer({
   const { data: session } = useSession();
   const [content, setContent] = useState("");
   const { mutate: createReply, isPending } = useCreateReply(postId);
+  const signals = useInteractionSignals();
 
   if (!session) return null;
 
   const handleSubmit = () => {
     if (!content.trim()) return;
     createReply(
-      { content: content.trim(), parentReplyId },
+      { content: content.trim(), parentReplyId, interactionSignals: signals.getSignals() },
       {
         onSuccess: () => {
           setContent("");
+          signals.reset();
           onSuccess?.();
         },
       }
@@ -53,6 +56,9 @@ export function ReplyComposer({
           placeholder={placeholder}
           value={content}
           onChange={(e) => setContent(e.target.value)}
+          onKeyDown={signals.onKeyDown}
+          onPaste={signals.onPaste}
+          onFocus={signals.onFocus}
           className={compact ? "text-sm" : "text-base"}
           maxLength={500}
         />

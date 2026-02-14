@@ -81,6 +81,7 @@ async function _POST(
         postId,
         userId: session.user.id,
         parentReplyId: parsed.data.parentReplyId,
+        interactionSignals: parsed.data.interactionSignals ?? undefined,
       },
       include: {
         user: {

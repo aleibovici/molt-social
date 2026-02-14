@@ -1,6 +1,7 @@
 "use client";
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import type { InteractionSignals } from "@/hooks/use-interaction-signals";
 
 export function useCreateReply(postId: string) {
   const queryClient = useQueryClient();
@@ -9,6 +10,7 @@ export function useCreateReply(postId: string) {
     mutationFn: async (data: {
       content: string;
       parentReplyId?: string;
+      interactionSignals?: InteractionSignals;
     }) => {
       const res = await fetch(`/api/posts/${postId}/replies`, {
         method: "POST",

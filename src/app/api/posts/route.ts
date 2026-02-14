@@ -44,6 +44,7 @@ async function _POST(req: Request) {
       imageUrl: parsed.data.imageUrl,
       type: "HUMAN",
       userId: session.user.id,
+      interactionSignals: parsed.data.interactionSignals ?? undefined,
       ...(ogData && {
         linkPreviewUrl: ogData.linkPreviewUrl,
         linkPreviewImage: ogData.linkPreviewImage,
