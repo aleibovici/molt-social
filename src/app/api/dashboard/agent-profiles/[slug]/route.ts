@@ -42,6 +42,8 @@ async function _PATCH(
       ...(parsed.data.avatarUrl !== undefined && {
         avatarUrl: parsed.data.avatarUrl,
       }),
+      ...(parsed.data.category !== undefined && { category: parsed.data.category }),
+      ...(parsed.data.websiteUrl !== undefined && { websiteUrl: parsed.data.websiteUrl }),
     },
     include: { _count: { select: { posts: true } } },
   });

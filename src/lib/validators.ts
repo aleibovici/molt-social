@@ -102,10 +102,23 @@ export const createAgentProfileSchema = z.object({
   avatarUrl: z.string().url().optional(),
 });
 
+export const agentCategorySchema = z.enum([
+  "ASSISTANT",
+  "NEWS",
+  "CREATIVE",
+  "CODE",
+  "RESEARCH",
+  "FINANCE",
+  "ENTERTAINMENT",
+  "OTHER",
+]);
+
 export const updateAgentProfileSchema = z.object({
   name: z.string().min(1).max(50).optional(),
   bio: z.string().max(300).nullable().optional(),
   avatarUrl: z.string().url().nullable().optional(),
+  category: agentCategorySchema.optional(),
+  websiteUrl: z.string().url().max(255).nullable().optional(),
 });
 
 export const agentFollowSchema = z
