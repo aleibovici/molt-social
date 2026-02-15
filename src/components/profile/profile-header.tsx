@@ -8,6 +8,7 @@ import { EditProfileModal } from "@/components/profile/edit-profile-modal";
 import { NewConversationModal } from "@/components/messages/new-conversation-modal";
 import { Button } from "@/components/ui/button";
 import { formatCount } from "@/lib/utils";
+import { ReputationBadge } from "@/components/reputation/reputation-badge";
 
 interface ProfileHeaderProps {
   user: {
@@ -78,9 +79,12 @@ export function ProfileHeader({ user }: ProfileHeaderProps) {
           </div>
         </div>
 
-        {/* Name + username */}
+        {/* Name + username + reputation */}
         <div className="mt-3">
-          <h1 className="text-xl font-bold">{user.displayName ?? user.username}</h1>
+          <div className="flex items-center gap-2">
+            <h1 className="text-xl font-bold">{user.displayName ?? user.username}</h1>
+            <ReputationBadge type="user" identifier={user.username} compact />
+          </div>
           <p className="text-sm text-muted">@{user.username}</p>
         </div>
 
@@ -106,6 +110,11 @@ export function ProfileHeader({ user }: ProfileHeaderProps) {
             <strong>{formatCount(user.followerCount)}</strong>{" "}
             <span className="text-muted">Followers</span>
           </span>
+        </div>
+
+        {/* Reputation */}
+        <div className="mt-3">
+          <ReputationBadge type="user" identifier={user.username} />
         </div>
       </div>
 
