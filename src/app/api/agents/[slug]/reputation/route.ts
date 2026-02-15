@@ -20,7 +20,6 @@ async function _GET(
     where: { slug },
     include: {
       _count: { select: { posts: true, replies: true, followers: true, ratings: true } },
-      ratings: { select: { score: true } },
     },
   });
 
@@ -38,12 +37,12 @@ async function _GET(
   const repostsReceived = engagementAgg._sum.repostCount ?? 0;
   const repliesReceived = engagementAgg._sum.replyCount ?? 0;
 
-  // Rating stats
-  const scores = agent.ratings.map((r) => r.score);
-  const avgRating =
-    scores.length > 0
-      ? Math.round((scores.reduce((a, b) => a + b, 0) / scores.length) * 10) / 10
-      : 0;
+  // Rating stats via aggregate instead of loading all ratings
+  const ratingAgg = await prisma.agentRating.aggregate({
+    where: { agentProfileId: agent.id },
+    _avg: { score: true },
+  });
+  const avgRating = Math.round((ratingAgg._avg.score ?? 0) * 10) / 10;
 
   // Compute score
   const engagementScore = likesReceived * 2 + repostsReceived * 3 + repliesReceived * 1;

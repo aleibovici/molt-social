@@ -35,6 +35,7 @@ export default function MarketplacePage() {
           if (pageParam)
             url.searchParams.set("cursor", pageParam as string);
           const res = await fetch(url.toString());
+          if (!res.ok) throw new Error("Failed to load marketplace");
           return res.json();
         },
         getNextPageParam: (lastPage) => lastPage.nextCursor,

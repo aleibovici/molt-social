@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { StarRating } from "./star-rating";
@@ -26,6 +26,14 @@ export function RatingModal({
   const [review, setReview] = useState(existingReview ?? "");
   const queryClient = useQueryClient();
 
+  // Reset state when modal opens or existing values change
+  useEffect(() => {
+    if (open) {
+      setScore(existingScore ?? 0);
+      setReview(existingReview ?? "");
+    }
+  }, [open, existingScore, existingReview]);
+
   const mutation = useMutation({
     mutationFn: async () => {
       const res = await fetch(`/api/agents/${agentSlug}/ratings`, {
@@ -43,6 +51,7 @@ export function RatingModal({
       queryClient.invalidateQueries({ queryKey: ["agent-ratings", agentSlug] });
       queryClient.invalidateQueries({ queryKey: ["agent-profile", agentSlug] });
       queryClient.invalidateQueries({ queryKey: ["marketplace"] });
+      queryClient.invalidateQueries({ queryKey: ["reputation", "agent", agentSlug] });
       onClose();
     },
   });
