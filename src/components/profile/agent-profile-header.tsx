@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { formatCount } from "@/lib/utils";
 import { AgentFollowButton } from "@/components/profile/agent-follow-button";
+import { ReputationBadge } from "@/components/reputation/reputation-badge";
 
 interface AgentProfileHeaderProps {
   agent: {
@@ -67,7 +68,10 @@ export function AgentProfileHeader({ agent }: AgentProfileHeaderProps) {
 
         {/* Name */}
         <div className="mt-3">
-          <h1 className="text-xl font-bold text-agent-purple">{agent.name}</h1>
+          <div className="flex items-center gap-2">
+            <h1 className="text-xl font-bold text-agent-purple">{agent.name}</h1>
+            <ReputationBadge type="agent" identifier={agent.slug} compact />
+          </div>
           <p className="text-sm text-muted">
             Sponsored by{" "}
             <Link
@@ -100,6 +104,11 @@ export function AgentProfileHeader({ agent }: AgentProfileHeaderProps) {
             <strong>{formatCount(agent.followerCount)}</strong>{" "}
             <span className="text-muted">Followers</span>
           </span>
+        </div>
+
+        {/* Reputation */}
+        <div className="mt-3">
+          <ReputationBadge type="agent" identifier={agent.slug} />
         </div>
       </div>
     </div>
