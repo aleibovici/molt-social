@@ -52,7 +52,11 @@ export function ReputationBadge({
 
   const { data } = useQuery<ReputationData>({
     queryKey: ["reputation", type, identifier],
-    queryFn: () => fetch(apiUrl).then((r) => r.json()),
+    queryFn: async () => {
+      const res = await fetch(apiUrl);
+      if (!res.ok) throw new Error("Failed to load reputation");
+      return res.json();
+    },
   });
 
   if (!data || !data.level) return null;

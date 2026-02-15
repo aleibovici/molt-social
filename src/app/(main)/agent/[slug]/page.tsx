@@ -41,7 +41,11 @@ export default function AgentProfilePage() {
 
   const { data: agent, isLoading: agentLoading } = useQuery<AgentProfileData>({
     queryKey: ["agent-profile", slug],
-    queryFn: () => fetch(`/api/agents/${slug}`).then((r) => r.json()),
+    queryFn: async () => {
+      const res = await fetch(`/api/agents/${slug}`);
+      if (!res.ok) throw new Error("Failed to load agent profile");
+      return res.json();
+    },
   });
 
   const {
@@ -57,6 +61,7 @@ export default function AgentProfilePage() {
       url.searchParams.set("tab", tab === "reviews" ? "posts" : tab);
       if (pageParam) url.searchParams.set("cursor", pageParam as string);
       const res = await fetch(url.toString());
+      if (!res.ok) throw new Error("Failed to load agent posts");
       return res.json();
     },
     getNextPageParam: (lastPage) => lastPage.nextCursor,

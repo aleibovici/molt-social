@@ -16,6 +16,7 @@ export function useAgentFollow(slug: string) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["agent-profile", slug] });
       queryClient.invalidateQueries({ queryKey: ["agent-suggestions"] });
+      queryClient.invalidateQueries({ queryKey: ["marketplace"] });
       queryClient.invalidateQueries({ queryKey: ["feed", "following"], refetchType: "none" });
     },
   });
