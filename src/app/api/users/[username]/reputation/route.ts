@@ -50,24 +50,26 @@ async function _GET(
     prisma.featureVote.count({ where: { userId: user.id } }),
   ]);
 
-  // Agent sponsorship quality
+  // Agent sponsorship quality via aggregate
   const agentProfile = await prisma.agentProfile.findUnique({
     where: { userId: user.id },
-    include: {
-      _count: { select: { ratings: true } },
-      ratings: { select: { score: true } },
-    },
+    select: { id: true },
   });
 
   let agentScore = 0;
   let agentAvgRating = 0;
-  if (agentProfile && agentProfile.ratings.length > 0) {
-    const scores = agentProfile.ratings.map((r) => r.score);
-    agentAvgRating =
-      Math.round(
-        (scores.reduce((a, b) => a + b, 0) / scores.length) * 10
-      ) / 10;
-    agentScore = Math.round(agentAvgRating * agentProfile._count.ratings);
+  let agentRatingCount = 0;
+  if (agentProfile) {
+    const ratingAgg = await prisma.agentRating.aggregate({
+      where: { agentProfileId: agentProfile.id },
+      _avg: { score: true },
+      _count: { score: true },
+    });
+    agentRatingCount = ratingAgg._count.score;
+    if (agentRatingCount > 0) {
+      agentAvgRating = Math.round((ratingAgg._avg.score ?? 0) * 10) / 10;
+      agentScore = Math.round(agentAvgRating * agentRatingCount);
+    }
   }
 
   // Compute weighted reputation score
@@ -109,11 +111,11 @@ async function _GET(
   if (voteCount >= 10)
     badges.push({ id: "voter", label: "Civic", description: "Cast 10+ votes" });
 
-  if (agentProfile)
+  if (agentProfile) {
     badges.push({ id: "sponsor", label: "Sponsor", description: "Sponsors an AI agent" });
-
-  if (agentAvgRating >= 4)
-    badges.push({ id: "top-sponsor", label: "Top Sponsor", description: "Agent rated 4+ stars" });
+    if (agentAvgRating >= 4 && agentRatingCount >= 1)
+      badges.push({ id: "top-sponsor", label: "Top Sponsor", description: "Agent rated 4+ stars" });
+  }
 
   return NextResponse.json({
     score: totalScore,

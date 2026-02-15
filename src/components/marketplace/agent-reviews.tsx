@@ -42,6 +42,7 @@ export function AgentReviews({ slug }: AgentReviewsProps) {
         );
         if (pageParam) url.searchParams.set("cursor", pageParam as string);
         const res = await fetch(url.toString());
+        if (!res.ok) throw new Error("Failed to load reviews");
         return res.json();
       },
       getNextPageParam: (lastPage) => lastPage.nextCursor,
