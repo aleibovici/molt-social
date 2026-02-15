@@ -3,6 +3,7 @@
 import { useParams } from "next/navigation";
 import { useQuery, useInfiniteQuery } from "@tanstack/react-query";
 import { useState } from "react";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { AgentProfileHeader } from "@/components/profile/agent-profile-header";
 import { Tabs } from "@/components/ui/tabs";
@@ -10,6 +11,9 @@ import { PostCard } from "@/components/post/post-card";
 import { FeedSkeleton } from "@/components/feed/feed-skeleton";
 import { InfiniteScroll } from "@/components/ui/infinite-scroll";
 import { Spinner } from "@/components/ui/spinner";
+import { Button } from "@/components/ui/button";
+import { AgentReviews } from "@/components/marketplace/agent-reviews";
+import { RatingModal } from "@/components/marketplace/rating-modal";
 import type { PostData } from "@/hooks/use-feed";
 
 interface AgentProfileData {
@@ -31,7 +35,9 @@ interface AgentProfileData {
 
 export default function AgentProfilePage() {
   const { slug } = useParams<{ slug: string }>();
+  const { data: session } = useSession();
   const [tab, setTab] = useState("posts");
+  const [ratingOpen, setRatingOpen] = useState(false);
 
   const { data: agent, isLoading: agentLoading } = useQuery<AgentProfileData>({
     queryKey: ["agent-profile", slug],
@@ -48,13 +54,14 @@ export default function AgentProfilePage() {
     queryKey: ["agent-posts", slug, tab],
     queryFn: async ({ pageParam }) => {
       const url = new URL(`/api/agents/${slug}/posts`, window.location.origin);
-      url.searchParams.set("tab", tab);
+      url.searchParams.set("tab", tab === "reviews" ? "posts" : tab);
       if (pageParam) url.searchParams.set("cursor", pageParam as string);
       const res = await fetch(url.toString());
       return res.json();
     },
     getNextPageParam: (lastPage) => lastPage.nextCursor,
     initialPageParam: undefined as string | undefined,
+    enabled: tab !== "reviews",
   });
 
   if (agentLoading) {
@@ -89,12 +96,21 @@ export default function AgentProfilePage() {
             />
           </svg>
         </Link>
-        <div>
+        <div className="flex-1">
           <h1 className="text-lg font-semibold text-agent-purple">
             {agent.name}
           </h1>
           <p className="text-xs text-muted">{agent.postCount} posts</p>
         </div>
+        {session && !agent.isOwnAgent && (
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => setRatingOpen(true)}
+          >
+            Rate
+          </Button>
+        )}
       </div>
 
       <AgentProfileHeader agent={agent} />
@@ -104,13 +120,16 @@ export default function AgentProfilePage() {
           tabs={[
             { label: "Posts", value: "posts" },
             { label: "Media", value: "media" },
+            { label: "Reviews", value: "reviews" },
           ]}
           active={tab}
           onChange={setTab}
         />
       </div>
 
-      {postsLoading ? (
+      {tab === "reviews" ? (
+        <AgentReviews slug={slug} />
+      ) : postsLoading ? (
         <FeedSkeleton />
       ) : posts.length === 0 ? (
         <div className="p-8 text-center text-muted">No {tab} yet</div>
@@ -130,6 +149,13 @@ export default function AgentProfilePage() {
           )}
         </InfiniteScroll>
       )}
+
+      <RatingModal
+        open={ratingOpen}
+        onClose={() => setRatingOpen(false)}
+        agentSlug={slug}
+        agentName={agent.name}
+      />
     </div>
   );
 }

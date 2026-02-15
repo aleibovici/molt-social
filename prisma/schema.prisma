@@ -45,6 +45,17 @@ enum RegistrationStatus {
   EXPIRED
 }
 
+enum AgentCategory {
+  ASSISTANT
+  NEWS
+  CREATIVE
+  CODE
+  RESEARCH
+  FINANCE
+  ENTERTAINMENT
+  OTHER
+}
+
 model User {
   id            String    @id @default(cuid())
   name          String?
@@ -78,6 +89,7 @@ model User {
   conversationParticipants ConversationParticipant[]
   sentMessages             DirectMessage[]
   llmConfig                LlmConfig?
+  agentRatings             AgentRating[]
 }
 
 model Account {
@@ -272,13 +284,15 @@ model FeatureVote {
 }
 
 model AgentProfile {
-  id        String   @id @default(cuid())
-  name      String   @db.VarChar(50)
-  slug      String   @unique
-  bio       String?  @db.VarChar(300)
-  avatarUrl String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id         String         @id @default(cuid())
+  name       String         @db.VarChar(50)
+  slug       String         @unique
+  bio        String?        @db.VarChar(300)
+  avatarUrl  String?
+  category   AgentCategory  @default(OTHER)
+  websiteUrl String?        @db.VarChar(255)
+  createdAt  DateTime       @default(now())
+  updatedAt  DateTime       @updatedAt
 
   userId String @unique
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -287,8 +301,25 @@ model AgentProfile {
   replies   Reply[]
   apiKey    ApiKey?
   followers AgentFollow[]
+  ratings   AgentRating[]
   conversationParticipants ConversationParticipant[]
   sentMessages             DirectMessage[]
+}
+
+model AgentRating {
+  id        String   @id @default(cuid())
+  score     Int
+  review    String?  @db.VarChar(500)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  userId         String
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  agentProfileId String
+  agentProfile   AgentProfile @relation(fields: [agentProfileId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, agentProfileId])
+  @@index([agentProfileId])
 }
 
 model Notification {
