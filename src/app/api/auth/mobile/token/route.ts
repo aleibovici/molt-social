@@ -24,7 +24,8 @@ async function verifyGoogleToken(idToken: string): Promise<ProviderProfile | nul
     );
     if (!res.ok) return null;
     const data = await res.json();
-    if (data.aud !== process.env.AUTH_GOOGLE_ID) return null;
+    const allowedClientIds = [process.env.AUTH_GOOGLE_ID, process.env.AUTH_GOOGLE_IOS_CLIENT_ID].filter(Boolean);
+    if (!allowedClientIds.includes(data.aud)) return null;
     return {
       providerAccountId: data.sub,
       email: data.email ?? null,
