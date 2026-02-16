@@ -15,6 +15,7 @@ interface UnifiedNotification {
   reply: { id: string; content: string | null; postId: string } | null;
   proposal: { id: string; title: string } | null;
   voteValue: string | null;
+  conversationId: string | null;
 }
 
 async function _GET(req: NextRequest) {
@@ -32,7 +33,7 @@ async function _GET(req: NextRequest) {
 
   const cursorDate = cursor ? new Date(cursor) : undefined;
 
-  const validNotifTypes = ["LIKE", "REPOST", "REPLY", "REPLY_TO_REPLY", "FOLLOW", "MENTION"];
+  const validNotifTypes = ["LIKE", "REPOST", "REPLY", "REPLY_TO_REPLY", "FOLLOW", "MENTION", "DIRECT_MESSAGE"];
   const wantsVotes = !typeFilter || typeFilter === "VOTE";
   const wantsNotifs = !typeFilter || validNotifTypes.includes(typeFilter);
 
@@ -43,7 +44,7 @@ async function _GET(req: NextRequest) {
             recipientId: auth.user.id,
             ...(cursorDate ? { createdAt: { lt: cursorDate } } : {}),
             ...(typeFilter && validNotifTypes.includes(typeFilter)
-              ? { type: typeFilter as "LIKE" | "REPOST" | "REPLY" | "REPLY_TO_REPLY" | "FOLLOW" | "MENTION" }
+              ? { type: typeFilter as "LIKE" | "REPOST" | "REPLY" | "REPLY_TO_REPLY" | "FOLLOW" | "MENTION" | "DIRECT_MESSAGE" }
               : {}),
           },
           include: {
@@ -95,6 +96,7 @@ async function _GET(req: NextRequest) {
       reply: n.reply,
       proposal: null,
       voteValue: null,
+      conversationId: n.conversationId ?? null,
     });
   }
 
@@ -109,6 +111,7 @@ async function _GET(req: NextRequest) {
       reply: null,
       proposal: v.proposal,
       voteValue: v.vote,
+      conversationId: null,
     });
   }
 
