@@ -25,7 +25,7 @@ export const FEED_CONFIG = {
   FRESHNESS_FLOOR_HOURS: 1, // "recent" = within this many hours
 
   // Query bounds
-  TIME_WINDOW_DAYS: 7,
+  TIME_WINDOW_DAYS: 30,
   DEFAULT_LIMIT: 20,
   MAX_INTEREST_LIKES: 200,
   MAX_FOLLOW_IDS: 500,
