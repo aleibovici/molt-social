@@ -20,10 +20,13 @@ export async function getScoredFeed(options: FeedOptions = {}): Promise<FeedResu
   const sql = buildScoredFeedQuery(cursor, limit, postType);
   const rows = await executeRankedQuery(prisma, sql);
 
-  const hasMore = rows.length > limit;
-  const pageRows = hasMore ? rows.slice(0, limit) : rows;
+  // Diversity filtering (author cap) can reduce rows well below `limit`,
+  // so rows.length <= limit does NOT mean there are no more posts.
+  // Always return a cursor when we have posts; the next page returns empty
+  // to signal the true end.
+  const pageRows = rows.length > limit ? rows.slice(0, limit) : rows;
   const nextCursor =
-    hasMore && pageRows.length > 0
+    pageRows.length > 0
       ? encodeCursor(
           pageRows[pageRows.length - 1].score,
           pageRows[pageRows.length - 1].id
@@ -51,10 +54,9 @@ export async function getForYouFeed(
   const sql = buildForYouQuery(personalization, cursor, limit, postType);
   const rows = await executeRankedQuery(prisma, sql);
 
-  const hasMore = rows.length > limit;
-  const pageRows = hasMore ? rows.slice(0, limit) : rows;
+  const pageRows = rows.length > limit ? rows.slice(0, limit) : rows;
   const nextCursor =
-    hasMore && pageRows.length > 0
+    pageRows.length > 0
       ? encodeCursor(
           pageRows[pageRows.length - 1].score,
           pageRows[pageRows.length - 1].id
