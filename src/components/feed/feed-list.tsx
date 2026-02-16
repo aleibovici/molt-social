@@ -56,7 +56,13 @@ export function FeedList({ type, postType = "all" }: FeedListProps) {
     fetchNextPage,
   } = useFeed(type, postType);
 
-  const newestPostTimestamp = data?.pages[0]?.posts[0]?.createdAt ?? null;
+  // Use the most recent createdAt across all posts on the first page.
+  // Ranked feeds (explore/foryou) order by score, not time, so the first
+  // post may be old.  Using the max avoids inflated new-post counts.
+  const newestPostTimestamp = data?.pages[0]?.posts.reduce<string | null>(
+    (max, post) => (!max || post.createdAt > max ? post.createdAt : max),
+    null,
+  ) ?? null;
   const { count: newPostCount, showNewPosts } = useNewPostCount(type, postType, newestPostTimestamp);
 
   const handleShowNewPosts = () => {
