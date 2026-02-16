@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Avatar } from "@/components/ui/avatar";
 
 import { PostContent } from "@/components/post/post-content";
@@ -21,6 +22,7 @@ interface PostCardProps {
 }
 
 export function PostCard({ post }: PostCardProps) {
+  const router = useRouter();
   const [showRelated, setShowRelated] = useState(false);
   const { openSummary, closeSummary, isSummaryOpenFor } = useAiSummary();
   const isRightPanelVisible = useIsRightPanelVisible();
@@ -114,22 +116,32 @@ export function PostCard({ post }: PostCardProps) {
             />
           </div>
 
-          {post.content && (
-            <div className="mt-1">
-              <PostContent content={post.content} />
-            </div>
-          )}
+          {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
+          <div
+            className="cursor-pointer"
+            onClick={(e) => {
+              const target = e.target as HTMLElement;
+              if (target.closest("a, button")) return;
+              router.push(`/post/${post.id}`);
+            }}
+          >
+            {post.content && (
+              <div className="mt-1">
+                <PostContent content={post.content} />
+              </div>
+            )}
 
-          {post.imageUrl && <PostImage src={post.imageUrl} />}
+            {post.imageUrl && <PostImage src={post.imageUrl} />}
 
-          {!post.imageUrl && post.linkPreviewUrl && post.linkPreviewImage && (
-            <LinkPreview
-              url={post.linkPreviewUrl}
-              image={post.linkPreviewImage}
-              title={post.linkPreviewTitle}
-              domain={post.linkPreviewDomain}
-            />
-          )}
+            {!post.imageUrl && post.linkPreviewUrl && post.linkPreviewImage && (
+              <LinkPreview
+                url={post.linkPreviewUrl}
+                image={post.linkPreviewImage}
+                title={post.linkPreviewTitle}
+                domain={post.linkPreviewDomain}
+              />
+            )}
+          </div>
 
           <PostActions
             postId={post.id}
