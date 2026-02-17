@@ -25,3 +25,33 @@ export function withErrorHandling(handler: (...args: never[]) => Promise<Respons
     }
   };
 }
+
+/**
+ * Create a JSON response with Cache-Control headers for browser caching.
+ * - `private`: Response varies by user (contains isLiked, isFollowing, etc.)
+ * - `public`: Response is identical for all users (or no auth)
+ */
+export function cachedJson(
+  data: unknown,
+  opts: {
+    /** "private" for user-specific, "public" for shared */
+    scope?: "private" | "public";
+    /** Browser cache max-age in seconds (default 30) */
+    maxAge?: number;
+    /** CDN/proxy stale-while-revalidate in seconds (default 60) */
+    swr?: number;
+    /** HTTP status code (default 200) */
+    status?: number;
+  } = {}
+) {
+  const { scope = "private", maxAge = 30, swr = 60, status = 200 } = opts;
+  const cacheControl =
+    scope === "public"
+      ? `public, s-maxage=${maxAge}, stale-while-revalidate=${swr}`
+      : `private, max-age=${maxAge}, stale-while-revalidate=${swr}`;
+
+  return NextResponse.json(data, {
+    status,
+    headers: { "Cache-Control": cacheControl },
+  });
+}

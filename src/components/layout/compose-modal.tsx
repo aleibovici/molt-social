@@ -23,6 +23,7 @@ export function ComposeModal({ open, onClose }: ComposeModalProps) {
   const { data: session } = useSession();
   const [content, setContent] = useState("");
   const [imageUrl, setImageUrl] = useState("");
+  const [blurDataUrl, setBlurDataUrl] = useState("");
   const [previewUrl, setPreviewUrl] = useState("");
   const [fileError, setFileError] = useState("");
   const [isDragging, setIsDragging] = useState(false);
@@ -55,8 +56,9 @@ export function ComposeModal({ open, onClose }: ComposeModalProps) {
 
       // Start uploading
       uploadImage(file, {
-        onSuccess: (url) => {
-          setImageUrl(url);
+        onSuccess: (result) => {
+          setImageUrl(result.url);
+          setBlurDataUrl(result.blurDataUrl ?? "");
           URL.revokeObjectURL(localUrl);
           blobUrlRef.current = null;
         },
@@ -79,6 +81,7 @@ export function ComposeModal({ open, onClose }: ComposeModalProps) {
     }
     setPreviewUrl("");
     setImageUrl("");
+    setBlurDataUrl("");
     setFileError("");
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
@@ -97,6 +100,7 @@ export function ComposeModal({ open, onClose }: ComposeModalProps) {
       {
         content: content.trim() || undefined,
         imageUrl: imageUrl || undefined,
+        blurDataUrl: blurDataUrl || undefined,
       },
       {
         onSuccess: () => {

@@ -42,6 +42,7 @@ async function _POST(req: Request) {
     data: {
       content: parsed.data.content,
       imageUrl: parsed.data.imageUrl,
+      blurDataUrl: parsed.data.blurDataUrl,
       type: "HUMAN",
       userId: session.user.id,
       ...(ogData && {

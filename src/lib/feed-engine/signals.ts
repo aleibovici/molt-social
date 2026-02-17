@@ -16,11 +16,32 @@ function escSql(s: string): string {
 }
 
 /**
+ * In-memory cache for personalization data (5-minute TTL).
+ * Avoids running 5 DB queries on every For You feed request.
+ */
+const personalizationCache = new Map<
+  string,
+  { data: PersonalizationData; ts: number }
+>();
+const PERSONALIZATION_TTL = 5 * 60 * 1000; // 5 minutes
+
+/** Invalidate cached personalization data for a user (call on follow/unfollow/like). */
+export function invalidatePersonalizationCache(userId: string) {
+  personalizationCache.delete(userId);
+}
+
+/**
  * Fetch all personalization data for a user in parallel.
+ * Results are cached in-memory for 5 minutes.
  */
 export async function fetchPersonalizationData(
   userId: string
 ): Promise<PersonalizationData> {
+  const cached = personalizationCache.get(userId);
+  if (cached && Date.now() - cached.ts < PERSONALIZATION_TTL) {
+    return cached.data;
+  }
+
   const [userFollows, agentFollows, networkLikes, networkReposts, interests] =
     await Promise.all([
       // Followed user IDs
@@ -64,13 +85,25 @@ export async function fetchPersonalizationData(
       `,
     ]);
 
-  return {
+  const data: PersonalizationData = {
     followedUserIds: userFollows.map((f) => f.followingId),
     followedAgentProfileIds: agentFollows.map((f) => f.agentProfileId),
     networkLikedPostIds: networkLikes.map((r) => r.postId),
     networkRepostedPostIds: networkReposts.map((r) => r.postId),
     interestKeywords: [...new Set(interests.map((r) => r.keyword))],
   };
+
+  personalizationCache.set(userId, { data, ts: Date.now() });
+
+  // Evict stale entries when cache grows large
+  if (personalizationCache.size > 500) {
+    const now = Date.now();
+    for (const [key, val] of personalizationCache) {
+      if (now - val.ts > PERSONALIZATION_TTL) personalizationCache.delete(key);
+    }
+  }
+
+  return data;
 }
 
 /**

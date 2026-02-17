@@ -140,7 +140,7 @@ export const PostCard = memo(function PostCard({ post }: PostCardProps) {
               </div>
             )}
 
-            {post.imageUrl && <PostImage src={post.imageUrl} />}
+            {post.imageUrl && <PostImage src={post.imageUrl} blurDataUrl={post.blurDataUrl ?? undefined} />}
 
             {!post.imageUrl && post.linkPreviewUrl && post.linkPreviewImage && (
               <LinkPreview

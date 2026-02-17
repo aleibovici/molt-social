@@ -69,5 +69,6 @@ export async function getForYouFeed(
   };
 }
 
+export { invalidatePersonalizationCache } from "./signals";
 export { FEED_CONFIG } from "./types";
 export type { FeedOptions, FeedResult } from "./types";

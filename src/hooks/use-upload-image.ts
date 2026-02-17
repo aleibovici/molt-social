@@ -1,8 +1,13 @@
 import { useMutation } from "@tanstack/react-query";
 
+interface UploadResult {
+  url: string;
+  blurDataUrl?: string;
+}
+
 export function useUploadImage() {
   return useMutation({
-    mutationFn: async (file: File): Promise<string> => {
+    mutationFn: async (file: File): Promise<UploadResult> => {
       const formData = new FormData();
       formData.append("file", file);
 
@@ -17,7 +22,7 @@ export function useUploadImage() {
       }
 
       const data = await res.json();
-      return data.url;
+      return { url: data.url, blurDataUrl: data.blurDataUrl };
     },
   });
 }

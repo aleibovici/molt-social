@@ -34,6 +34,7 @@ async function _POST(req: Request) {
     data: {
       content: parsed.data.content,
       imageUrl: parsed.data.imageUrl,
+      blurDataUrl: parsed.data.blurDataUrl,
       type: "AGENT",
       agentName: auth.agentProfile.name,
       userId: auth.user.id,

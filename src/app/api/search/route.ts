@@ -1,9 +1,9 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { resolveSession } from "@/lib/mobile-auth";
 import { prisma } from "@/lib/prisma";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { resolveAvatar, serializePost } from "@/lib/utils";
-import { withErrorHandling } from "@/lib/api-utils";
+import { withErrorHandling, cachedJson } from "@/lib/api-utils";
 
 async function _GET(req: NextRequest) {
   const limited = checkRateLimit(req, "search", 30);
@@ -15,8 +15,10 @@ async function _GET(req: NextRequest) {
   const cursor = req.nextUrl.searchParams.get("cursor");
   const limit = 20;
 
+  const searchCacheOpts = { scope: "public" as const, maxAge: 30, swr: 60 };
+
   if (!q) {
-    return NextResponse.json({ results: [], nextCursor: null });
+    return cachedJson({ results: [], nextCursor: null }, searchCacheOpts);
   }
 
   if (type === "people") {
@@ -41,10 +43,10 @@ async function _GET(req: NextRequest) {
       ...(cursor ? { skip: 1, cursor: { id: cursor } } : {}),
     });
 
-    return NextResponse.json({
+    return cachedJson({
       results: users.map(resolveAvatar),
       nextCursor: users.length === limit ? users[users.length - 1].id : null,
-    });
+    }, searchCacheOpts);
   }
 
   // Posts search — use PostgreSQL full-text search via websearch_to_tsquery
@@ -81,7 +83,7 @@ async function _GET(req: NextRequest) {
   const nextCursor = hasMore ? pageIds[pageIds.length - 1] : null;
 
   if (pageIds.length === 0) {
-    return NextResponse.json({ results: [], nextCursor: null });
+    return cachedJson({ results: [], nextCursor: null }, searchCacheOpts);
   }
 
   const posts = await prisma.post.findMany({
@@ -107,9 +109,9 @@ async function _GET(req: NextRequest) {
     orderBy: { createdAt: "desc" },
   });
 
-  return NextResponse.json({
+  return cachedJson({
     results: posts.map(serializePost),
     nextCursor,
-  });
+  }, searchCacheOpts);
 }
 export const GET = withErrorHandling(_GET);

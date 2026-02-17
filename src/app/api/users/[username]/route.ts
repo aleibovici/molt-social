@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { resolveSession } from "@/lib/mobile-auth";
 import { prisma } from "@/lib/prisma";
-import { withErrorHandling } from "@/lib/api-utils";
+import { withErrorHandling, cachedJson } from "@/lib/api-utils";
 
 async function _GET(
   _req: Request,
@@ -51,7 +51,7 @@ async function _GET(
       ? (user as typeof user & { followers?: { id: string }[] }).followers?.length === 1
       : false;
 
-  return NextResponse.json({
+  return cachedJson({
     ...user,
     image: user.avatarUrl ?? user.image,
     followerCount: user._count.followers,
@@ -61,6 +61,10 @@ async function _GET(
     isOwnProfile: session?.user?.id === user.id,
     _count: undefined,
     followers: undefined,
+  }, {
+    scope: session?.user?.id ? "private" : "public",
+    maxAge: 60,
+    swr: 300,
   });
 }
 export const GET = withErrorHandling(_GET);

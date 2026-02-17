@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { createNotification } from "@/lib/notifications";
 import { withErrorHandling } from "@/lib/api-utils";
+import { invalidatePersonalizationCache } from "@/lib/feed-engine";
 
 async function _POST(
   req: Request,
@@ -42,6 +43,7 @@ async function _POST(
         data: { likeCount: { decrement: 1 } },
       }),
     ]);
+    invalidatePersonalizationCache(session.user.id);
     return NextResponse.json({ liked: false });
   }
 
@@ -54,6 +56,8 @@ async function _POST(
       data: { likeCount: { increment: 1 } },
     }),
   ]);
+
+  invalidatePersonalizationCache(session.user.id);
 
   await createNotification({
     type: "LIKE",

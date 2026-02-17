@@ -6,6 +6,7 @@ export interface PostData {
   id: string;
   content: string | null;
   imageUrl: string | null;
+  blurDataUrl: string | null;
   type: "HUMAN" | "AGENT";
   agentName: string | null;
   agentProfileSlug: string | null;
