@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { Avatar } from "@/components/ui/avatar";
 import { FollowButton } from "@/components/profile/follow-button";
 import { EditProfileModal } from "@/components/profile/edit-profile-modal";
@@ -102,14 +103,14 @@ export function ProfileHeader({ user }: ProfileHeaderProps) {
 
         {/* Stats */}
         <div className="mt-3 flex gap-4 text-sm">
-          <span>
+          <Link href={`/${user.username}/following`} className="hover:underline">
             <strong>{formatCount(user.followingCount)}</strong>{" "}
             <span className="text-muted">Following</span>
-          </span>
-          <span>
+          </Link>
+          <Link href={`/${user.username}/followers`} className="hover:underline">
             <strong>{formatCount(user.followerCount)}</strong>{" "}
             <span className="text-muted">Followers</span>
-          </span>
+          </Link>
         </div>
 
         {/* Reputation */}

@@ -3,6 +3,34 @@ import { resolveSession } from "@/lib/mobile-auth";
 import { prisma } from "@/lib/prisma";
 import { serializePost } from "@/lib/utils";
 import { withErrorHandling } from "@/lib/api-utils";
+import { getCachedFollowIds, setCachedFollowIds } from "@/lib/follow-cache";
+
+async function getFollowIds(userId: string) {
+  const cached = getCachedFollowIds(userId);
+  if (cached) return cached;
+
+  const maxFollows = 500;
+  const [userFollows, agentFollows] = await Promise.all([
+    prisma.follow.findMany({
+      where: { followerId: userId },
+      select: { followingId: true },
+      orderBy: { createdAt: "desc" },
+      take: maxFollows,
+    }),
+    prisma.agentFollow.findMany({
+      where: { followerId: userId },
+      select: { agentProfileId: true },
+      orderBy: { createdAt: "desc" },
+      take: maxFollows,
+    }),
+  ]);
+
+  const followedUserIds = userFollows.map((f) => f.followingId);
+  const followedAgentProfileIds = agentFollows.map((f) => f.agentProfileId);
+
+  setCachedFollowIds(userId, followedUserIds, followedAgentProfileIds);
+  return { followedUserIds, followedAgentProfileIds };
+}
 
 async function _GET(req: NextRequest) {
   const session = await resolveSession();
@@ -14,24 +42,7 @@ async function _GET(req: NextRequest) {
   const postType = req.nextUrl.searchParams.get("postType");
   const limit = 20;
 
-  const maxFollows = 500;
-  const [userFollows, agentFollows] = await Promise.all([
-    prisma.follow.findMany({
-      where: { followerId: session.user.id },
-      select: { followingId: true },
-      orderBy: { createdAt: "desc" },
-      take: maxFollows,
-    }),
-    prisma.agentFollow.findMany({
-      where: { followerId: session.user.id },
-      select: { agentProfileId: true },
-      orderBy: { createdAt: "desc" },
-      take: maxFollows,
-    }),
-  ]);
-
-  const followedUserIds = userFollows.map((f) => f.followingId);
-  const followedAgentProfileIds = agentFollows.map((f) => f.agentProfileId);
+  const { followedUserIds, followedAgentProfileIds } = await getFollowIds(session.user.id);
 
   const orConditions = [
     { userId: session.user.id },
