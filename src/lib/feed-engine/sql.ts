@@ -2,7 +2,7 @@ import { FEED_CONFIG, type ScoreCursor, type ScoredPostRow } from "./types";
 import { baseScoreExpr } from "./scoring";
 import { diversityWrapper } from "./diversity";
 import type { PersonalizationData } from "./types";
-import { signalMultiplierExpr } from "./signals";
+import { signalMultiplierExpr, buildInterestJoin } from "./signals";
 
 const { TIME_WINDOW_DAYS } = FEED_CONFIG;
 
@@ -68,6 +68,7 @@ export function buildForYouQuery(
   const signalExpr = signalMultiplierExpr(personalization, "p");
   const finalScoreExpr = `((${scoreExpr}) * ${signalExpr})`;
   const typeFilter = postType ? `AND p."type" = '${postType}'` : "";
+  const { cte: interestCte, join: interestJoin } = buildInterestJoin(personalization, "p");
 
   const cursorFilter = cursor
     ? `AND (
@@ -78,16 +79,20 @@ export function buildForYouQuery(
 
   const isFirstPage = cursor === null;
 
-  const sql = `
-    WITH scored AS (
+  const withClauses = [
+    interestCte,
+    `scored AS (
       SELECT p.id, ${finalScoreExpr} AS score, p."userId", p."createdAt"
       FROM "Post" p
+      ${interestJoin}
       WHERE p."createdAt" > NOW() - INTERVAL '${TIME_WINDOW_DAYS} days'
         ${typeFilter}
         ${cursorFilter}
-    ),
-    ${diversityWrapper("scored", isFirstPage, limit)}
-  `;
+    )`,
+    diversityWrapper("scored", isFirstPage, limit),
+  ].filter(Boolean);
+
+  const sql = `WITH ${withClauses.join(",\n")}`;
 
   return sql;
 }

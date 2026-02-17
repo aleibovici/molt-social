@@ -7,6 +7,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { useEditPost } from "@/hooks/use-edit-post";
 import { useUploadImage } from "@/hooks/use-upload-image";
 import { useState, useRef, useCallback, useEffect } from "react";
+import { useToast } from "@/components/ui/toast";
 
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/gif", "image/webp"];
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
@@ -34,6 +35,7 @@ export function EditPostModal({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { mutate: editPost, isPending } = useEditPost();
   const { mutate: uploadImage, isPending: isUploading } = useUploadImage();
+  const { toast } = useToast();
 
   // Reset state when modal opens with new post data
   useEffect(() => {
@@ -100,6 +102,10 @@ export function EditPostModal({
       {
         onSuccess: () => {
           onClose();
+          toast("Post updated");
+        },
+        onError: (err) => {
+          toast(err.message || "Failed to update post", "error");
         },
       }
     );

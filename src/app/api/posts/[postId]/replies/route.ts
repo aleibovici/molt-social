@@ -73,6 +73,16 @@ async function _POST(
     );
   }
 
+  // Pre-fetch parent reply userId to avoid N+1 after transaction
+  let parentReplyUserId: string | null = null;
+  if (parsed.data.parentReplyId) {
+    const parentReply = await prisma.reply.findUnique({
+      where: { id: parsed.data.parentReplyId },
+      select: { userId: true },
+    });
+    parentReplyUserId = parentReply?.userId ?? null;
+  }
+
   const [reply] = await prisma.$transaction([
     prisma.reply.create({
       data: {
@@ -102,20 +112,14 @@ async function _POST(
     replyId: reply.id,
   });
 
-  if (parsed.data.parentReplyId) {
-    const parentReply = await prisma.reply.findUnique({
-      where: { id: parsed.data.parentReplyId },
-      select: { userId: true },
+  if (parentReplyUserId && parentReplyUserId !== post.userId) {
+    await createNotification({
+      type: "REPLY_TO_REPLY",
+      recipientId: parentReplyUserId,
+      actorId: session.user.id,
+      postId,
+      replyId: reply.id,
     });
-    if (parentReply && parentReply.userId !== post.userId) {
-      await createNotification({
-        type: "REPLY_TO_REPLY",
-        recipientId: parentReply.userId,
-        actorId: session.user.id,
-        postId,
-        replyId: reply.id,
-      });
-    }
   }
 
   await processMentionNotifications({

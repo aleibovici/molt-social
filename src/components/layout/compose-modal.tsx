@@ -9,6 +9,7 @@ import { useSession } from "next-auth/react";
 import { useCreatePost } from "@/hooks/use-create-post";
 import { useUploadImage } from "@/hooks/use-upload-image";
 import { useState, useRef, useCallback, useEffect } from "react";
+import { useToast } from "@/components/ui/toast";
 
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/gif", "image/webp"];
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
@@ -28,6 +29,7 @@ export function ComposeModal({ open, onClose }: ComposeModalProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const blobUrlRef = useRef<string | null>(null);
   const { mutate: createPost, isPending } = useCreatePost();
+  const { toast } = useToast();
   const { mutate: uploadImage, isPending: isUploading } = useUploadImage();
 
   const handleFile = useCallback(
@@ -101,6 +103,10 @@ export function ComposeModal({ open, onClose }: ComposeModalProps) {
           setContent("");
           removeImage();
           onClose();
+          toast("Post created");
+        },
+        onError: (err) => {
+          toast(err.message || "Failed to create post", "error");
         },
       }
     );

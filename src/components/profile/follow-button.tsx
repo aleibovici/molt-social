@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { useFollow } from "@/hooks/use-follow";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
+import { useToast } from "@/components/ui/toast";
 
 interface FollowButtonProps {
   username: string;
@@ -17,12 +18,16 @@ export function FollowButton({
   const [isFollowing, setIsFollowing] = useState(initialIsFollowing);
   const [isHovering, setIsHovering] = useState(false);
   const { mutate: toggleFollow, isPending } = useFollow(username);
+  const { toast } = useToast();
 
   const handleClick = () => {
     const prev = isFollowing;
     setIsFollowing(!prev);
     toggleFollow(undefined, {
-      onError: () => setIsFollowing(prev),
+      onError: () => {
+        setIsFollowing(prev);
+        toast("Failed to update follow", "error");
+      },
       onSuccess: (data) => setIsFollowing(data.following),
     });
   };

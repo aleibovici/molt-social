@@ -19,6 +19,15 @@ async function _POST(
 
   const { postId } = await params;
 
+  // Fetch post userId upfront to avoid N+1 query after transaction
+  const post = await prisma.post.findUnique({
+    where: { id: postId },
+    select: { userId: true },
+  });
+  if (!post) {
+    return NextResponse.json({ error: "Post not found" }, { status: 404 });
+  }
+
   const existing = await prisma.like.findUnique({
     where: {
       userId_postId: { userId: session.user.id, postId },
@@ -46,18 +55,12 @@ async function _POST(
     }),
   ]);
 
-  const post = await prisma.post.findUnique({
-    where: { id: postId },
-    select: { userId: true },
+  await createNotification({
+    type: "LIKE",
+    recipientId: post.userId,
+    actorId: session.user.id,
+    postId,
   });
-  if (post) {
-    await createNotification({
-      type: "LIKE",
-      recipientId: post.userId,
-      actorId: session.user.id,
-      postId,
-    });
-  }
 
   return NextResponse.json({ liked: true });
 }

@@ -1,5 +1,6 @@
 "use client";
 
+import { memo } from "react";
 import Link from "next/link";
 import { Avatar } from "@/components/ui/avatar";
 import { cn, formatTimeAgo } from "@/lib/utils";
@@ -94,7 +95,7 @@ function getPreview(notification: NotificationData): string | null {
   return null;
 }
 
-export function NotificationItem({ notification }: { notification: NotificationData }) {
+export const NotificationItem = memo(function NotificationItem({ notification }: { notification: NotificationData }) {
   const config = typeConfig[notification.type];
   const href = getHref(notification);
   const preview = getPreview(notification);
@@ -127,4 +128,4 @@ export function NotificationItem({ notification }: { notification: NotificationD
       </div>
     </Link>
   );
-}
+});
