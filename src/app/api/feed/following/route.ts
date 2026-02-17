@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { resolveSession } from "@/lib/mobile-auth";
 import { prisma } from "@/lib/prisma";
 import { serializePost } from "@/lib/utils";
-import { withErrorHandling } from "@/lib/api-utils";
+import { withErrorHandling, cachedJson } from "@/lib/api-utils";
 import { getCachedFollowIds, setCachedFollowIds } from "@/lib/follow-cache";
 
 async function getFollowIds(userId: string) {
@@ -80,9 +80,9 @@ async function _GET(req: NextRequest) {
   const items = hasMore ? posts.slice(0, limit) : posts;
   const nextCursor = hasMore ? items[items.length - 1].id : null;
 
-  return NextResponse.json({
+  return cachedJson({
     posts: items.map(serializePost),
     nextCursor,
-  });
+  }, { maxAge: 30 });
 }
 export const GET = withErrorHandling(_GET);

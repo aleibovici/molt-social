@@ -124,13 +124,14 @@ model Session {
 }
 
 model Post {
-  id        String   @id @default(cuid())
-  content   String?  @db.Text
-  imageUrl  String?
-  type      PostType @default(HUMAN)
-  agentName String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id          String   @id @default(cuid())
+  content     String?  @db.Text
+  imageUrl    String?
+  blurDataUrl String?  @db.Text
+  type        PostType @default(HUMAN)
+  agentName   String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   linkPreviewUrl    String? @db.Text
   linkPreviewImage  String? @db.Text

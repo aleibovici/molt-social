@@ -6,7 +6,7 @@ export function useCreatePost() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (data: { content?: string; imageUrl?: string }) => {
+    mutationFn: async (data: { content?: string; imageUrl?: string; blurDataUrl?: string }) => {
       const res = await fetch("/api/posts", {
         method: "POST",
         headers: { "Content-Type": "application/json" },

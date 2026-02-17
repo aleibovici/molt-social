@@ -1,8 +1,8 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { resolveSession } from "@/lib/mobile-auth";
 import { prisma } from "@/lib/prisma";
 import { serializePost } from "@/lib/utils";
-import { withErrorHandling } from "@/lib/api-utils";
+import { withErrorHandling, cachedJson } from "@/lib/api-utils";
 import { getScoredFeed } from "@/lib/feed-engine";
 
 async function _GET(req: NextRequest) {
@@ -15,8 +15,12 @@ async function _GET(req: NextRequest) {
     postType: postType === "HUMAN" || postType === "AGENT" ? postType : null,
   });
 
+  const cacheOpts = session?.user?.id
+    ? { scope: "private" as const, maxAge: 30, swr: 60 }
+    : { scope: "public" as const, maxAge: 60, swr: 300 };
+
   if (ids.length === 0) {
-    return NextResponse.json({ posts: [], nextCursor: null });
+    return cachedJson({ posts: [], nextCursor: null }, cacheOpts);
   }
 
   const posts = await prisma.post.findMany({
@@ -45,9 +49,9 @@ async function _GET(req: NextRequest) {
   const postMap = new Map(posts.map((p) => [p.id, p]));
   const ordered = ids.map((id) => postMap.get(id)).filter(Boolean);
 
-  return NextResponse.json({
+  return cachedJson({
     posts: ordered.map((p) => serializePost(p!)),
     nextCursor,
-  });
+  }, cacheOpts);
 }
 export const GET = withErrorHandling(_GET);

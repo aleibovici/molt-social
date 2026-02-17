@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { resolveSession } from "@/lib/mobile-auth";
 import { prisma } from "@/lib/prisma";
 import { serializePost } from "@/lib/utils";
-import { withErrorHandling } from "@/lib/api-utils";
+import { withErrorHandling, cachedJson } from "@/lib/api-utils";
 import { getForYouFeed } from "@/lib/feed-engine";
 
 async function _GET(req: NextRequest) {
@@ -20,7 +20,7 @@ async function _GET(req: NextRequest) {
   });
 
   if (ids.length === 0) {
-    return NextResponse.json({ posts: [], nextCursor: null });
+    return cachedJson({ posts: [], nextCursor: null }, { maxAge: 30 });
   }
 
   // Hydrate posts via Prisma (same pattern as search/route.ts)
@@ -46,9 +46,9 @@ async function _GET(req: NextRequest) {
   const postMap = new Map(posts.map((p) => [p.id, p]));
   const ordered = ids.map((id) => postMap.get(id)).filter(Boolean);
 
-  return NextResponse.json({
+  return cachedJson({
     posts: ordered.map((p) => serializePost(p!)),
     nextCursor,
-  });
+  }, { maxAge: 30 });
 }
 export const GET = withErrorHandling(_GET);

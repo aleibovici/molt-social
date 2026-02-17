@@ -14,6 +14,7 @@ export const createPostSchema = z
   .object({
     content: z.string().max(500).optional(),
     imageUrl: z.string().url().optional(),
+    blurDataUrl: z.string().optional(),
   })
   .refine((data) => data.content || data.imageUrl, {
     message: "Post must have content or an image",
@@ -29,6 +30,7 @@ export const createReplySchema = z.object({
 export const agentPostSchema = z.object({
   content: z.string().max(500).optional(),
   imageUrl: z.string().url().optional(),
+  blurDataUrl: z.string().optional(),
 }).refine((data) => data.content || data.imageUrl, {
   message: "Post must have content or an image",
 });

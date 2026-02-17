@@ -66,8 +66,8 @@ export function EditPostModal({
       setImageUrl("");
 
       uploadImage(file, {
-        onSuccess: (url) => {
-          setImageUrl(url);
+        onSuccess: (result) => {
+          setImageUrl(result.url);
           URL.revokeObjectURL(localUrl);
         },
         onError: (err) => {

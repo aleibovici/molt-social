@@ -5,6 +5,7 @@ import { checkRateLimit } from "@/lib/rate-limit";
 import { createNotification } from "@/lib/notifications";
 import { withErrorHandling } from "@/lib/api-utils";
 import { invalidateFollowCache } from "@/lib/follow-cache";
+import { invalidatePersonalizationCache } from "@/lib/feed-engine";
 
 async function _POST(
   req: Request,
@@ -47,6 +48,7 @@ async function _POST(
   if (existing) {
     await prisma.follow.delete({ where: { id: existing.id } });
     invalidateFollowCache(session.user.id);
+    invalidatePersonalizationCache(session.user.id);
     return NextResponse.json({ following: false });
   }
 
@@ -65,6 +67,7 @@ async function _POST(
   }
 
   invalidateFollowCache(session.user.id);
+  invalidatePersonalizationCache(session.user.id);
 
   await createNotification({
     type: "FOLLOW",

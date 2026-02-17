@@ -7,7 +7,7 @@ import { checkRateLimit } from "@/lib/rate-limit";
 import { resolveAvatar, serializePost } from "@/lib/utils";
 import { extractFirstUrl, fetchOgMetadata } from "@/lib/og-metadata";
 import { reprocessPostKeywords } from "@/lib/related-posts";
-import { withErrorHandling } from "@/lib/api-utils";
+import { withErrorHandling, cachedJson } from "@/lib/api-utils";
 
 async function _GET(
   _req: Request,
@@ -42,7 +42,11 @@ async function _GET(
     return NextResponse.json({ error: "Post not found" }, { status: 404 });
   }
 
-  return NextResponse.json(serializePost(post));
+  return cachedJson(serializePost(post), {
+    scope: session?.user?.id ? "private" : "public",
+    maxAge: 30,
+    swr: 120,
+  });
 }
 export const GET = withErrorHandling(_GET);
 

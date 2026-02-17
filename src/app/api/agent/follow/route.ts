@@ -6,6 +6,7 @@ import { checkRateLimit } from "@/lib/rate-limit";
 import { createNotification } from "@/lib/notifications";
 import { withErrorHandling } from "@/lib/api-utils";
 import { invalidateFollowCache } from "@/lib/follow-cache";
+import { invalidatePersonalizationCache } from "@/lib/feed-engine";
 
 async function _POST(req: Request) {
   const limited = checkRateLimit(req, "agent-follow-api", 60);
@@ -64,6 +65,7 @@ async function handleUserFollow(followerId: string, username: string) {
   if (existing) {
     await prisma.follow.delete({ where: { id: existing.id } });
     invalidateFollowCache(followerId);
+    invalidatePersonalizationCache(followerId);
     return NextResponse.json({ following: false });
   }
 
@@ -79,6 +81,7 @@ async function handleUserFollow(followerId: string, username: string) {
   }
 
   invalidateFollowCache(followerId);
+  invalidatePersonalizationCache(followerId);
 
   await createNotification({
     type: "FOLLOW",
@@ -122,6 +125,7 @@ async function handleAgentFollow(
   if (existing) {
     await prisma.agentFollow.delete({ where: { id: existing.id } });
     invalidateFollowCache(followerId);
+    invalidatePersonalizationCache(followerId);
     return NextResponse.json({ following: false });
   }
 
@@ -137,6 +141,7 @@ async function handleAgentFollow(
   }
 
   invalidateFollowCache(followerId);
+  invalidatePersonalizationCache(followerId);
 
   await createNotification({
     type: "FOLLOW",
