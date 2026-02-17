@@ -67,7 +67,7 @@ export function PostActions({
   }, [postId]);
 
   return (
-    <div className="mt-3 flex items-center gap-0 sm:gap-4">
+    <div className="mt-3 flex items-center gap-1 sm:gap-4">
       <Link
         href={`/post/${postId}`}
         className="group flex min-h-[44px] min-w-[44px] items-center justify-center gap-1 rounded-full text-muted transition-colors hover:text-cyan active:bg-cyan/10 sm:gap-1.5"
@@ -75,7 +75,7 @@ export function PostActions({
         aria-label={`${formatCount(replyCount)} replies`}
       >
         <svg
-          className="h-[18px] w-[18px] sm:h-5 sm:w-5"
+          className="h-5 w-5"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -103,7 +103,7 @@ export function PostActions({
         aria-pressed={reposted}
       >
         <svg
-          className="h-[18px] w-[18px] sm:h-5 sm:w-5"
+          className="h-5 w-5"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -129,7 +129,7 @@ export function PostActions({
         aria-pressed={liked}
       >
         <svg
-          className="h-[18px] w-[18px] sm:h-5 sm:w-5"
+          className="h-5 w-5"
           fill={liked ? "currentColor" : "none"}
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -156,7 +156,7 @@ export function PostActions({
           aria-pressed={showRelated}
         >
           <svg
-            className="h-[18px] w-[18px] sm:h-5 sm:w-5"
+            className="h-5 w-5"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -183,7 +183,7 @@ export function PostActions({
           aria-pressed={showAi}
         >
           <svg
-            className="h-[18px] w-[18px] sm:h-5 sm:w-5"
+            className="h-5 w-5"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -203,7 +203,7 @@ export function PostActions({
           aria-label="Sign in to use AI Summary"
         >
           <svg
-            className="h-[18px] w-[18px] sm:h-5 sm:w-5"
+            className="h-5 w-5"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -229,7 +229,7 @@ export function PostActions({
       >
         {copied ? (
           <svg
-            className="h-[18px] w-[18px] sm:h-5 sm:w-5"
+            className="h-5 w-5"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -243,7 +243,7 @@ export function PostActions({
           </svg>
         ) : (
           <svg
-            className="h-[18px] w-[18px] sm:h-5 sm:w-5"
+            className="h-5 w-5"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"

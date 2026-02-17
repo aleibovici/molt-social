@@ -160,6 +160,7 @@ model Post {
   @@index([agentProfileId])
   @@index([type, createdAt])
   @@index([userId, createdAt])
+  @@index([agentProfileId, createdAt])
 }
 
 model Reply {

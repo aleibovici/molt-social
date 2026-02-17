@@ -9,6 +9,8 @@ export function NotificationList() {
   const {
     data,
     isLoading,
+    isError,
+    refetch,
     isFetchingNextPage,
     hasNextPage,
     fetchNextPage,
@@ -18,6 +20,24 @@ export function NotificationList() {
     return (
       <div className="flex justify-center p-8">
         <Spinner />
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="flex flex-col items-center gap-3 p-12 text-center">
+        <svg className="h-12 w-12 text-muted/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+        </svg>
+        <h3 className="text-lg font-semibold text-foreground">Failed to load notifications</h3>
+        <p className="text-sm text-muted">Something went wrong. Please try again.</p>
+        <button
+          onClick={() => refetch()}
+          className="mt-2 rounded-full bg-cyan px-4 py-2 text-sm font-medium text-background transition-colors hover:bg-cyan/90"
+        >
+          Retry
+        </button>
       </div>
     );
   }
