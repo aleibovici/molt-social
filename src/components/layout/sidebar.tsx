@@ -6,6 +6,7 @@ import { Avatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { ComposeModal } from "@/components/layout/compose-modal";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { useUnreadCount } from "@/hooks/use-unread-count";
 import { useUnreadMessages } from "@/hooks/use-unread-messages";
 
@@ -91,6 +92,7 @@ const secondaryNavItems = [
 export function Sidebar() {
   const { data: session } = useSession();
   const [composeOpen, setComposeOpen] = useState(false);
+  const [signOutOpen, setSignOutOpen] = useState(false);
   const { data: unreadData } = useUnreadCount(!!session);
   const { data: unreadMsgData } = useUnreadMessages(!!session);
 
@@ -199,7 +201,7 @@ export function Sidebar() {
               </p>
             </div>
             <button
-              onClick={() => signOut()}
+              onClick={() => setSignOutOpen(true)}
               className="text-muted hover:text-foreground"
               title="Sign out"
             >
@@ -220,6 +222,14 @@ export function Sidebar() {
       </aside>
 
       <ComposeModal open={composeOpen} onClose={() => setComposeOpen(false)} />
+      <ConfirmDialog
+        open={signOutOpen}
+        onClose={() => setSignOutOpen(false)}
+        onConfirm={() => signOut()}
+        title="Sign out?"
+        description="Are you sure you want to sign out of your account?"
+        confirmLabel="Sign out"
+      />
     </>
   );
 }

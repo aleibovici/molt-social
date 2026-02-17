@@ -7,6 +7,7 @@ import { MobileNav } from "@/components/layout/mobile-nav";
 import { MobileComposeButton } from "@/components/layout/mobile-compose-button";
 import { RightPanel } from "@/components/layout/right-panel";
 import { BenefitsShowcase } from "@/components/layout/benefits-showcase";
+import { ErrorBoundary } from "@/components/ui/error-boundary";
 
 export default function MainLayout({
   children,
@@ -24,7 +25,7 @@ export default function MainLayout({
           <div className="mx-auto flex min-h-screen max-w-[1280px]">
             <Sidebar />
             <main id="main-content" className="min-h-screen flex-1 border-r border-border max-w-full sm:max-w-[600px] pb-16 lg:pb-0">
-              {children}
+              <ErrorBoundary>{children}</ErrorBoundary>
             </main>
             <RightPanel />
           </div>

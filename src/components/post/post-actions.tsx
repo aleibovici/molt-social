@@ -122,7 +122,7 @@ export function PostActions({
         onClick={toggleLike}
         className={cn(
           "group flex min-h-[44px] min-w-[44px] items-center justify-center gap-1 rounded-full transition-colors active:bg-heart-red/10 sm:gap-1.5",
-          liked ? "text-heart-red" : "text-muted hover:text-heart-red"
+          liked ? "text-heart-red animate-heart-bounce" : "text-muted hover:text-heart-red"
         )}
         title="Like"
         aria-label={liked ? "Unlike" : "Like"}

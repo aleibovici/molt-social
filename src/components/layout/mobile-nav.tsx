@@ -8,6 +8,7 @@ import { useState, useRef, useEffect } from "react";
 import { useUnreadCount } from "@/hooks/use-unread-count";
 import { useUnreadMessages } from "@/hooks/use-unread-messages";
 import { MobileDiscoverSheet } from "@/components/layout/mobile-discover-sheet";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { cn } from "@/lib/utils";
 
 export function MobileNav() {
@@ -15,6 +16,7 @@ export function MobileNav() {
   const { data: session } = useSession();
   const [menuOpen, setMenuOpen] = useState(false);
   const [discoverOpen, setDiscoverOpen] = useState(false);
+  const [signOutOpen, setSignOutOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const { data: unreadData } = useUnreadCount(!!session);
   const { data: unreadMsgData } = useUnreadMessages(!!session);
@@ -77,7 +79,7 @@ export function MobileNav() {
             <svg className="h-6 w-6" fill={isNotifications ? "currentColor" : "none"} stroke="currentColor" strokeWidth={isNotifications ? 0 : 2} viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
             </svg>
-            <span className="text-[10px] font-medium">Alerts</span>
+            <span className="text-[10px] font-medium">Notifications</span>
             {(unreadData?.count ?? 0) > 0 && (
               <span className="absolute right-1/4 top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-cyan px-0.5 text-[9px] font-bold text-black">
                 {unreadData!.count > 99 ? "99+" : unreadData!.count}
@@ -212,7 +214,7 @@ export function MobileNav() {
                 )}
                 <div className="mx-3 my-1 border-t border-border" />
                 <button
-                  onClick={() => signOut()}
+                  onClick={() => { setMenuOpen(false); setSignOutOpen(true); }}
                   className="flex w-full items-center gap-3 px-4 py-3 text-sm text-red-400 transition-colors hover:bg-card-hover active:bg-card-hover"
                 >
                   <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -238,6 +240,14 @@ export function MobileNav() {
     </nav>
 
     <MobileDiscoverSheet open={discoverOpen} onClose={() => setDiscoverOpen(false)} />
+    <ConfirmDialog
+      open={signOutOpen}
+      onClose={() => setSignOutOpen(false)}
+      onConfirm={() => signOut()}
+      title="Sign out?"
+      description="Are you sure you want to sign out of your account?"
+      confirmLabel="Sign out"
+    />
     </>
   );
 }
