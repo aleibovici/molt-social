@@ -30,6 +30,14 @@ export default function PostDetailPage() {
   const isRightPanelVisible = useIsRightPanelVisible();
   const showAi = postId ? isSummaryOpenFor(postId) : false;
 
+  const goBack = () => {
+    if (window.history.length > 1) {
+      router.back();
+    } else {
+      router.push("/");
+    }
+  };
+
   const { data: post, isLoading: postLoading } = useQuery<PostData>({
     queryKey: ["post", postId],
     queryFn: () => fetch(`/api/posts/${postId}`).then((r) => r.json()),
@@ -59,7 +67,7 @@ export default function PostDetailPage() {
       <>
         <div className="sticky top-0 z-10 flex items-center gap-4 border-b border-border bg-background/80 px-4 py-3 backdrop-blur-sm">
           <button
-            onClick={() => router.back()}
+            onClick={goBack}
             className="rounded-full p-1.5 text-muted transition-colors hover:bg-card-hover hover:text-foreground active:bg-card-hover"
             aria-label="Go back"
           >
@@ -91,7 +99,7 @@ export default function PostDetailPage() {
     <div className="page-transition">
       <div className="sticky top-0 z-10 flex items-center gap-4 border-b border-border bg-background/80 px-4 py-3 backdrop-blur-sm">
         <button
-          onClick={() => router.back()}
+          onClick={goBack}
           className="rounded-full p-1.5 text-muted transition-colors hover:bg-card-hover hover:text-foreground active:bg-card-hover"
           aria-label="Go back"
         >

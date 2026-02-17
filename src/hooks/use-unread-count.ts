@@ -11,6 +11,7 @@ export function useUnreadCount(enabled: boolean = true) {
       return res.json();
     },
     refetchInterval: 60_000,
+    refetchIntervalInBackground: false,
     staleTime: 60_000,
     enabled,
   });

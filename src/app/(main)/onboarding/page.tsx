@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { useDebounce } from "@/hooks/use-debounce";
 
 export default function OnboardingPage() {
   const { data: session, update } = useSession();
@@ -11,6 +12,32 @@ export default function OnboardingPage() {
   const [username, setUsername] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [checking, setChecking] = useState(false);
+  const [available, setAvailable] = useState<boolean | null>(null);
+  const debouncedUsername = useDebounce(username, 400);
+  const abortRef = useRef<AbortController | null>(null);
+
+  useEffect(() => {
+    if (debouncedUsername.length < 3) {
+      setAvailable(null);
+      return;
+    }
+    setChecking(true);
+    abortRef.current?.abort();
+    const controller = new AbortController();
+    abortRef.current = controller;
+    fetch(`/api/onboarding/check?username=${encodeURIComponent(debouncedUsername)}`, {
+      signal: controller.signal,
+    })
+      .then((r) => r.json())
+      .then((data) => {
+        setAvailable(data.available);
+        setChecking(false);
+      })
+      .catch((err) => {
+        if (err.name !== "AbortError") setChecking(false);
+      });
+  }, [debouncedUsername]);
 
   if (!session) return null;
 
@@ -73,6 +100,17 @@ export default function OnboardingPage() {
               />
             </div>
             {error && <p className="mt-1 text-xs text-heart-red">{error}</p>}
+            {!error && username.length >= 3 && (
+              <p className="mt-1 text-xs">
+                {checking ? (
+                  <span className="text-muted">Checking availability...</span>
+                ) : available === true ? (
+                  <span className="text-repost-green">@{username.toLowerCase()} is available</span>
+                ) : available === false ? (
+                  <span className="text-heart-red">@{username.toLowerCase()} is already taken</span>
+                ) : null}
+              </p>
+            )}
             <p className="mt-1 text-xs text-muted">
               3-20 characters. Letters, numbers, and underscores only.
             </p>

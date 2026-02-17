@@ -6,7 +6,6 @@ import { useQuery } from "@tanstack/react-query";
 import { Tabs } from "@/components/ui/tabs";
 import { PostCard } from "@/components/post/post-card";
 import { UserCard } from "@/components/profile/user-card";
-import { Spinner } from "@/components/ui/spinner";
 import { useDebounce } from "@/hooks/use-debounce";
 import type { PostData } from "@/hooks/use-feed";
 
@@ -86,8 +85,17 @@ export default function SearchPage() {
 
       <div>
         {isLoading && (
-          <div className="flex justify-center p-8">
-            <Spinner />
+          <div className="divide-y divide-border">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <div key={i} className="flex gap-3 p-4 animate-pulse">
+                <div className="h-10 w-10 shrink-0 rounded-full bg-card" />
+                <div className="flex-1 space-y-2">
+                  <div className="h-4 w-1/3 rounded bg-card" />
+                  <div className="h-3 w-2/3 rounded bg-card" />
+                  {type === "posts" && <div className="h-3 w-full rounded bg-card" />}
+                </div>
+              </div>
+            ))}
           </div>
         )}
 

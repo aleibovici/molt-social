@@ -46,7 +46,7 @@ export function FollowButton({
           isHovering && "border-heart-red text-heart-red hover:bg-heart-red/10"
         )}
       >
-        {isHovering ? "Unfollow" : "Following"}
+        {isPending ? "Updating..." : isHovering ? "Unfollow" : "Following"}
       </Button>
     );
   }
@@ -58,7 +58,7 @@ export function FollowButton({
       disabled={isPending}
       className="min-w-[100px]"
     >
-      Follow
+      {isPending ? "Following..." : "Follow"}
     </Button>
   );
 }

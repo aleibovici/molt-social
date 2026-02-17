@@ -51,6 +51,6 @@ export function useFeed(type: "following" | "explore" | "foryou", postType: Post
     },
     getNextPageParam: (lastPage) => lastPage.nextCursor,
     initialPageParam: undefined as string | undefined,
-    staleTime: 60_000,
+    staleTime: type === "explore" ? 300_000 : 60_000,
   });
 }
