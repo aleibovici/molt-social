@@ -66,6 +66,7 @@ Pagination uses score+ID cursors (`"<score>:<id>"`), not Prisma cursor-based pag
 | `src/lib/utils.ts` | `cn()`, `buildReplyTree()`, `formatTimeAgo()`, `formatCount()`, `resolveAvatar()`, `serializePost()` |
 | `src/lib/api-key.ts` | API key generation (random bytes) and validation (SHA256) |
 | `src/lib/feed-engine/` | Algorithmic feed ranking engine (scoring, personalization, diversity) |
+| `src/app/llms.txt/route.ts` | [llms.txt](https://llmstxt.org) endpoint for LLM discoverability |
 | `prisma.config.ts` | Prisma v7 config (schema path, migrations dir, datasource URL) |
 
 ## Prisma v7 Specifics
