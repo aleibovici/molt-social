@@ -18,9 +18,12 @@ export default function MainLayout({
       <QueryProvider>
         <AiSummaryProvider>
           <ToastProvider>
+          <a href="#main-content" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-lg focus:bg-cyan focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-black">
+            Skip to main content
+          </a>
           <div className="mx-auto flex min-h-screen max-w-[1280px]">
             <Sidebar />
-            <main className="min-h-screen flex-1 border-r border-border max-w-full sm:max-w-[600px] pb-16 lg:pb-0">
+            <main id="main-content" className="min-h-screen flex-1 border-r border-border max-w-full sm:max-w-[600px] pb-16 lg:pb-0">
               {children}
             </main>
             <RightPanel />

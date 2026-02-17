@@ -67,10 +67,10 @@ export function PostActions({
   }, [postId]);
 
   return (
-    <div className="mt-3 flex items-center gap-1 sm:gap-6">
+    <div className="mt-3 flex items-center gap-0 sm:gap-4">
       <Link
         href={`/post/${postId}`}
-        className="group flex items-center gap-1 rounded-full p-1.5 text-muted transition-colors hover:text-cyan active:bg-cyan/10 sm:gap-1.5 sm:p-0"
+        className="group flex min-h-[44px] min-w-[44px] items-center justify-center gap-1 rounded-full text-muted transition-colors hover:text-cyan active:bg-cyan/10 sm:gap-1.5"
         title="Replies"
         aria-label={`${formatCount(replyCount)} replies`}
       >
@@ -93,7 +93,7 @@ export function PostActions({
       <button
         onClick={toggleRepost}
         className={cn(
-          "group flex items-center gap-1 rounded-full p-1.5 transition-colors active:bg-repost-green/10 sm:gap-1.5 sm:p-0",
+          "group flex min-h-[44px] min-w-[44px] items-center justify-center gap-1 rounded-full transition-colors active:bg-repost-green/10 sm:gap-1.5",
           reposted
             ? "text-repost-green"
             : "text-muted hover:text-repost-green"
@@ -121,7 +121,7 @@ export function PostActions({
       <button
         onClick={toggleLike}
         className={cn(
-          "group flex items-center gap-1 rounded-full p-1.5 transition-colors active:bg-heart-red/10 sm:gap-1.5 sm:p-0",
+          "group flex min-h-[44px] min-w-[44px] items-center justify-center gap-1 rounded-full transition-colors active:bg-heart-red/10 sm:gap-1.5",
           liked ? "text-heart-red" : "text-muted hover:text-heart-red"
         )}
         title="Like"
@@ -148,7 +148,7 @@ export function PostActions({
         <button
           onClick={onToggleRelated}
           className={cn(
-            "group flex items-center gap-1 rounded-full p-1.5 transition-colors active:bg-cyan/10 sm:gap-1.5 sm:p-0",
+            "group flex min-h-[44px] min-w-[44px] items-center justify-center gap-1 rounded-full transition-colors active:bg-cyan/10 sm:gap-1.5",
             showRelated ? "text-cyan" : "text-muted hover:text-cyan"
           )}
           title="Related posts"
@@ -175,7 +175,7 @@ export function PostActions({
         <button
           onClick={onToggleAi}
           className={cn(
-            "group flex items-center gap-1 rounded-full p-1.5 transition-colors active:bg-cyan/10 sm:gap-1.5 sm:p-0",
+            "group flex min-h-[44px] min-w-[44px] items-center justify-center gap-1 rounded-full transition-colors active:bg-cyan/10 sm:gap-1.5",
             showAi ? "text-cyan" : "text-muted hover:text-cyan"
           )}
           title="AI Summary"
@@ -198,7 +198,7 @@ export function PostActions({
         </button>
       ) : !isAuthenticated && (
         <span
-          className="group flex items-center gap-1 p-1.5 text-muted/50 cursor-default sm:gap-1.5 sm:p-0"
+          className="group flex min-h-[44px] min-w-[44px] items-center justify-center gap-1 text-muted/50 cursor-default sm:gap-1.5"
           title="Sign in to use AI Summary"
           aria-label="Sign in to use AI Summary"
         >
@@ -221,7 +221,7 @@ export function PostActions({
       <button
         onClick={handleShare}
         className={cn(
-          "group flex items-center gap-1 rounded-full p-1.5 transition-colors active:bg-cyan/10 sm:gap-1.5 sm:p-0",
+          "group flex min-h-[44px] min-w-[44px] items-center justify-center gap-1 rounded-full transition-colors active:bg-cyan/10 sm:gap-1.5",
           copied ? "text-cyan" : "text-muted hover:text-cyan"
         )}
         title="Share link"

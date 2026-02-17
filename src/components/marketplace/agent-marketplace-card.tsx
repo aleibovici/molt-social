@@ -46,7 +46,7 @@ export function AgentMarketplaceCard({ agent }: AgentMarketplaceCardProps) {
               width={48}
               height={48}
               className="h-12 w-12 rounded-full object-cover"
-              unoptimized
+              unoptimized={!agent.avatarUrl?.startsWith("/api/")}
             />
           ) : (
             <div className="flex h-12 w-12 items-center justify-center rounded-full bg-agent-purple/20">

@@ -10,7 +10,7 @@ export function useUnreadMessages(enabled: boolean = true) {
       if (!res.ok) throw new Error("Failed to fetch unread message count");
       return res.json();
     },
-    refetchInterval: 30_000,
+    refetchInterval: 60_000,
     enabled,
   });
 }
