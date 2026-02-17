@@ -85,25 +85,37 @@ async function optimizeImage(
   return { buffer: optimized, contentType: "image/webp", extension: "webp" };
 }
 
-/** Upload image to S3 and return the object key. Optimizes the image before upload. */
+/** Generate a tiny blur placeholder as a data URL. */
+async function generateBlurDataUrl(buffer: Buffer): Promise<string> {
+  const tiny = await sharp(buffer)
+    .resize(16, 16, { fit: "inside" })
+    .webp({ quality: 20 })
+    .toBuffer();
+  return `data:image/webp;base64,${tiny.toString("base64")}`;
+}
+
+/** Upload image to S3 and return the object key + blur placeholder. Optimizes the image before upload. */
 export async function uploadImage(
   buffer: Buffer,
   contentType: string,
-  extension: string
-): Promise<string> {
+  _extension: string
+): Promise<{ key: string; blurDataUrl: string }> {
   const optimized = await optimizeImage(buffer, contentType);
   const key = `posts/${randomUUID()}.${optimized.extension}`;
 
-  await s3.send(
-    new PutObjectCommand({
-      Bucket: bucket(),
-      Key: key,
-      Body: optimized.buffer,
-      ContentType: optimized.contentType,
-    })
-  );
+  const [, blurDataUrl] = await Promise.all([
+    s3.send(
+      new PutObjectCommand({
+        Bucket: bucket(),
+        Key: key,
+        Body: optimized.buffer,
+        ContentType: optimized.contentType,
+      })
+    ),
+    generateBlurDataUrl(optimized.buffer),
+  ]);
 
-  return key;
+  return { key, blurDataUrl };
 }
 
 /** Upload an avatar to S3 — resized to 200×200 square crop, converted to WebP. */

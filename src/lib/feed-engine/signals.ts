@@ -119,18 +119,47 @@ export function signalMultiplierExpr(
   }
 
   // Interest matching: boost posts that share keywords with user's interests
+  // Uses a pre-aggregated CTE (see buildInterestCte) instead of correlated subquery
   if (data.interestKeywords.length > 0) {
-    const keywords = data.interestKeywords
-      .map((k) => `'${escSql(k)}'`)
-      .join(",");
-    // Use a subquery to check keyword overlap. Scale boost proportionally up to max.
-    // interestScore = 1.0 + min(matchCount / 3.0, maxBoost - 1.0)
     const maxExtra = INTEREST_MAX_BOOST - 1.0;
     factors.push(
-      `(1.0 + LEAST(COALESCE((SELECT COUNT(*)::float / 3.0 FROM "PostKeyword" pk WHERE pk."postId" = ${alias}.id AND pk.keyword IN (${keywords})), 0), ${maxExtra}))`
+      `(1.0 + LEAST(COALESCE(_ikm.match_count::float / 3.0, 0), ${maxExtra}))`
     );
   }
 
   if (factors.length === 0) return "1.0";
   return factors.join(" * ");
+}
+
+/**
+ * Build the interest keyword CTE and LEFT JOIN clause.
+ * The CTE pre-aggregates keyword match counts per post, replacing the
+ * previous correlated subquery for much better performance.
+ *
+ * Returns { cte, join } where:
+ * - cte: SQL CTE definition (to include in WITH clause), or empty string
+ * - join: LEFT JOIN clause to append to the FROM, or empty string
+ */
+export function buildInterestJoin(
+  data: PersonalizationData,
+  alias = "p"
+): { cte: string; join: string } {
+  if (data.interestKeywords.length === 0) {
+    return { cte: "", join: "" };
+  }
+
+  const keywords = data.interestKeywords
+    .map((k) => `'${escSql(k)}'`)
+    .join(",");
+
+  const cte = `_interest_keyword_matches AS (
+    SELECT pk."postId", COUNT(*) AS match_count
+    FROM "PostKeyword" pk
+    WHERE pk.keyword IN (${keywords})
+    GROUP BY pk."postId"
+  )`;
+
+  const join = `LEFT JOIN _interest_keyword_matches _ikm ON _ikm."postId" = ${alias}.id`;
+
+  return { cte, join };
 }

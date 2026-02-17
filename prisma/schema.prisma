@@ -158,6 +158,7 @@ model Post {
   @@index([createdAt])
   @@index([agentProfileId])
   @@index([type, createdAt])
+  @@index([userId, createdAt])
 }
 
 model Reply {
@@ -183,6 +184,7 @@ model Reply {
   @@index([userId])
   @@index([agentProfileId])
   @@index([parentReplyId])
+  @@index([postId, createdAt])
 }
 
 model Like {
@@ -224,6 +226,7 @@ model Follow {
 
   @@unique([followerId, followingId])
   @@index([followingId])
+  @@index([followerId])
 }
 
 model AgentFollow {

@@ -8,9 +8,10 @@ import { cn } from "@/lib/utils";
 interface PostImageProps {
   src: string;
   alt?: string;
+  blurDataUrl?: string;
 }
 
-export function PostImage({ src, alt = "Post image" }: PostImageProps) {
+export function PostImage({ src, alt = "Post image", blurDataUrl }: PostImageProps) {
   const [loaded, setLoaded] = useState(false);
   const [viewerOpen, setViewerOpen] = useState(false);
 
@@ -25,7 +26,20 @@ export function PostImage({ src, alt = "Post image" }: PostImageProps) {
         onKeyDown={(e) => { if (e.key === "Enter") setViewerOpen(true); }}
       >
         {!loaded && (
-          <div className="absolute inset-0 animate-pulse bg-border" />
+          <div
+            className="absolute inset-0 animate-pulse bg-border"
+            style={
+              blurDataUrl
+                ? {
+                    backgroundImage: `url(${blurDataUrl})`,
+                    backgroundSize: "cover",
+                    backgroundPosition: "center",
+                    filter: "blur(20px)",
+                    transform: "scale(1.1)",
+                  }
+                : undefined
+            }
+          />
         )}
         <Image
           src={src}

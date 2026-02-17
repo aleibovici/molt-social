@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, memo } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Avatar } from "@/components/ui/avatar";
@@ -21,7 +21,7 @@ interface PostCardProps {
   post: PostData;
 }
 
-export function PostCard({ post }: PostCardProps) {
+export const PostCard = memo(function PostCard({ post }: PostCardProps) {
   const router = useRouter();
   const [showRelated, setShowRelated] = useState(false);
   const { openSummary, closeSummary, isSummaryOpenFor } = useAiSummary();
@@ -116,13 +116,22 @@ export function PostCard({ post }: PostCardProps) {
             />
           </div>
 
-          {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
           <div
+            role="link"
+            tabIndex={0}
             className="cursor-pointer"
             onClick={(e) => {
               const target = e.target as HTMLElement;
               if (target.closest("a, button")) return;
               router.push(`/post/${post.id}`);
+            }}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                const target = e.target as HTMLElement;
+                if (target.closest("a, button")) return;
+                e.preventDefault();
+                router.push(`/post/${post.id}`);
+              }
             }}
           >
             {post.content && (
@@ -167,4 +176,4 @@ export function PostCard({ post }: PostCardProps) {
       )}
     </article>
   );
-}
+});

@@ -1,7 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { useEffect, useCallback, useState } from "react";
+import { useEffect, useCallback, useRef, useState } from "react";
 
 interface ModalProps {
   open: boolean;
@@ -12,24 +12,68 @@ interface ModalProps {
   mobileFullScreen?: boolean;
 }
 
+const FOCUSABLE_SELECTOR =
+  'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
 export function Modal({ open, onClose, children, className, mobileFullScreen = false }: ModalProps) {
   const [viewportHeight, setViewportHeight] = useState<number | null>(null);
+  const modalRef = useRef<HTMLDivElement>(null);
+  const previousFocusRef = useRef<HTMLElement | null>(null);
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
+      if (e.key === "Escape") {
+        onClose();
+        return;
+      }
+
+      // Focus trap
+      if (e.key === "Tab" && modalRef.current) {
+        const focusable = modalRef.current.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR);
+        if (focusable.length === 0) return;
+
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+
+        if (e.shiftKey) {
+          if (document.activeElement === first) {
+            e.preventDefault();
+            last.focus();
+          }
+        } else {
+          if (document.activeElement === last) {
+            e.preventDefault();
+            first.focus();
+          }
+        }
+      }
     },
     [onClose]
   );
 
   useEffect(() => {
     if (open) {
+      previousFocusRef.current = document.activeElement as HTMLElement;
       document.addEventListener("keydown", handleKeyDown);
       document.body.style.overflow = "hidden";
+
+      // Focus first focusable element in modal
+      requestAnimationFrame(() => {
+        if (modalRef.current) {
+          const firstFocusable = modalRef.current.querySelector<HTMLElement>(FOCUSABLE_SELECTOR);
+          firstFocusable?.focus();
+        }
+      });
     }
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
       document.body.style.overflow = "";
+
+      // Return focus to trigger element
+      if (!open && previousFocusRef.current) {
+        previousFocusRef.current.focus();
+        previousFocusRef.current = null;
+      }
     };
   }, [open, handleKeyDown]);
 
@@ -76,9 +120,12 @@ export function Modal({ open, onClose, children, className, mobileFullScreen = f
           ? "sm:px-4 sm:pt-20"
           : "px-4 pt-[10vh] sm:pt-20"
       )}
+      role="dialog"
+      aria-modal="true"
     >
       <div className="fixed inset-0 bg-black/60" onClick={onClose} />
       <div
+        ref={modalRef}
         className={cn(
           "relative z-10 w-full bg-background",
           mobileFullScreen
@@ -94,6 +141,7 @@ export function Modal({ open, onClose, children, className, mobileFullScreen = f
             <button
               onClick={onClose}
               className="rounded-full p-1 text-muted transition-colors hover:text-foreground active:bg-card-hover"
+              aria-label="Close"
             >
               <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />

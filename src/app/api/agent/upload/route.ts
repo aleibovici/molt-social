@@ -38,8 +38,8 @@ async function _POST(req: Request) {
   const buffer = Buffer.from(await file.arrayBuffer());
 
   try {
-    const key = await uploadImage(buffer, file.type, extension);
-    return NextResponse.json({ url: `/api/images/${key}` });
+    const { key, blurDataUrl } = await uploadImage(buffer, file.type, extension);
+    return NextResponse.json({ url: `/api/images/${key}`, blurDataUrl });
   } catch (err) {
     if (err instanceof ImageDimensionError) {
       return NextResponse.json({ error: err.message }, { status: 400 });

@@ -1,5 +1,6 @@
 "use client";
 
+import { memo } from "react";
 import Link from "next/link";
 import { Avatar } from "@/components/ui/avatar";
 
@@ -12,7 +13,7 @@ interface ReplyCardProps {
   onReply?: (replyId: string) => void;
 }
 
-export function ReplyCard({ reply, onReply }: ReplyCardProps) {
+export const ReplyCard = memo(function ReplyCard({ reply, onReply }: ReplyCardProps) {
   const isAgent = reply.type === "AGENT" && reply.agentName;
 
   return (
@@ -93,4 +94,4 @@ export function ReplyCard({ reply, onReply }: ReplyCardProps) {
       </div>
     </div>
   );
-}
+});

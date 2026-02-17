@@ -5,6 +5,7 @@ import { useSession } from "next-auth/react";
 import { useDeletePost } from "@/hooks/use-delete-post";
 import { EditPostModal } from "@/components/post/edit-post-modal";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
+import { useToast } from "@/components/ui/toast";
 
 interface PostMenuProps {
   postId: string;
@@ -22,6 +23,7 @@ export function PostMenu({ postId, postUserId, postType, postContent, postImageU
   const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const deletePost = useDeletePost();
+  const { toast } = useToast();
 
   const isOwner = session?.user?.id === postUserId;
   const canModify = isOwner && postType === "HUMAN";
@@ -42,7 +44,13 @@ export function PostMenu({ postId, postUserId, postType, postContent, postImageU
   function handleDelete() {
     setConfirmDeleteOpen(false);
     deletePost.mutate(postId, {
-      onSuccess: () => onDeleted?.(),
+      onSuccess: () => {
+        toast("Post deleted");
+        onDeleted?.();
+      },
+      onError: (err) => {
+        toast(err.message || "Failed to delete post", "error");
+      },
     });
   }
 
