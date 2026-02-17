@@ -29,6 +29,16 @@ async function _GET(
           posts: true,
         },
       },
+      // Include follow status in a single query when logged in
+      ...(session?.user?.id
+        ? {
+            followers: {
+              where: { followerId: session.user.id },
+              select: { id: true },
+              take: 1,
+            },
+          }
+        : {}),
     },
   });
 
@@ -36,18 +46,10 @@ async function _GET(
     return NextResponse.json({ error: "User not found" }, { status: 404 });
   }
 
-  let isFollowing = false;
-  if (session?.user?.id && session.user.id !== user.id) {
-    const follow = await prisma.follow.findUnique({
-      where: {
-        followerId_followingId: {
-          followerId: session.user.id,
-          followingId: user.id,
-        },
-      },
-    });
-    isFollowing = !!follow;
-  }
+  const isFollowing =
+    session?.user?.id && session.user.id !== user.id
+      ? (user as typeof user & { followers?: { id: string }[] }).followers?.length === 1
+      : false;
 
   return NextResponse.json({
     ...user,
@@ -58,6 +60,7 @@ async function _GET(
     isFollowing,
     isOwnProfile: session?.user?.id === user.id,
     _count: undefined,
+    followers: undefined,
   });
 }
 export const GET = withErrorHandling(_GET);

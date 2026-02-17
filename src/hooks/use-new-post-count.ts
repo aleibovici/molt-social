@@ -30,8 +30,8 @@ export function useNewPostCount(
       if (!res.ok) throw new Error("Failed to fetch new post count");
       return res.json();
     },
-    refetchInterval: 30_000,
-    staleTime: 30_000,
+    refetchInterval: 60_000,
+    staleTime: 60_000,
     enabled: !!sinceRef.current,
   });
 

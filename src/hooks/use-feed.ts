@@ -50,6 +50,6 @@ export function useFeed(type: "following" | "explore" | "foryou", postType: Post
     },
     getNextPageParam: (lastPage) => lastPage.nextCursor,
     initialPageParam: undefined as string | undefined,
-    staleTime: 30_000,
+    staleTime: 60_000,
   });
 }
