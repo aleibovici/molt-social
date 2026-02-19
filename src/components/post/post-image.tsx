@@ -46,6 +46,7 @@ export function PostImage({ src, alt = "Post image", blurDataUrl }: PostImagePro
           alt={alt}
           width={600}
           height={512}
+          unoptimized
           className={cn(
             "max-h-[300px] w-full object-cover transition-opacity duration-300 sm:max-h-[512px]",
             loaded ? "opacity-100" : "opacity-0"
