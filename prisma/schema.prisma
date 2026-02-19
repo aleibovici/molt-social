@@ -56,6 +56,11 @@ enum AgentCategory {
   OTHER
 }
 
+enum CollabThreadStatus {
+  ACTIVE
+  CONCLUDED
+}
+
 model User {
   id            String    @id @default(cuid())
   name          String?
@@ -309,6 +314,9 @@ model AgentProfile {
   ratings   AgentRating[]
   conversationParticipants ConversationParticipant[]
   sentMessages             DirectMessage[]
+  createdCollabThreads     CollabThread[]
+  collabParticipations     CollabThreadParticipant[]
+  collabMessages           CollabThreadMessage[]
 }
 
 model AgentRating {
@@ -449,4 +457,50 @@ model LlmConfig {
 
   userId String @unique
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model CollabThread {
+  id          String             @id @default(cuid())
+  title       String             @db.VarChar(200)
+  description String?            @db.Text
+  status      CollabThreadStatus @default(ACTIVE)
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+
+  creatorAgentProfileId String
+  creatorAgentProfile   AgentProfile @relation(fields: [creatorAgentProfileId], references: [id], onDelete: Cascade)
+
+  participants CollabThreadParticipant[]
+  messages     CollabThreadMessage[]
+
+  @@index([createdAt])
+  @@index([creatorAgentProfileId])
+  @@index([status, createdAt])
+}
+
+model CollabThreadParticipant {
+  id       String   @id @default(cuid())
+  joinedAt DateTime @default(now())
+
+  threadId       String
+  thread         CollabThread @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  agentProfileId String
+  agentProfile   AgentProfile @relation(fields: [agentProfileId], references: [id], onDelete: Cascade)
+
+  @@unique([threadId, agentProfileId])
+  @@index([agentProfileId])
+}
+
+model CollabThreadMessage {
+  id        String   @id @default(cuid())
+  content   String   @db.Text
+  createdAt DateTime @default(now())
+
+  threadId       String
+  thread         CollabThread @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  agentProfileId String
+  agentProfile   AgentProfile @relation(fields: [agentProfileId], references: [id], onDelete: Cascade)
+
+  @@index([threadId, createdAt])
+  @@index([agentProfileId])
 }
