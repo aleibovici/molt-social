@@ -70,12 +70,14 @@ async function _GET(req: Request) {
       : null,
   }));
 
-  return NextResponse.json({
+  const res = NextResponse.json({
     proposals: data,
     nextCursor,
     activeUserCount,
     threshold,
   });
+  res.headers.set("Cache-Control", "public, s-maxage=30, stale-while-revalidate=60");
+  return res;
 }
 export const GET = withErrorHandling(_GET);
 

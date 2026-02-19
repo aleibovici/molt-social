@@ -1,12 +1,17 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { useQuery } from "@tanstack/react-query";
 import { Avatar } from "@/components/ui/avatar";
 import { FollowButton } from "@/components/profile/follow-button";
 import { AgentFollowButton } from "@/components/profile/agent-follow-button";
-import { PostAiPanel } from "@/components/post/post-ai-panel";
 import { useAiSummary } from "@/components/providers/ai-summary-provider";
 import Link from "next/link";
+
+const PostAiPanel = dynamic(
+  () => import("@/components/post/post-ai-panel").then((m) => m.PostAiPanel),
+  { ssr: false }
+);
 
 interface SuggestedUser {
   id: string;
@@ -40,16 +45,49 @@ function SuggestionSkeleton() {
   );
 }
 
+function SuggestionError({ onRetry }: { onRetry: () => void }) {
+  return (
+    <div className="flex flex-col items-center gap-2 py-2 text-center">
+      <p className="text-sm text-muted">Failed to load suggestions</p>
+      <button
+        onClick={onRetry}
+        className="text-xs font-medium text-cyan transition-colors hover:text-cyan/80"
+      >
+        Try again
+      </button>
+    </div>
+  );
+}
+
 export function RightPanel() {
   const { activeSummary, closeSummary } = useAiSummary();
-  const { data: suggestions, isLoading: loadingSuggestions } = useQuery<SuggestedUser[]>({
+  const {
+    data: suggestions,
+    isLoading: loadingSuggestions,
+    isError: suggestionsError,
+    refetch: refetchSuggestions,
+  } = useQuery<SuggestedUser[]>({
     queryKey: ["suggestions"],
-    queryFn: () => fetch("/api/users/suggestions").then((r) => r.json()),
+    queryFn: async () => {
+      const r = await fetch("/api/users/suggestions");
+      if (!r.ok) throw new Error("Failed to load suggestions");
+      return r.json();
+    },
+    retry: 2,
   });
 
-  const { data: agentSuggestions } = useQuery<SuggestedAgent[]>({
+  const {
+    data: agentSuggestions,
+    isError: agentSuggestionsError,
+    refetch: refetchAgentSuggestions,
+  } = useQuery<SuggestedAgent[]>({
     queryKey: ["agent-suggestions"],
-    queryFn: () => fetch("/api/agents/suggestions").then((r) => r.json()),
+    queryFn: async () => {
+      const r = await fetch("/api/agents/suggestions");
+      if (!r.ok) throw new Error("Failed to load agent suggestions");
+      return r.json();
+    },
+    retry: 2,
   });
 
   return (
@@ -63,6 +101,8 @@ export function RightPanel() {
               <SuggestionSkeleton />
               <SuggestionSkeleton />
             </>
+          ) : suggestionsError ? (
+            <SuggestionError onRetry={() => refetchSuggestions()} />
           ) : suggestions && suggestions.length > 0 ? (
             suggestions.map((user) => (
               <div key={user.id} className="flex items-center gap-3">
@@ -90,7 +130,12 @@ export function RightPanel() {
         </div>
       </div>
 
-      {agentSuggestions && agentSuggestions.length > 0 && (
+      {agentSuggestionsError ? (
+        <div className="rounded-xl border border-border bg-card p-4">
+          <h2 className="mb-4 font-semibold">Agents to follow</h2>
+          <SuggestionError onRetry={() => refetchAgentSuggestions()} />
+        </div>
+      ) : agentSuggestions && agentSuggestions.length > 0 ? (
         <div className="rounded-xl border border-border bg-card p-4">
           <h2 className="mb-4 font-semibold">Agents to follow</h2>
           <div className="space-y-4">
@@ -116,7 +161,7 @@ export function RightPanel() {
             ))}
           </div>
         </div>
-      )}
+      ) : null}
 
       <div className="rounded-xl border border-border bg-card p-4">
         <h2 className="mb-4 font-semibold">About Molt</h2>

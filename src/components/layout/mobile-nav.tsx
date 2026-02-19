@@ -55,10 +55,10 @@ export function MobileNav() {
 
   return (
     <>
-    <nav className="fixed bottom-0 left-0 right-0 z-40 border-t border-border bg-background/95 backdrop-blur-md lg:hidden safe-area-bottom">
-      <div className="flex">
+    <nav aria-label="Mobile navigation" className="fixed bottom-0 left-0 right-0 z-40 border-t border-border bg-background/95 backdrop-blur-md lg:hidden safe-area-bottom">
+      <div className="flex" role="tablist">
         {/* Home */}
-        <Link href="/" className={navLinkClass(isHome)}>
+        <Link href="/" className={navLinkClass(isHome)} aria-label="Home" aria-current={isHome ? "page" : undefined}>
           <svg className="h-6 w-6" fill={isHome ? "currentColor" : "none"} stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={isHome ? 0 : 2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0a1 1 0 01-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 01-1 1" />
           </svg>
@@ -66,7 +66,7 @@ export function MobileNav() {
         </Link>
 
         {/* Search */}
-        <Link href="/search" className={navLinkClass(isSearch)}>
+        <Link href="/search" className={navLinkClass(isSearch)} aria-label="Search" aria-current={isSearch ? "page" : undefined}>
           <svg className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth={isSearch ? 2.5 : 2} viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
           </svg>
@@ -75,7 +75,7 @@ export function MobileNav() {
 
         {/* Notifications (auth only) */}
         {session && (
-          <Link href="/notifications" className={cn(navLinkClass(isNotifications), "relative")}>
+          <Link href="/notifications" className={cn(navLinkClass(isNotifications), "relative")} aria-label={`Notifications${(unreadData?.count ?? 0) > 0 ? `, ${unreadData!.count} unread` : ""}`} aria-current={isNotifications ? "page" : undefined}>
             <svg className="h-6 w-6" fill={isNotifications ? "currentColor" : "none"} stroke="currentColor" strokeWidth={isNotifications ? 0 : 2} viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
             </svg>
@@ -90,7 +90,7 @@ export function MobileNav() {
 
         {/* Messages (auth only) */}
         {session && (
-          <Link href="/messages" className={cn(navLinkClass(isMessages), "relative")}>
+          <Link href="/messages" className={cn(navLinkClass(isMessages), "relative")} aria-label={`Messages${(unreadMsgData?.count ?? 0) > 0 ? `, ${unreadMsgData!.count} unread` : ""}`} aria-current={isMessages ? "page" : undefined}>
             <svg className="h-6 w-6" fill={isMessages ? "currentColor" : "none"} stroke="currentColor" strokeWidth={isMessages ? 0 : 2} viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
             </svg>
@@ -108,6 +108,9 @@ export function MobileNav() {
           <div ref={menuRef} className="relative flex flex-1 items-center justify-center">
             <button
               onClick={() => setMenuOpen((prev) => !prev)}
+              aria-label="Profile menu"
+              aria-expanded={menuOpen}
+              aria-haspopup="true"
               className={cn(
                 "flex flex-col items-center justify-center gap-0.5 py-3 transition-colors",
                 isProfile || menuOpen ? "text-cyan" : "text-muted active:text-foreground"
@@ -135,7 +138,7 @@ export function MobileNav() {
               <span className="text-[10px] font-medium">Profile</span>
             </button>
             {menuOpen && (
-              <div className="absolute bottom-full mb-2 right-0 min-w-[200px] rounded-2xl border border-border bg-background py-2 shadow-xl animate-in fade-in slide-in-from-bottom-2 duration-200">
+              <div role="menu" className="absolute bottom-full mb-2 right-0 min-w-[200px] rounded-2xl border border-border bg-background py-2 shadow-xl animate-in fade-in slide-in-from-bottom-2 duration-200">
                 <Link
                   href={profileHref}
                   onClick={() => setMenuOpen(false)}
@@ -229,6 +232,7 @@ export function MobileNav() {
           <Link
             href="/sign-in"
             className={navLinkClass(false)}
+            aria-label="Sign in"
           >
             <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />

@@ -40,9 +40,10 @@ export function RelatedPostsCarousel({ postId, enabled }: RelatedPostsCarouselPr
       <p className="mb-2 text-xs font-medium uppercase tracking-wider text-muted">
         Related Posts
       </p>
-      <div className="relative">
+      <div className="relative" role="region" aria-label="Related posts carousel">
         <button
           onClick={() => scroll("left")}
+          aria-label="Scroll left"
           className="absolute -left-2 top-1/2 z-10 hidden -translate-y-1/2 rounded-full border border-border bg-background/90 p-1.5 text-muted shadow-sm backdrop-blur-sm transition-colors hover:text-foreground sm:flex"
         >
           <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -60,6 +61,7 @@ export function RelatedPostsCarousel({ postId, enabled }: RelatedPostsCarouselPr
         </div>
         <button
           onClick={() => scroll("right")}
+          aria-label="Scroll right"
           className="absolute -right-2 top-1/2 z-10 hidden -translate-y-1/2 rounded-full border border-border bg-background/90 p-1.5 text-muted shadow-sm backdrop-blur-sm transition-colors hover:text-foreground sm:flex"
         >
           <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

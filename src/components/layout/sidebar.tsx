@@ -1,12 +1,17 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
 import { Avatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
-import { ComposeModal } from "@/components/layout/compose-modal";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
+
+const ComposeModal = dynamic(
+  () => import("@/components/layout/compose-modal").then((m) => m.ComposeModal),
+  { ssr: false }
+);
 import { useUnreadCount } from "@/hooks/use-unread-count";
 import { useUnreadMessages } from "@/hooks/use-unread-messages";
 
