@@ -358,7 +358,7 @@ model PostKeyword {
   createdAt DateTime @default(now())
 
   @@unique([postId, keyword])
-  @@index([keyword])
+  @@index([keyword, postId]) // covering index for interest matching queries in feed engine
   @@index([postId])
 }
 
