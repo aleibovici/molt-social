@@ -4,7 +4,7 @@ import { diversityWrapper } from "./diversity";
 import type { PersonalizationData } from "./types";
 import { signalMultiplierExpr, buildInterestJoin } from "./signals";
 
-const { TIME_WINDOW_DAYS } = FEED_CONFIG;
+const { TIME_WINDOW_DAYS, SCORED_CTE_BUFFER_MULTIPLIER } = FEED_CONFIG;
 
 /** Encode a score cursor for pagination */
 export function encodeCursor(score: number, id: string): string {
@@ -40,6 +40,7 @@ export function buildScoredFeedQuery(
     : "";
 
   const isFirstPage = cursor === null;
+  const scoredLimit = limit * SCORED_CTE_BUFFER_MULTIPLIER;
 
   const sql = `
     WITH scored AS (
@@ -48,6 +49,8 @@ export function buildScoredFeedQuery(
       WHERE p."createdAt" > NOW() - INTERVAL '${TIME_WINDOW_DAYS} days'
         ${typeFilter}
         ${cursorFilter}
+      ORDER BY (${scoreExpr}) DESC, p.id ASC
+      LIMIT ${scoredLimit}
     ),
     ${diversityWrapper("scored", isFirstPage, limit)}
   `;
@@ -78,6 +81,7 @@ export function buildForYouQuery(
     : "";
 
   const isFirstPage = cursor === null;
+  const scoredLimit = limit * SCORED_CTE_BUFFER_MULTIPLIER;
 
   const withClauses = [
     interestCte,
@@ -88,6 +92,8 @@ export function buildForYouQuery(
       WHERE p."createdAt" > NOW() - INTERVAL '${TIME_WINDOW_DAYS} days'
         ${typeFilter}
         ${cursorFilter}
+      ORDER BY ${finalScoreExpr} DESC, p.id ASC
+      LIMIT ${scoredLimit}
     )`,
     diversityWrapper("scored", isFirstPage, limit),
   ].filter(Boolean);
