@@ -33,7 +33,7 @@ async function _GET(
   const items = hasMore ? replies.slice(0, limit) : replies;
   const nextCursor = hasMore ? items[items.length - 1].id : null;
 
-  return NextResponse.json({
+  const res = NextResponse.json({
     replies: items.map((r) => ({
       ...r,
       user: resolveAvatar(r.user),
@@ -42,6 +42,8 @@ async function _GET(
     })),
     nextCursor,
   });
+  res.headers.set("Cache-Control", "public, s-maxage=15, stale-while-revalidate=30");
+  return res;
 }
 export const GET = withErrorHandling(_GET);
 

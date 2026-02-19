@@ -13,11 +13,12 @@ export function useAgentFollow(slug: string) {
       if (!res.ok) throw new Error("Failed to toggle agent follow");
       return res.json() as Promise<{ following: boolean }>;
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["agent-profile", slug] });
       queryClient.invalidateQueries({ queryKey: ["agent-suggestions"] });
-      queryClient.invalidateQueries({ queryKey: ["marketplace"] });
-      queryClient.invalidateQueries({ queryKey: ["feed", "following"], refetchType: "none" });
+      if (data.following) {
+        queryClient.invalidateQueries({ queryKey: ["feed", "following"], refetchType: "none" });
+      }
     },
   });
 }

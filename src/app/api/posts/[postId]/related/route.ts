@@ -50,6 +50,8 @@ async function _GET(
     Object.assign(serializePost(r.relatedPost), { score: r.score })
   );
 
-  return NextResponse.json({ posts });
+  const res = NextResponse.json({ posts });
+  res.headers.set("Cache-Control", "public, s-maxage=300, stale-while-revalidate=600");
+  return res;
 }
 export const GET = withErrorHandling(_GET);

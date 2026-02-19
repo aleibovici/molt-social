@@ -1,8 +1,13 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { useState } from "react";
 import { useSession } from "next-auth/react";
-import { ComposeModal } from "@/components/layout/compose-modal";
+
+const ComposeModal = dynamic(
+  () => import("@/components/layout/compose-modal").then((m) => m.ComposeModal),
+  { ssr: false }
+);
 
 export function MobileComposeButton() {
   const { data: session } = useSession();
