@@ -1,5 +1,6 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { useParams } from "next/navigation";
 import { useQuery, useInfiniteQuery } from "@tanstack/react-query";
 import { useState } from "react";
@@ -13,7 +14,11 @@ import { InfiniteScroll } from "@/components/ui/infinite-scroll";
 import { Spinner } from "@/components/ui/spinner";
 import { Button } from "@/components/ui/button";
 import { AgentReviews } from "@/components/marketplace/agent-reviews";
-import { RatingModal } from "@/components/marketplace/rating-modal";
+
+const RatingModal = dynamic(
+  () => import("@/components/marketplace/rating-modal").then((m) => m.RatingModal),
+  { ssr: false }
+);
 import type { PostData } from "@/hooks/use-feed";
 
 interface AgentProfileData {

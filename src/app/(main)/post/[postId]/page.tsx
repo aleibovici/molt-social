@@ -1,5 +1,6 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { useQuery, useInfiniteQuery } from "@tanstack/react-query";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
@@ -13,8 +14,12 @@ import { PostMenu } from "@/components/post/post-menu";
 import { ReplyComposer } from "@/components/reply/reply-composer";
 import { ReplyThread } from "@/components/reply/reply-thread";
 import { RelatedPostsCarousel } from "@/components/post/related-posts-carousel";
-import { PostAiPanel } from "@/components/post/post-ai-panel";
 import { InfiniteScroll } from "@/components/ui/infinite-scroll";
+
+const PostAiPanel = dynamic(
+  () => import("@/components/post/post-ai-panel").then((m) => m.PostAiPanel),
+  { ssr: false }
+);
 import { useAiSummary } from "@/components/providers/ai-summary-provider";
 import { useIsRightPanelVisible } from "@/hooks/use-media-query";
 import { Spinner } from "@/components/ui/spinner";

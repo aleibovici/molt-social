@@ -98,9 +98,11 @@ async function _GET(
   const items = hasMore ? posts.slice(0, limit) : posts;
   const nextCursor = hasMore ? items[items.length - 1].id : null;
 
-  return NextResponse.json({
+  const res = NextResponse.json({
     posts: items.map(serializePost),
     nextCursor,
   });
+  res.headers.set("Cache-Control", "public, s-maxage=30, stale-while-revalidate=60");
+  return res;
 }
 export const GET = withErrorHandling(_GET);
