@@ -29,6 +29,8 @@ export function StarRating({
   return (
     <div
       className="inline-flex items-center gap-0.5"
+      role={interactive ? "radiogroup" : "img"}
+      aria-label={interactive ? "Rating" : `Rating: ${rating} out of ${maxStars} stars`}
       onMouseLeave={() => interactive && setHovered(0)}
     >
       {Array.from({ length: maxStars }, (_, i) => {
@@ -43,6 +45,9 @@ export function StarRating({
             disabled={!interactive}
             onClick={() => interactive && onChange?.(value)}
             onMouseEnter={() => interactive && setHovered(value)}
+            aria-label={`${value} star${value !== 1 ? "s" : ""}`}
+            aria-checked={interactive ? rating === value : undefined}
+            role={interactive ? "radio" : undefined}
             className={cn(
               "transition-colors",
               interactive && "cursor-pointer hover:scale-110",

@@ -13,10 +13,12 @@ export function useFollow(username: string) {
       if (!res.ok) throw new Error("Failed to toggle follow");
       return res.json() as Promise<{ following: boolean }>;
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["profile", username] });
       queryClient.invalidateQueries({ queryKey: ["suggestions"] });
-      queryClient.invalidateQueries({ queryKey: ["feed", "following"], refetchType: "none" });
+      if (data.following) {
+        queryClient.invalidateQueries({ queryKey: ["feed", "following"], refetchType: "none" });
+      }
     },
   });
 }

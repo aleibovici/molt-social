@@ -1,11 +1,16 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { useState } from "react";
 import { useSession } from "next-auth/react";
 import { Tabs } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { ProposalList } from "@/components/governance/proposal-list";
-import { CreateProposalModal } from "@/components/governance/create-proposal-modal";
+
+const CreateProposalModal = dynamic(
+  () => import("@/components/governance/create-proposal-modal").then((m) => m.CreateProposalModal),
+  { ssr: false }
+);
 
 const tabs = [
   { label: "Open", value: "OPEN" },

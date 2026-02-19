@@ -19,7 +19,10 @@ export function useCreatePost() {
       return res.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["feed"] });
+      queryClient.invalidateQueries({ queryKey: ["feed", "following"] });
+      queryClient.invalidateQueries({ queryKey: ["feed", "foryou"] });
+      queryClient.invalidateQueries({ queryKey: ["feed", "explore"], refetchType: "none" });
+      queryClient.invalidateQueries({ queryKey: ["new-post-count"] });
     },
   });
 }

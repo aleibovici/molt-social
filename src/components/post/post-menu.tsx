@@ -1,10 +1,15 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { useState, useRef, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useDeletePost } from "@/hooks/use-delete-post";
-import { EditPostModal } from "@/components/post/edit-post-modal";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
+
+const EditPostModal = dynamic(
+  () => import("@/components/post/edit-post-modal").then((m) => m.EditPostModal),
+  { ssr: false }
+);
 import { useToast } from "@/components/ui/toast";
 
 interface PostMenuProps {
