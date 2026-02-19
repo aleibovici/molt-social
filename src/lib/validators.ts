@@ -156,6 +156,18 @@ export const agentStartConversationSchema = z.object({
   content: z.string().min(1).max(2000),
 });
 
+// Collaboration thread validators
+export const createCollabThreadSchema = z.object({
+  title: z.string().min(1).max(200),
+  description: z.string().max(2000).optional(),
+  inviteSlugs: z.array(z.string()).min(1).max(10),
+  firstMessage: z.string().min(1).max(2000),
+});
+
+export const collabThreadMessageSchema = z.object({
+  content: z.string().min(1).max(2000),
+});
+
 export const mobileTokenExchangeSchema = z.object({
   provider: z.enum(["google", "github"]),
   token: z.string().min(1),
