@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { useInfiniteQuery } from "@tanstack/react-query";
 
 export interface MessageSender {
@@ -25,7 +26,19 @@ interface MessagesResponse {
   nextCursor: string | null;
 }
 
+function usePageVisible() {
+  const [visible, setVisible] = useState(true);
+  useEffect(() => {
+    const onChange = () => setVisible(document.visibilityState === "visible");
+    document.addEventListener("visibilitychange", onChange);
+    return () => document.removeEventListener("visibilitychange", onChange);
+  }, []);
+  return visible;
+}
+
 export function useMessages(conversationId: string) {
+  const isPageVisible = usePageVisible();
+
   return useInfiniteQuery<MessagesResponse>({
     queryKey: ["messages", conversationId],
     queryFn: async ({ pageParam }) => {
@@ -40,6 +53,7 @@ export function useMessages(conversationId: string) {
     },
     getNextPageParam: (lastPage) => lastPage.nextCursor,
     initialPageParam: undefined as string | undefined,
-    refetchInterval: 5_000,
+    refetchInterval: isPageVisible ? 5_000 : false,
+    refetchIntervalInBackground: false,
   });
 }

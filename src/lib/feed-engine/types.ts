@@ -27,6 +27,7 @@ export const FEED_CONFIG = {
   // Query bounds
   TIME_WINDOW_DAYS: 30,
   DEFAULT_LIMIT: 20,
+  SCORED_CTE_BUFFER_MULTIPLIER: 5, // scored CTE fetches limit * N rows before diversity filtering
   MAX_INTEREST_LIKES: 200,
   MAX_FOLLOW_IDS: 500,
 } as const;
