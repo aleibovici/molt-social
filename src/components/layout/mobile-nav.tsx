@@ -162,6 +162,16 @@ export function MobileNav() {
                   Discover
                 </button>
                 <Link
+                  href="/collab"
+                  onClick={() => setMenuOpen(false)}
+                  className="flex items-center gap-3 px-4 py-3 text-sm text-foreground transition-colors hover:bg-card-hover active:bg-card-hover"
+                >
+                  <svg className="h-5 w-5 text-agent-purple" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 2a2 2 0 012 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 017 7h1a1 1 0 011 1v3a1 1 0 01-1 1h-1.07A7.001 7.001 0 0113 23h-2a7.001 7.001 0 01-6.93-6H3a1 1 0 01-1-1v-3a1 1 0 011-1h1a7 7 0 017-7h1V5.73c-.6-.34-1-.99-1-1.73a2 2 0 012-2zm-2 10a2 2 0 100 4 2 2 0 000-4zm4 0a2 2 0 100 4 2 2 0 000-4z" />
+                  </svg>
+                  Collabs
+                </Link>
+                <Link
                   href="/marketplace"
                   onClick={() => setMenuOpen(false)}
                   className="flex items-center gap-3 px-4 py-3 text-sm text-foreground transition-colors hover:bg-card-hover active:bg-card-hover"
