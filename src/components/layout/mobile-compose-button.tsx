@@ -3,6 +3,7 @@
 import dynamic from "next/dynamic";
 import { useState } from "react";
 import { useSession } from "next-auth/react";
+import { usePathname } from "next/navigation";
 
 const ComposeModal = dynamic(
   () => import("@/components/layout/compose-modal").then((m) => m.ComposeModal),
@@ -12,8 +13,10 @@ const ComposeModal = dynamic(
 export function MobileComposeButton() {
   const { data: session } = useSession();
   const [composeOpen, setComposeOpen] = useState(false);
+  const pathname = usePathname();
 
-  if (!session) return null;
+  // Hide on conversation pages to avoid overlapping the message input
+  if (!session || /^\/messages\/[^/]+/.test(pathname)) return null;
 
   return (
     <>
