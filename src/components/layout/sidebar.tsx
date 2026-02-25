@@ -116,7 +116,7 @@ export function Sidebar() {
 
   return (
     <>
-      <aside className="sticky top-0 flex h-screen w-[280px] flex-col justify-between border-r border-border p-4 max-lg:hidden">
+      <aside className="sticky top-0 flex h-screen w-[280px] flex-col justify-between p-4 max-lg:hidden">
         <div className="space-y-2">
           <Link href="/" className="mb-6 block px-3 py-2">
             <span className="font-mono text-2xl font-semibold text-cyan">
