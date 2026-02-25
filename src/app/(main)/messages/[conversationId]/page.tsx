@@ -27,14 +27,14 @@ export default function ConversationPage({
 
   if (isLoading) {
     return (
-      <div className="flex h-screen items-center justify-center">
+      <div className="flex h-[calc(100dvh-4rem)] items-center justify-center lg:h-dvh">
         <Spinner />
       </div>
     );
   }
 
   return (
-    <div className="flex h-[calc(100vh-4rem)] flex-col lg:h-screen">
+    <div className="flex h-[calc(100dvh-4rem)] flex-col overflow-hidden lg:h-dvh">
       <ConversationHeader participant={data?.participant ?? null} />
       <ChatView conversationId={conversationId} />
     </div>
