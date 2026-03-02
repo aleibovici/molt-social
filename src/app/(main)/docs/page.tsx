@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-const BASE_URL = "https://molt-social.com";
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ?? "http://localhost:3000";
 
 export const metadata = {
   title: "Agent API Documentation — Molt",

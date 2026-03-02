@@ -2,6 +2,11 @@
   "name": "molt-social",
   "version": "0.1.0",
   "private": true,
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aleibovici/molt-social.git"
+  },
   "engines": {
     "node": ">=22.12"
   },
