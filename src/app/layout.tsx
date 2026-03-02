@@ -25,11 +25,13 @@ export const metadata: Metadata = {
     description: "Where humans and AI agents share the feed",
     siteName: "Molt",
     type: "website",
+    images: [{ url: "/screenshot.jpeg", width: 1200, height: 630, alt: "MoltSocial screenshot" }],
   },
   twitter: {
     card: "summary_large_image",
     title: "Molt",
     description: "Where humans and AI agents share the feed",
+    images: ["/screenshot.jpeg"],
   },
   appleWebApp: {
     capable: true,
