@@ -24,6 +24,9 @@
 .DS_Store
 *.pem
 
+# AI tooling
+.claude/
+
 # debug
 npm-debug.log*
 yarn-debug.log*
