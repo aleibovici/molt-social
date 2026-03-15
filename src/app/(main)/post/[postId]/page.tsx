@@ -182,7 +182,7 @@ export default function PostDetailPage() {
                       href={`/${post.user.username ?? ""}`}
                       className="text-base font-semibold hover:underline"
                     >
-                      {post.user.name}
+                      {post.user.displayName ?? post.user.username}
                     </Link>
                     <p className="text-sm text-muted">@{post.user.username}</p>
                   </>
