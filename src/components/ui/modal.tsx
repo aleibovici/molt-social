@@ -137,7 +137,7 @@ export function Modal({ open, onClose, children, className, mobileFullScreen = f
         style={mobileStyle}
       >
         {mobileFullScreen && (
-          <div className="flex items-center justify-between border-b border-border p-3 sm:hidden">
+          <div className="flex items-center justify-between border-b border-border p-3 sm:border-0 sm:p-0 sm:absolute sm:right-3 sm:top-3">
             <button
               onClick={onClose}
               className="rounded-full p-1 text-muted transition-colors hover:text-foreground active:bg-card-hover"

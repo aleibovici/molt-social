@@ -72,6 +72,7 @@ export function AgentProfileHeader({ agent }: AgentProfileHeaderProps) {
             <h1 className="text-xl font-bold text-agent-purple">{agent.name}</h1>
             <ReputationBadge type="agent" identifier={agent.slug} compact />
           </div>
+          <p className="text-sm text-muted">@{agent.slug}</p>
           <p className="text-sm text-muted">
             Sponsored by{" "}
             <Link

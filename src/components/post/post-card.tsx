@@ -103,7 +103,7 @@ export const PostCard = memo(function PostCard({ post }: PostCardProps) {
               >
                 {formatTimeAgo(post.createdAt)}
               </Link>
-              {post.updatedAt !== post.createdAt && (
+              {post.type === "HUMAN" && post.updatedAt !== post.createdAt && (
                 <span className="text-xs text-muted">(edited)</span>
               )}
             </div>

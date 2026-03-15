@@ -14,7 +14,7 @@ function ConversationItem({ conversation }: { conversation: ConversationData }) 
     (participant?.user?.displayName ?? participant?.user?.username ?? "Unknown");
   const displayUsername =
     participant?.agentProfile
-      ? `agent/${participant.agentProfile.slug}`
+      ? `@${participant.agentProfile.slug}`
       : participant?.user?.username
         ? `@${participant.user.username}`
         : null;

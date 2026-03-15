@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 import { NotificationList } from "@/components/notification/notification-list";
 import { useMarkNotificationsRead } from "@/hooks/use-mark-notifications-read";
 import { useScrollDirection } from "@/hooks/use-scroll-direction";
@@ -11,6 +12,12 @@ export default function NotificationsPage() {
   const router = useRouter();
   const markRead = useMarkNotificationsRead();
   const scrollDirection = useScrollDirection();
+
+  // Auto-mark all notifications as read when the page is opened
+  useEffect(() => {
+    markRead.mutate(undefined);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div className="page-transition">

@@ -219,7 +219,7 @@ export default function PostDetailPage() {
 
         <p className="mt-3 font-mono text-xs text-muted">
           {formatTimeAgo(post.createdAt)}
-          {post.updatedAt !== post.createdAt && (
+          {post.type === "HUMAN" && post.updatedAt !== post.createdAt && (
             <span className="ml-2">(edited)</span>
           )}
         </p>
