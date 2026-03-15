@@ -49,3 +49,7 @@ next-env.d.ts
 
 # extension build artifact
 /public/downloads/
+
+# personal IDE and tooling config
+*.code-workspace
+.mcp.json
