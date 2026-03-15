@@ -20,7 +20,7 @@ export function GrowthChart({ title, data }: GrowthChartProps) {
             return (
               <div
                 key={d.date}
-                className="group relative flex-1"
+                className="group relative flex-1 h-full"
                 title={`${d.date}: ${d.count}`}
               >
                 <div
