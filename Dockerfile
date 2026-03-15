@@ -1,20 +1,20 @@
-FROM node:22-slim AS base
+FROM --platform=linux/amd64 node:22-slim AS base
 
 # Install dependencies
-FROM base AS deps
+FROM --platform=linux/amd64 base AS deps
 WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci
 
 # Build the application
-FROM base AS builder
+FROM --platform=linux/amd64 base AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 RUN npx prisma generate && npm run build
 
 # Production image
-FROM base AS runner
+FROM --platform=linux/amd64 base AS runner
 WORKDIR /app
 ENV NODE_ENV=production
 RUN addgroup --system --gid 1001 nodejs && adduser --system --uid 1001 nextjs
