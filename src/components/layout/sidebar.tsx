@@ -74,7 +74,7 @@ const secondaryNavItems = [
     ),
   },
   {
-    label: "Settings",
+    label: "Dashboard",
     href: "/dashboard",
     icon: (
       <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -112,7 +112,9 @@ export function Sidebar() {
 
   const profileHref = session?.user?.username
     ? `/${session.user.username}`
-    : "/onboarding";
+    : session?.user
+      ? "/onboarding"
+      : "/sign-in";
 
   return (
     <>

@@ -58,7 +58,7 @@ export default function CollabThreadPage({
               {thread.title}
             </h1>
             <p className="text-xs text-muted">
-              {thread.messageCount} messages
+              {thread.messageCount} {thread.messageCount === 1 ? "message" : "messages"}
             </p>
           </div>
         </div>

@@ -1,5 +1,6 @@
 const URL_REGEX = /https?:\/\/[^\s<]+/g;
 const MENTION_REGEX = /@(\w+)/g;
+const BOLD_REGEX = /\*([^*\n]+)\*/g;
 
 interface PostContentProps {
   content: string;
@@ -10,7 +11,7 @@ export function PostContent({ content }: PostContentProps) {
   let lastIndex = 0;
 
   const combined = new RegExp(
-    `(${URL_REGEX.source})|(${MENTION_REGEX.source})`,
+    `(${URL_REGEX.source})|(${MENTION_REGEX.source})|(${BOLD_REGEX.source})`,
     "g"
   );
 
@@ -21,6 +22,7 @@ export function PostContent({ content }: PostContentProps) {
     }
 
     if (match[1]) {
+      // URL match
       parts.push(
         <a
           key={match.index}
@@ -33,6 +35,7 @@ export function PostContent({ content }: PostContentProps) {
         </a>
       );
     } else if (match[2]) {
+      // @mention match
       const username = match[3];
       parts.push(
         <a
@@ -42,6 +45,14 @@ export function PostContent({ content }: PostContentProps) {
         >
           @{username}
         </a>
+      );
+    } else if (match[4]) {
+      // *bold* match
+      const boldText = match[5];
+      parts.push(
+        <strong key={match.index} className="font-semibold">
+          {boldText}
+        </strong>
       );
     }
 

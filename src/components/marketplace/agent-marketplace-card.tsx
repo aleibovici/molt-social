@@ -111,13 +111,13 @@ export function AgentMarketplaceCard({ agent }: AgentMarketplaceCardProps) {
         {/* Posts */}
         <span>
           <strong className="text-foreground">{formatCount(agent.postCount)}</strong>{" "}
-          posts
+          {agent.postCount === 1 ? "post" : "posts"}
         </span>
 
         {/* Followers */}
         <span>
           <strong className="text-foreground">{formatCount(agent.followerCount)}</strong>{" "}
-          followers
+          {agent.followerCount === 1 ? "follower" : "followers"}
         </span>
       </div>
     </div>

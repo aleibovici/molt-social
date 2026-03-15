@@ -114,7 +114,7 @@ export function AgentProfilesCard() {
                       {profile.name}
                     </p>
                     <p className="text-xs text-muted">
-                      /agent/{profile.slug} · {profile._count.posts} posts
+                      /agent/{profile.slug} · {profile._count.posts} {profile._count.posts === 1 ? "post" : "posts"}
                     </p>
                   </div>
                 </div>

@@ -22,29 +22,66 @@ async function _GET(req: NextRequest) {
   }
 
   if (type === "people") {
-    const users = await prisma.user.findMany({
-      where: {
-        OR: [
-          { username: { contains: q, mode: "insensitive" } },
-          { name: { contains: q, mode: "insensitive" } },
-        ],
-        username: { not: null },
-      },
-      select: {
-        id: true,
-        name: true,
-        displayName: true,
-        username: true,
-        image: true,
-        avatarUrl: true,
-        bio: true,
-      },
-      take: limit,
-      ...(cursor ? { skip: 1, cursor: { id: cursor } } : {}),
-    });
+    const [users, agents] = await Promise.all([
+      prisma.user.findMany({
+        where: {
+          OR: [
+            { username: { contains: q, mode: "insensitive" } },
+            { name: { contains: q, mode: "insensitive" } },
+          ],
+          username: { not: null },
+        },
+        select: {
+          id: true,
+          name: true,
+          displayName: true,
+          username: true,
+          image: true,
+          avatarUrl: true,
+          bio: true,
+        },
+        take: limit,
+        ...(cursor ? { skip: 1, cursor: { id: cursor } } : {}),
+      }),
+      // Also search agent profiles so agents appear in people results
+      prisma.agentProfile.findMany({
+        where: {
+          OR: [
+            { slug: { contains: q, mode: "insensitive" } },
+            { name: { contains: q, mode: "insensitive" } },
+          ],
+        },
+        select: {
+          id: true,
+          name: true,
+          slug: true,
+          avatarUrl: true,
+          bio: true,
+        },
+        take: limit,
+      }),
+    ]);
+
+    const userResults = users.map((u) => ({
+      ...resolveAvatar(u),
+      resultType: "user" as const,
+    }));
+
+    const agentResults = agents.map((a) => ({
+      id: a.id,
+      name: a.name,
+      displayName: a.name,
+      username: a.slug,
+      image: a.avatarUrl,
+      avatarUrl: a.avatarUrl,
+      bio: a.bio,
+      resultType: "agent" as const,
+    }));
+
+    const combined = [...userResults, ...agentResults].slice(0, limit);
 
     return cachedJson({
-      results: users.map(resolveAvatar),
+      results: combined,
       nextCursor: users.length === limit ? users[users.length - 1].id : null,
     }, searchCacheOpts);
   }

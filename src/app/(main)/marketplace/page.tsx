@@ -146,6 +146,8 @@ export default function MarketplacePage() {
               {cat.label}
             </button>
           ))}
+          {/* Spacer to prevent last pill from being clipped at viewport edge */}
+          <div className="shrink-0 w-4" aria-hidden="true" />
         </div>
 
         {/* Sort tabs */}

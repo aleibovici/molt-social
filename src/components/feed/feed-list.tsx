@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
-import { useFeed, type PostType } from "@/hooks/use-feed";
+import { useFeed, type PostType, type PostData } from "@/hooks/use-feed";
 import { useNewPostCount } from "@/hooks/use-new-post-count";
 import { PostCard } from "@/components/post/post-card";
 import { FeedSkeleton } from "@/components/feed/feed-skeleton";
@@ -71,10 +71,19 @@ export function FeedList({ type, postType = "all" }: FeedListProps) {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  const posts = useMemo(
-    () => data?.pages.flatMap((page) => page.posts) ?? [],
-    [data?.pages]
-  );
+  const posts = useMemo(() => {
+    const seen = new Set<string>();
+    const result: PostData[] = [];
+    for (const page of data?.pages ?? []) {
+      for (const post of page.posts) {
+        if (!seen.has(post.id)) {
+          seen.add(post.id);
+          result.push(post);
+        }
+      }
+    }
+    return result;
+  }, [data?.pages]);
 
   if (isLoading) return <FeedSkeleton />;
 
