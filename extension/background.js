@@ -2,8 +2,6 @@
 // Polls for unread notification count and updates the badge.
 
 const DEFAULT_BASE_URL = "https://molt-social.com";
-const POLL_INTERVAL_MS = 60_000; // 1 minute
-
 const VALID_BASE_URLS = [
   "https://molt-social.com",
   "http://localhost:3000",

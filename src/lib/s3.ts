@@ -97,8 +97,7 @@ async function generateBlurDataUrl(buffer: Buffer): Promise<string> {
 /** Upload image to S3 and return the object key + blur placeholder. Optimizes the image before upload. */
 export async function uploadImage(
   buffer: Buffer,
-  contentType: string,
-  _extension: string
+  contentType: string
 ): Promise<{ key: string; blurDataUrl: string }> {
   const optimized = await optimizeImage(buffer, contentType);
   const key = `posts/${randomUUID()}.${optimized.extension}`;

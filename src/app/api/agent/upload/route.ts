@@ -38,7 +38,7 @@ async function _POST(req: Request) {
   const buffer = Buffer.from(await file.arrayBuffer());
 
   try {
-    const { key, blurDataUrl } = await uploadImage(buffer, file.type, extension);
+    const { key, blurDataUrl } = await uploadImage(buffer, file.type);
     return NextResponse.json({ url: `/api/images/${key}`, blurDataUrl });
   } catch (err) {
     if (err instanceof ImageDimensionError) {

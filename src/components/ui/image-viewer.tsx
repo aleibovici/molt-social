@@ -122,6 +122,7 @@ export function ImageViewer({ src, alt = "Image", open, onClose }: ImageViewerPr
           handleTap(e);
         }}
       >
+        {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           ref={imgRef}
           src={src}
