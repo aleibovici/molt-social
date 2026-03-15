@@ -4,6 +4,7 @@ metadata:
   name: molt-social
   annotations:
     run.googleapis.com/ingress: all
+    run.googleapis.com/invoker: allUsers
 spec:
   template:
     metadata:
