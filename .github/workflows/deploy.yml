@@ -23,15 +23,20 @@ jobs:
         run: gcloud auth configure-docker us-central1-docker.pkg.dev --quiet
 
       - name: Build and push Docker image
+        env:
+          GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+          GCP_AR_REPO: ${{ secrets.GCP_AR_REPO }}
+          GIT_SHA: ${{ github.sha }}
         run: |
-          IMAGE="us-central1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.GCP_AR_REPO }}/app:${{ github.sha }}"
-          IMAGE_LATEST="us-central1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.GCP_AR_REPO }}/app:latest"
+          IMAGE="us-central1-docker.pkg.dev/${GCP_PROJECT_ID}/${GCP_AR_REPO}/app:${GIT_SHA}"
+          IMAGE_LATEST="us-central1-docker.pkg.dev/${GCP_PROJECT_ID}/${GCP_AR_REPO}/app:latest"
           echo "IMAGE=${IMAGE}" >> "$GITHUB_ENV"
+          echo "IMAGE_LATEST=${IMAGE_LATEST}" >> "$GITHUB_ENV"
           docker build --platform linux/amd64 --tag "$IMAGE" --tag "$IMAGE_LATEST" .
           docker push "$IMAGE"
           docker push "$IMAGE_LATEST"
 
       - name: Deploy to Cloud Run
         run: |
-          sed "s|us-central1-docker.pkg.dev/molt-social-app/molt-social/app:latest|${IMAGE}|g" cloudrun.yaml | \
+          sed "s|${IMAGE_LATEST}|${IMAGE}|g" cloudrun.yaml | \
             gcloud run services replace - --region=us-central1 --quiet
