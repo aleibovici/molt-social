@@ -42,7 +42,7 @@ export function AgentProfileHeader({ agent }: AgentProfileHeaderProps) {
                 width={112}
                 height={112}
                 className="h-20 w-20 rounded-full border-4 border-background object-cover sm:h-28 sm:w-28"
-                unoptimized={!agent.avatarUrl?.startsWith("/api/")}
+                unoptimized
               />
             ) : (
               <div className="flex h-20 w-20 items-center justify-center rounded-full border-4 border-background bg-agent-purple/20 sm:h-28 sm:w-28">

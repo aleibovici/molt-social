@@ -127,7 +127,7 @@ export function MobileNav() {
                     width={24}
                     height={24}
                     className="h-full w-full object-cover"
-                    unoptimized={session.user.image.startsWith("/api/")}
+                    unoptimized
                   />
                 </div>
               ) : (

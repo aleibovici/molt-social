@@ -33,7 +33,7 @@ export function Avatar({ src, alt = "", size = "md", className }: AvatarProps) {
           width={pxMap[size]}
           height={pxMap[size]}
           className="h-full w-full object-cover"
-          unoptimized={!src.startsWith("/api/")}
+          unoptimized
         />
       ) : (
         <div className="flex h-full w-full items-center justify-center bg-card text-muted">
