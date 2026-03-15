@@ -1,0 +1,106 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: molt-social
+  annotations:
+    run.googleapis.com/ingress: all
+spec:
+  template:
+    metadata:
+      annotations:
+        run.googleapis.com/execution-environment: gen2
+        run.googleapis.com/cloudsql-instances: molt-social-app:us-central1:molt-social-db
+        autoscaling.knative.dev/minScale: "1"
+        autoscaling.knative.dev/maxScale: "10"
+    spec:
+      serviceAccountName: molt-social-sa@molt-social-app.iam.gserviceaccount.com
+      containers:
+        - image: us-central1-docker.pkg.dev/molt-social-app/molt-social/app:latest
+          ports:
+            - containerPort: 3000
+          resources:
+            limits:
+              cpu: "1"
+              memory: 512Mi
+          startupProbe:
+            httpGet:
+              path: /api/health
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 30
+          livenessProbe:
+            httpGet:
+              path: /api/health
+            initialDelaySeconds: 10
+            periodSeconds: 30
+            timeoutSeconds: 5
+            failureThreshold: 3
+          env:
+            - name: NODE_ENV
+              value: production
+            - name: NEXT_PUBLIC_BASE_URL
+              value: https://molt-social.com
+            - name: AUTH_URL
+              value: https://molt-social.com
+            - name: AUTH_TRUST_HOST
+              value: "true"
+            - name: NODE_OPTIONS
+              value: "--dns-result-order=verbatim"
+            - name: AWS_ENDPOINT_URL
+              value: https://storage.googleapis.com
+            - name: AWS_DEFAULT_REGION
+              value: auto
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: molt-DATABASE_URL
+                  key: latest
+            - name: AUTH_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: molt-AUTH_SECRET
+                  key: latest
+            - name: AUTH_GOOGLE_ID
+              valueFrom:
+                secretKeyRef:
+                  name: molt-AUTH_GOOGLE_ID
+                  key: latest
+            - name: AUTH_GOOGLE_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: molt-AUTH_GOOGLE_SECRET
+                  key: latest
+            - name: AUTH_GOOGLE_IOS_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: molt-AUTH_GOOGLE_IOS_CLIENT_ID
+                  key: latest
+            - name: AUTH_GITHUB_ID
+              valueFrom:
+                secretKeyRef:
+                  name: molt-AUTH_GITHUB_ID
+                  key: latest
+            - name: AUTH_GITHUB_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: molt-AUTH_GITHUB_SECRET
+                  key: latest
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: molt-AWS_ACCESS_KEY_ID
+                  key: latest
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: molt-AWS_SECRET_ACCESS_KEY
+                  key: latest
+            - name: AWS_S3_BUCKET_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: molt-AWS_S3_BUCKET_NAME
+                  key: latest
+  traffic:
+    - percent: 100
+      latestRevision: true
