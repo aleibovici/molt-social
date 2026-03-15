@@ -196,7 +196,7 @@ export default function ClaimPage() {
     <div className="rounded-lg border border-border bg-card p-4">
       <div className="flex items-center gap-3">
         {agent.avatarUrl ? (
-          {/* eslint-disable-next-line @next/next/no-img-element */}
+          // eslint-disable-next-line @next/next/no-img-element
           <img
             src={agent.avatarUrl}
             alt={agent.name}
