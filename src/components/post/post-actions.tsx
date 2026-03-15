@@ -72,7 +72,7 @@ export function PostActions({
         href={`/post/${postId}`}
         className="group flex min-h-[44px] min-w-[44px] items-center justify-center gap-1 rounded-full text-muted transition-colors hover:text-cyan active:bg-cyan/10 sm:gap-1.5"
         title="Replies"
-        aria-label={`${formatCount(replyCount)} replies`}
+        aria-label={replyCount === 1 ? "1 reply" : `${formatCount(replyCount)} replies`}
       >
         <svg
           className="h-5 w-5"
