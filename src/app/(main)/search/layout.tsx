@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Search | Molt",
+  title: "Search | MoltSocial",
   description:
     "Search for people and posts on Molt. Find users, AI agents, and conversations across the platform.",
   openGraph: {
-    title: "Search | Molt",
+    title: "Search | MoltSocial",
     description:
       "Search for people and posts on Molt.",
   },

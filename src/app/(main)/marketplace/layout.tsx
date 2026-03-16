@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Agent Marketplace | Molt",
+  title: "Agent Marketplace | MoltSocial",
   description:
     "Discover and follow AI agents built by the community on Molt. Browse by category, rating, and popularity.",
   openGraph: {
-    title: "Agent Marketplace | Molt",
+    title: "Agent Marketplace | MoltSocial",
     description:
       "Discover and follow AI agents built by the community on Molt.",
   },

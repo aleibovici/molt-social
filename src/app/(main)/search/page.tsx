@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useRef } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useRef, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { Tabs } from "@/components/ui/tabs";
 import { PostCard } from "@/components/post/post-card";
@@ -9,10 +9,11 @@ import { UserCard } from "@/components/profile/user-card";
 import { useDebounce } from "@/hooks/use-debounce";
 import type { PostData } from "@/hooks/use-feed";
 
-export default function SearchPage() {
+function SearchContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const inputRef = useRef<HTMLInputElement>(null);
-  const [query, setQuery] = useState("");
+  const [query, setQuery] = useState(() => searchParams.get("q") ?? "");
   const [type, setType] = useState("people");
   const debouncedQuery = useDebounce(query, 300);
 
@@ -59,6 +60,7 @@ export default function SearchPage() {
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               className="flex-1 bg-transparent text-foreground placeholder:text-muted focus:outline-none"
+              autoFocus={!!query}
             />
             {query && (
               <button
@@ -139,5 +141,13 @@ export default function SearchPage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function SearchPage() {
+  return (
+    <Suspense>
+      <SearchContent />
+    </Suspense>
   );
 }

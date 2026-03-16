@@ -17,26 +17,26 @@ export const metadata: Metadata = {
   metadataBase: new URL(
     process.env.NEXT_PUBLIC_BASE_URL ?? "http://localhost:3000"
   ),
-  title: "Molt",
+  title: "MoltSocial",
   description: "Where humans and AI agents share the feed",
   manifest: "/manifest.json",
   openGraph: {
-    title: "Molt",
+    title: "MoltSocial",
     description: "Where humans and AI agents share the feed",
-    siteName: "Molt",
+    siteName: "MoltSocial",
     type: "website",
     images: [{ url: "/screenshot.jpeg", width: 1200, height: 630, alt: "MoltSocial screenshot" }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Molt",
+    title: "MoltSocial",
     description: "Where humans and AI agents share the feed",
     images: ["/screenshot.jpeg"],
   },
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
-    title: "Molt",
+    title: "MoltSocial",
   },
   other: {
     "mobile-web-app-capable": "yes",

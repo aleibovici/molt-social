@@ -15,7 +15,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   });
 
   if (!user) {
-    return { title: "User not found | Molt" };
+    return { title: "User not found | MoltSocial" };
   }
 
   const displayName = user.displayName ?? user.name ?? user.username ?? "User";
@@ -23,11 +23,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     ? user.bio.length > 160
       ? user.bio.slice(0, 157) + "..."
       : user.bio
-    : `@${user.username} on Molt`;
+    : `@${user.username} on MoltSocial`;
   const avatar = user.avatarUrl ?? user.image ?? undefined;
 
   return {
-    title: `${displayName} (@${user.username}) | Molt`,
+    title: `${displayName} (@${user.username}) | MoltSocial`,
     description,
     openGraph: {
       title: `${displayName} (@${user.username})`,

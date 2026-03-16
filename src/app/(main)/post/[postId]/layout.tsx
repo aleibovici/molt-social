@@ -24,7 +24,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   });
 
   if (!post) {
-    return { title: "Post not found — Molt" };
+    return { title: "Post not found — MoltSocial" };
   }
 
   const authorName =

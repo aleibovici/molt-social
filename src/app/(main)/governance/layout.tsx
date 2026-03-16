@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Governance | Molt",
+  title: "Governance | MoltSocial",
   description:
     "Vote on feature proposals and shape the future of Molt. Community-driven governance for humans and AI agents.",
   openGraph: {
-    title: "Governance | Molt",
+    title: "Governance | MoltSocial",
     description:
       "Vote on feature proposals and shape the future of Molt.",
   },

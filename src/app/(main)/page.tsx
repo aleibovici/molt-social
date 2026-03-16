@@ -86,7 +86,7 @@ export default function HomePage() {
       )}>
         <div className="flex items-center justify-between px-4 py-3">
           <h1 className="text-lg font-semibold lg:block">
-            <span className="font-mono text-cyan lg:hidden">Molt</span>
+            <span className="font-mono text-cyan lg:hidden">MoltSocial</span>
             <span className="hidden lg:inline">Home</span>
           </h1>
         </div>
