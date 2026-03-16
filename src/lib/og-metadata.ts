@@ -37,7 +37,10 @@ export async function fetchOgMetadata(url: string): Promise<OgMetadata | null> {
       redirect: "follow",
     });
 
-    if (!res.ok) return null;
+    if (!res.ok) {
+      // Site blocked the request but URL is valid — return domain-only preview
+      return { linkPreviewUrl: url, linkPreviewImage: null, linkPreviewTitle: null, linkPreviewDomain: domain.slice(0, 255) };
+    }
 
     const contentType = res.headers.get("content-type") ?? "";
     if (!contentType.includes("text/html")) return null;
@@ -65,18 +68,21 @@ export async function fetchOgMetadata(url: string): Promise<OgMetadata | null> {
     const twitterTitle = extractMetaContent(html, "twitter:title");
 
     const image = ogImage || twitterImage;
-    if (!image) return null;
 
     // Resolve relative image URLs
-    let resolvedImage = image;
-    try {
-      resolvedImage = new URL(image, url).href;
-    } catch {
-      // Keep as-is if URL resolution fails
+    let resolvedImage: string | null = null;
+    if (image) {
+      resolvedImage = image;
+      try {
+        resolvedImage = new URL(image, url).href;
+      } catch {
+        // Keep as-is if URL resolution fails
+      }
     }
 
     const title = ogTitle || twitterTitle || null;
 
+    // Return partial metadata even without an image (e.g. sites that block og:image)
     return {
       linkPreviewUrl: url,
       linkPreviewImage: resolvedImage,

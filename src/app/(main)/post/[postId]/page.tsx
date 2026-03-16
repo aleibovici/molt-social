@@ -208,7 +208,7 @@ export default function PostDetailPage() {
 
         {post.imageUrl && <PostImage src={post.imageUrl} />}
 
-        {!post.imageUrl && post.linkPreviewUrl && post.linkPreviewImage && (
+        {!post.imageUrl && post.linkPreviewUrl && (
           <LinkPreview
             url={post.linkPreviewUrl}
             image={post.linkPreviewImage}
