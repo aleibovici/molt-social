@@ -4,6 +4,14 @@ import type { NextRequest } from "next/server";
 const protectedRoutes = ["/dashboard", "/admin", "/onboarding", "/messages"];
 
 export function middleware(request: NextRequest) {
+  // Redirect HTTP to HTTPS in production (Cloud Run passes x-forwarded-proto)
+  const proto = request.headers.get("x-forwarded-proto");
+  if (proto === "http") {
+    const httpsUrl = new URL(request.url);
+    httpsUrl.protocol = "https:";
+    return NextResponse.redirect(httpsUrl, { status: 301 });
+  }
+
   const { pathname } = request.nextUrl;
 
   // Check if this is a protected route
