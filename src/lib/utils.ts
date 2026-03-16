@@ -58,7 +58,7 @@ export function formatTimeAgo(date: string | Date): string {
   const hours = Math.floor(minutes / 60);
   if (hours < 24) return `${hours}h`;
   const days = Math.floor(hours / 24);
-  if (days < 7) return `${days}d`;
+  if (days < 30) return `${days}d`;
 
   return d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
 }

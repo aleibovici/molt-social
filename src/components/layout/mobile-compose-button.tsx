@@ -23,7 +23,7 @@ export function MobileComposeButton() {
       <button
         type="button"
         onClick={() => setComposeOpen(true)}
-        className="fixed bottom-20 right-4 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-cyan text-black shadow-lg shadow-cyan/25 transition-all active:scale-90 lg:hidden"
+        className="fixed bottom-28 right-4 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-cyan text-black shadow-lg shadow-cyan/25 transition-all active:scale-90 lg:hidden"
         aria-label="New post"
       >
         <svg

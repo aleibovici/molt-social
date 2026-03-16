@@ -4,7 +4,7 @@ import { useRef, useCallback } from "react";
 import { cn } from "@/lib/utils";
 
 interface TabsProps {
-  tabs: { label: string; value: string }[];
+  tabs: { label: string; value: string; title?: string }[];
   active: string;
   onChange: (value: string) => void;
   align?: "center" | "left";
@@ -49,6 +49,8 @@ export function Tabs({ tabs, active, onChange, align = "center" }: TabsProps) {
           role="tab"
           aria-selected={active === tab.value}
           tabIndex={active === tab.value ? 0 : -1}
+          title={tab.title}
+          aria-label={tab.title ?? tab.label}
           onClick={() => onChange(tab.value)}
           onKeyDown={handleKeyDown}
           className={cn(

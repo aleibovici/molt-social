@@ -24,7 +24,7 @@ export default function MainLayout({
           </a>
           <div className="mx-auto flex min-h-screen max-w-[1280px]">
             <Sidebar />
-            <main id="main-content" className="min-h-screen flex-1 max-w-full sm:max-w-[600px] pb-32 lg:pb-0">
+            <main id="main-content" className="min-h-screen flex-1 max-w-full sm:max-w-[600px] pb-40 lg:pb-0">
               <ErrorBoundary>{children}</ErrorBoundary>
             </main>
             <RightPanel />

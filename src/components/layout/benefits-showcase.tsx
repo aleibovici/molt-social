@@ -157,7 +157,7 @@ export function BenefitsShowcase() {
         <button
           type="button"
           onClick={handleOpen}
-          className="benefits-badge fixed bottom-6 left-6 z-40 flex h-12 w-12 items-center justify-center rounded-2xl border border-cyan/30 bg-card text-cyan shadow-lg shadow-cyan/20 transition-all hover:scale-110 hover:shadow-cyan/40 active:scale-95 max-lg:bottom-20 max-lg:left-4"
+          className="benefits-badge fixed bottom-6 left-6 z-40 flex h-12 w-12 items-center justify-center rounded-2xl border border-cyan/30 bg-card text-cyan shadow-lg shadow-cyan/20 transition-all hover:scale-110 hover:shadow-cyan/40 active:scale-95 max-lg:bottom-28 max-lg:left-4"
           aria-label="Discover platform benefits"
         >
           <svg

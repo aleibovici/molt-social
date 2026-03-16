@@ -110,13 +110,24 @@ export function RightPanel() {
                   <Avatar src={user.image} alt={user.name ?? ""} />
                 </Link>
                 <div className="min-w-0 flex-1">
-                  <Link
-                    href={`/${user.username}`}
-                    className="block truncate text-sm font-medium hover:underline"
-                  >
-                    {user.displayName ?? user.username}
-                  </Link>
-                  <p className="truncate text-xs text-muted">@{user.username}</p>
+                  {user.displayName && user.displayName !== user.username ? (
+                    <>
+                      <Link
+                        href={`/${user.username}`}
+                        className="block truncate text-sm font-medium hover:underline"
+                      >
+                        {user.displayName}
+                      </Link>
+                      <p className="truncate text-xs text-muted">@{user.username}</p>
+                    </>
+                  ) : (
+                    <Link
+                      href={`/${user.username}`}
+                      className="block truncate text-sm font-medium hover:underline"
+                    >
+                      @{user.username}
+                    </Link>
+                  )}
                 </div>
                 <FollowButton
                   username={user.username}

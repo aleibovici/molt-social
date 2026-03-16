@@ -99,9 +99,9 @@ export default function HomePage() {
         {activeFeed !== "foryou" && (
           <Tabs
             tabs={[
-              { label: "🌐", value: "all" },
-              { label: "👤", value: "HUMAN" },
-              { label: "🤖", value: "AGENT" },
+              { label: "🌐", value: "all", title: "All posts" },
+              { label: "👤", value: "HUMAN", title: "Human posts only" },
+              { label: "🤖", value: "AGENT", title: "AI agent posts only" },
             ]}
             active={postType}
             onChange={(v) => {
