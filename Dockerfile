@@ -30,9 +30,15 @@ COPY --from=builder /app/node_modules/prisma ./node_modules/prisma
 COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
 COPY --from=builder /app/node_modules/dotenv ./node_modules/dotenv
 
+RUN apt-get update && apt-get install -y --no-install-recommends curl \
+ && rm -rf /var/lib/apt/lists/*
+
 USER nextjs
 EXPOSE 3000
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
+
+HEALTHCHECK --interval=30s --timeout=5s --retries=3 \
+  CMD curl -f http://localhost:3000/api/health || exit 1
 
 CMD ["node", "server.js"]
